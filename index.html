@@ -11,40 +11,50 @@
 <style>
 /* ===== POLNES LUXURY EMERALD · WHITE · GOLD ===== */
 :root{
-/* Ganti gambar latar kampus di sini, contoh: --bg-image:url('./kampus.jpg'); */
---bg-image: url('./kampus.jpg');
---bg-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Cdefs%3E%3Cpattern id='g' width='80' height='80' patternUnits='userSpaceOnUse'%3E%3Cpath d='M80 0H0V80' fill='none' stroke='%23C5A059' stroke-opacity='.3' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='1600' height='900' fill='url(%23g)'/%3E%3Cg fill='none' stroke='%2310B981' stroke-opacity='.38' stroke-width='1.6'%3E%3Cpath d='M900 900V420a200 200 0 0 1 400 0v480'/%3E%3Cpath d='M960 900V430a140 140 0 0 1 280 0v470'/%3E%3Cpath d='M1340 900V520a120 120 0 0 1 240 0v380'/%3E%3Cpath d='M1400 900V530a60 60 0 0 1 120 0v370'/%3E%3Cpath d='M0 700L700 0M120 760L820 60M240 820L940 120' stroke='%23C5A059' stroke-opacity='.3'/%3E%3C/g%3E%3Cg fill='%23C5A059' fill-opacity='.35'%3E%3Ccircle cx='1100' cy='220' r='5'/%3E%3Ccircle cx='1300' cy='140' r='4'/%3E%3Ccircle cx='1500' cy='260' r='5'/%3E%3C/g%3E%3C/svg%3E");
---bg:linear-gradient(180deg,#F6F8F6 0%,#EBF0EC 100%);--pn:rgba(255,255,255,.86);--dlg:#FBFDFB;--in:rgba(255,255,255,.92);--ink:#10281F;--mut:#5C7167;--ln:#D8E2DC;--nv:#073024;--nvg:linear-gradient(170deg,#0B4635 0%,#073024 55%,#041E17 100%);--nvt:#EAF3EE;--gd:#C5A059;--gdg:linear-gradient(135deg,#E8D4A2 0%,#C5A059 50%,#9A7833 100%);--gt:#80601F;--gdt:#F5ECD6;--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(197,160,89,.30),transparent 65%),linear-gradient(135deg,#0B4635 0%,#073024 58%,#041E17 100%);--bar:#0B4635;--ok:#066B4B;--okb:rgba(16,185,129,.16);--er:#9B2C39;--erb:#F8E4E6;--sh:rgba(7,48,36,.35);--bgo:.85;
+--fallback-bg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Cdefs%3E%3Cpattern id='g' width='80' height='80' patternUnits='userSpaceOnUse'%3E%3Cpath d='M80 0H0V80' fill='none' stroke='%23C5A059' stroke-opacity='.32' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='1600' height='900' fill='url(%23g)'/%3E%3Cg fill='none' stroke='%2310B981' stroke-opacity='.4' stroke-width='1.6'%3E%3Cpath d='M900 900V420a200 200 0 0 1 400 0v480'/%3E%3Cpath d='M960 900V430a140 140 0 0 1 280 0v470'/%3E%3Cpath d='M1340 900V520a120 120 0 0 1 240 0v380'/%3E%3Cpath d='M1400 900V530a60 60 0 0 1 120 0v370'/%3E%3Cpath d='M0 700L700 0M120 760L820 60M240 820L940 120' stroke='%23C5A059' stroke-opacity='.3'/%3E%3C/g%3E%3C/svg%3E");
+--bg:linear-gradient(180deg,#F6F8F6 0%,#EBF0EC 100%);--pn:rgba(255,255,255,.84);--dlg:#FBFDFB;--in:rgba(255,255,255,.92);--ink:#10281F;--mut:#5C7167;--ln:#D8E2DC;--nv:#073024;--nvg:linear-gradient(170deg,#0B4635 0%,#073024 55%,#041E17 100%);--nvt:#EAF3EE;--gd:#C5A059;--gdg:linear-gradient(135deg,#E8D4A2 0%,#C5A059 50%,#9A7833 100%);--gt:#80601F;--gdt:#F5ECD6;--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(197,160,89,.32),transparent 65%),linear-gradient(135deg,rgba(11,70,53,.94) 0%,rgba(7,48,36,.95) 58%,rgba(4,30,23,.97) 100%);--bar:#0B4635;--ok:#066B4B;--okb:rgba(16,185,129,.16);--er:#9B2C39;--erb:#F8E4E6;--sh:rgba(7,48,36,.35);--bgo:.46;--fbo:.82;
 color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:linear-gradient(180deg,#06110E 0%,#030907 100%);--pn:rgba(11,29,23,.82);--dlg:#0B1D17;--in:rgba(6,17,14,.7);--ink:#F1F5F2;--mut:#9BB0A5;--ln:#1F3A30;--nv:#0B1D17;--nvg:linear-gradient(170deg,#0A2A20 0%,#061A14 55%,#030D09 100%);--nvt:#EAF3EE;--gd:#D6B672;--gdg:linear-gradient(135deg,#EFDDAE 0%,#D6B672 50%,#A58435 100%);--gt:#E6CA8B;--gdt:rgba(214,182,114,.14);--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(214,182,114,.22),transparent 65%),linear-gradient(135deg,#0E4D3A 0%,#08301F 58%,#041A12 100%);--bar:#34D399;--ok:#6EE7B7;--okb:rgba(16,185,129,.18);--er:#F29AA3;--erb:rgba(196,70,86,.2);--sh:rgba(0,0,0,.7);--bgo:.6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:linear-gradient(180deg,#06110E 0%,#030907 100%);--pn:rgba(11,29,23,.82);--dlg:#0B1D17;--in:rgba(6,17,14,.7);--ink:#F1F5F2;--mut:#9BB0A5;--ln:#1F3A30;--nv:#0B1D17;--nvg:linear-gradient(170deg,#0A2A20 0%,#061A14 55%,#030D09 100%);--nvt:#EAF3EE;--gd:#D6B672;--gdg:linear-gradient(135deg,#EFDDAE 0%,#D6B672 50%,#A58435 100%);--gt:#E6CA8B;--gdt:rgba(214,182,114,.14);--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(214,182,114,.22),transparent 65%),linear-gradient(135deg,#0E4D3A 0%,#08301F 58%,#041A12 100%);--bar:#34D399;--ok:#6EE7B7;--okb:rgba(16,185,129,.18);--er:#F29AA3;--erb:rgba(196,70,86,.2);--sh:rgba(0,0,0,.7);--bgo:.6;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:linear-gradient(180deg,#06110E 0%,#030907 100%);--pn:rgba(11,29,23,.80);--dlg:#0B1D17;--in:rgba(6,17,14,.74);--ink:#F1F5F2;--mut:#9BB0A5;--ln:#1F3A30;--nv:#0B1D17;--nvg:linear-gradient(170deg,#0A2A20 0%,#061A14 55%,#030D09 100%);--nvt:#EAF3EE;--gd:#D6B672;--gdg:linear-gradient(135deg,#EFDDAE 0%,#D6B672 50%,#A58435 100%);--gt:#E6CA8B;--gdt:rgba(214,182,114,.15);--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(214,182,114,.24),transparent 65%),linear-gradient(135deg,rgba(14,77,58,.92) 0%,rgba(8,48,31,.94) 58%,rgba(4,26,18,.96) 100%);--bar:#34D399;--ok:#6EE7B7;--okb:rgba(16,185,129,.18);--er:#F29AA3;--erb:rgba(196,70,86,.2);--sh:rgba(0,0,0,.7);--bgo:.36;--fbo:.55;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:linear-gradient(180deg,#06110E 0%,#030907 100%);--pn:rgba(11,29,23,.80);--dlg:#0B1D17;--in:rgba(6,17,14,.74);--ink:#F1F5F2;--mut:#9BB0A5;--ln:#1F3A30;--nv:#0B1D17;--nvg:linear-gradient(170deg,#0A2A20 0%,#061A14 55%,#030D09 100%);--nvt:#EAF3EE;--gd:#D6B672;--gdg:linear-gradient(135deg,#EFDDAE 0%,#D6B672 50%,#A58435 100%);--gt:#E6CA8B;--gdt:rgba(214,182,114,.15);--em:#10B981;--hero:radial-gradient(520px 220px at 100% 0%,rgba(214,182,114,.24),transparent 65%),linear-gradient(135deg,rgba(14,77,58,.92) 0%,rgba(8,48,31,.94) 58%,rgba(4,26,18,.96) 100%);--bar:#34D399;--ok:#6EE7B7;--okb:rgba(16,185,129,.18);--er:#F29AA3;--erb:rgba(196,70,86,.2);--sh:rgba(0,0,0,.7);--bgo:.36;--fbo:.55;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg);background-attachment:fixed;min-height:100%}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);background-attachment:fixed;color:var(--ink);font:14px/1.55 Manrope,system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{margin:0;background:transparent;color:var(--ink);font:14px/1.55 Manrope,system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 h1,h3,.lg,.hn,.v{font-family:"Playfair Display",Georgia,serif;font-weight:600;font-variant-numeric:lining-nums}
-h1{font-size:32px;line-height:1.1;margin:0;letter-spacing:-.01em}h3{font-size:19px;margin:0 0 12px}
+h1{font-size:30px;line-height:1.15;margin:0;letter-spacing:-.01em}h3{font-size:19px;margin:0 0 12px}
 
-/* ===== LATAR GAMBAR + GRADIENT MASK ===== */
-#bgl{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-#bgl::before{content:"";position:absolute;inset:0;background:var(--bg-image) right top/cover no-repeat;opacity:var(--bgo);
--webkit-mask-image:radial-gradient(120% 90% at 100% 0%,#000 0%,rgba(0,0,0,.75) 35%,transparent 78%),linear-gradient(180deg,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
--webkit-mask-composite:source-in;
-mask-image:radial-gradient(120% 90% at 100% 0%,#000 0%,rgba(0,0,0,.75) 35%,transparent 78%),linear-gradient(180deg,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
-mask-composite:intersect}
-#bgl::after{content:"";position:absolute;inset:0;background:radial-gradient(640px 380px at 92% 4%,rgba(16,185,129,.16),transparent 70%),radial-gradient(520px 320px at 70% 0%,rgba(197,160,89,.14),transparent 70%);
+/* ===== LATAR GAMBAR KAMPUS + GRADIENT MASK ===== */
+#bgl{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#bgl::before{content:"";position:absolute;inset:0;background:var(--fallback-bg) right top/cover no-repeat;opacity:var(--fbo);transition:opacity .5s ease;
+-webkit-mask-image:radial-gradient(ellipse 95% 75% at 78% 8%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.6) 40%,rgba(0,0,0,.15) 70%,transparent 92%);
+mask-image:radial-gradient(ellipse 95% 75% at 78% 8%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.6) 40%,rgba(0,0,0,.15) 70%,transparent 92%)}
+#bgl.has-photo::before{opacity:0}
+#bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;opacity:0;transition:opacity .7s ease;
+-webkit-mask-image:radial-gradient(ellipse 98% 78% at 76% 10%,rgba(0,0,0,.96) 0%,rgba(0,0,0,.68) 38%,rgba(0,0,0,.22) 68%,transparent 92%);
+mask-image:radial-gradient(ellipse 98% 78% at 76% 10%,rgba(0,0,0,.96) 0%,rgba(0,0,0,.68) 38%,rgba(0,0,0,.22) 68%,transparent 92%)}
+#bgl.has-photo #bg-img{opacity:var(--bgo)}
+#bgl::after{content:"";position:absolute;inset:0;background:radial-gradient(640px 380px at 90% 4%,rgba(16,185,129,.16),transparent 70%),radial-gradient(520px 320px at 68% 0%,rgba(197,160,89,.15),transparent 70%);
 -webkit-mask-image:linear-gradient(180deg,#000,transparent 65%);mask-image:linear-gradient(180deg,#000,transparent 65%)}
 
-.app{display:grid;grid-template-columns:252px 1fr;min-height:100vh}
-aside{background:radial-gradient(260px 260px at 100% 0,rgba(197,160,89,.2),transparent 70%),var(--nvg);color:var(--nvt);padding:26px 16px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid transparent;border-image:linear-gradient(180deg,rgba(197,160,89,.7),rgba(197,160,89,0) 75%) 1}
-.brand{display:grid;justify-items:center;gap:6px;text-align:center}
-.sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+/* ===== LAYOUT & COLLAPSIBLE SIDEBAR ===== */
+.app{display:grid;grid-template-columns:256px 1fr;min-height:100vh;position:relative;z-index:1;transition:grid-template-columns .36s cubic-bezier(.2,.8,.2,1)}
+aside{background:radial-gradient(260px 260px at 100% 0,rgba(197,160,89,.22),transparent 70%),var(--nvg);color:var(--nvt);padding:24px 16px;position:sticky;top:0;height:100vh;overflow-x:hidden;overflow-y:auto;border-right:1px solid transparent;border-image:linear-gradient(180deg,rgba(197,160,89,.7),rgba(197,160,89,0) 75%) 1;transition:opacity .28s ease,padding .36s cubic-bezier(.2,.8,.2,1)}
+.aside-in{min-width:222px;display:flex;flex-direction:column;gap:20px;min-height:100%}
+body.sb-off .app{grid-template-columns:0px 1fr}
+body.sb-off aside{opacity:0;padding-left:0;padding-right:0;pointer-events:none;border-right:0}
+
+.sb-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border-radius:10px;flex-shrink:0}
+.sb-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s ease}
+body.sb-off .sb-btn svg{transform:rotate(180deg)}
+
+.brand{display:grid;justify-items:center;gap:6px;text-align:center;position:relative}
+.sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.72}
 .lg{font-size:25px;padding:0 4px}.lg em{background:var(--gdg);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
 
 /* ===== LOGO MELAYANG ===== */
-.logo{position:relative;width:96px;height:96px;margin:2px auto 8px;perspective:600px;animation:float 5.5s ease-in-out infinite;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.logo{position:relative;width:96px;height:96px;margin:2px auto 6px;perspective:600px;animation:float 5.5s ease-in-out infinite;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 30% 25%,#fff,#EEF3EF);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .25s ease-out,box-shadow .3s;box-shadow:0 0 0 1.5px var(--gd),0 0 0 5px rgba(197,160,89,.2),0 16px 30px -10px rgba(0,0,0,.65)}
 .logo:hover .lg3{box-shadow:0 0 0 1.5px var(--gd),0 0 0 6px rgba(197,160,89,.35),0 0 26px 2px rgba(227,203,142,.5),0 16px 30px -10px rgba(0,0,0,.65)}
-.lg3 img,.lg3 .fb{width:74%;height:74%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.28))}
+.lg3 img,.lg3 .fb{width:76%;height:76%;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.28))}
 .lg3 .fb{display:none}
 .lg3 .gl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,232,170,.9),rgba(255,232,170,0) 55%)}
 .logo:hover .gl{opacity:1}
@@ -55,38 +65,47 @@ aside{background:radial-gradient(260px 260px at 100% 0,rgba(197,160,89,.2),trans
 @keyframes pulse{0%{transform:scale(1)}35%{transform:scale(.9)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 @keyframes ring{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
 
-nav{display:flex;flex-direction:column;gap:2px}
-nav button{background:none;border:0;color:inherit;text-align:left;padding:10px 14px;font:inherit;font-weight:500;cursor:pointer;opacity:.72;border-radius:10px;transition:opacity .2s,background .2s,transform .2s}
-nav button:hover{opacity:1;background:rgba(255,255,255,.07);transform:translateX(3px)}
+nav{display:flex;flex-direction:column;gap:3px}
+nav button{background:none;border:0;color:inherit;text-align:left;padding:10px 14px;font:inherit;font-weight:500;cursor:pointer;opacity:.74;border-radius:10px;transition:opacity .2s,background .2s,transform .2s}
+nav button:hover{opacity:1;background:rgba(255,255,255,.08);transform:translateX(3px)}
 nav button.on{opacity:1;font-weight:600;background:linear-gradient(90deg,rgba(197,160,89,.28),rgba(197,160,89,0));box-shadow:inset 3px 0 0 var(--gd)}
-.st{margin-top:auto;font-size:12px;opacity:.9;padding:12px;display:grid;gap:4px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.04)}
+.st{margin-top:auto;font-size:12px;opacity:.9;padding:12px;display:grid;gap:4px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.04)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#7C9488}
 .dot.on{background:var(--em);animation:ping 2s infinite}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 
-main{padding:32px 36px;min-width:0;max-width:1120px;width:100%}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid transparent;border-image:linear-gradient(90deg,var(--gd),rgba(197,160,89,0) 65%) 1}
-#v{view-transition-name:pgv}
-#v.pe{animation:pageEnter .45s cubic-bezier(.2,.7,.2,1) backwards}
-@keyframes pageEnter{from{opacity:0;transform:translateY(10px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
-::view-transition-group(pgv){animation-duration:.4s}
-::view-transition-old(pgv){animation:vtOut .18s ease-in both}
-::view-transition-new(pgv){animation:vtIn .4s cubic-bezier(.2,.7,.2,1) both}
-@keyframes vtOut{to{opacity:0;transform:translateY(-6px);filter:blur(4px)}}
-@keyframes vtIn{from{opacity:0;transform:translateY(10px);filter:blur(6px)}}
+main{padding:28px 36px;min-width:0;max-width:1160px;width:100%;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid transparent;border-image:linear-gradient(90deg,var(--gd),rgba(197,160,89,0) 65%) 1}
+.hd-l{display:flex;align-items:center;gap:12px;min-width:0}
 
-.hero{background:var(--hero);color:var(--nvt);border-radius:20px;padding:26px 28px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 22px 44px -26px var(--sh),inset 0 0 0 1px rgba(197,160,89,.18)}
+/* ===== LIVE TAP SPOTLIGHT BANNER ===== */
+.tap-spot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:linear-gradient(120deg,rgba(11,70,53,.95),rgba(6,44,33,.96));color:#EAF3EE;border:1px solid var(--gd);border-radius:14px;padding:14px 18px;margin-bottom:14px;box-shadow:0 16px 32px -18px var(--sh);animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+.tap-spot strong{font-size:15px;color:#fff}
+.tap-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#E8D4A2;font-weight:600}
+.tap-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--em);animation:ping 1.5s infinite}
+
+#v{view-transition-name:pgv}
+#v.pe{animation:pageEnter .42s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes pageEnter{from{opacity:0;transform:translateY(10px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+::view-transition-group(pgv){animation-duration:.38s}
+::view-transition-old(pgv){animation:vtOut .16s ease-in both}
+::view-transition-new(pgv){animation:vtIn .38s cubic-bezier(.2,.7,.2,1) both}
+@keyframes vtOut{to{opacity:0;transform:translateY(-6px);filter:blur(4px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px);filter:blur(5px)}}
+
+.hero{background:var(--hero);color:var(--nvt);border-radius:20px;padding:26px 28px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 22px 44px -26px var(--sh),inset 0 0 0 1px rgba(197,160,89,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .hero::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:var(--gdg)}
-.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(227,203,142,.08) 22px 23px);-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000);mask-image:linear-gradient(90deg,transparent 30%,#000)}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(227,203,142,.07) 22px 23px);-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000);mask-image:linear-gradient(90deg,transparent 30%,#000)}
 .hero>*{position:relative;z-index:1}
 .hh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.hs{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.24);color:var(--nvt);font:inherit;width:auto;max-width:100%;margin:0;padding:6px 10px;border-radius:10px;transition:border-color .2s,background .2s}
-.hs:hover{border-color:var(--gd);background:rgba(255,255,255,.1)}
+.hs{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.24);color:var(--nvt);font:inherit;width:auto;max-width:100%;margin:0;padding:6px 10px;border-radius:10px;transition:border-color .2s,background .2s}
+.hs:hover{border-color:var(--gd);background:rgba(255,255,255,.12)}
 .hs option{color:#10281F}
 .hn{font-size:clamp(26px,4vw,42px);line-height:1.1;margin:18px 0 6px}
-.hm{opacity:.8;font-size:13px;margin:4px 0}
+.hm{opacity:.82;font-size:13px;margin:4px 0}
 .bar{height:7px;background:rgba(255,255,255,.14);border-radius:9px;overflow:hidden;margin:18px 0 8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#10B981,#6EE7B7);border-radius:9px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
 .hero .b{background:rgba(255,255,255,.14);color:var(--nvt)}.hero .b.ok{background:linear-gradient(135deg,#34D399,#10B981);color:#032A1E}.hero .b.lt{background:var(--gdg);color:#2A1F07}
+#live-clk{margin-left:auto;font-variant-numeric:tabular-nums;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.14)}
 
 .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));background:var(--pn);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 14px 30px -24px var(--sh)}
 .strip>div{position:relative;padding:16px 20px;border-left:1px solid var(--ln);transition:background .3s}
@@ -110,7 +129,7 @@ tr+tr td{border-top:1px solid var(--ln)}tr:hover td{background:rgba(197,160,89,.
 .b{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:500;display:inline-block}
 .ok{background:var(--okb);color:var(--ok)}.lt{background:var(--gdt);color:var(--gt)}.no{background:var(--ln);color:var(--mut)}.er{background:var(--erb);color:var(--er)}
 #sync-st::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--em);margin-right:6px;vertical-align:1px;animation:ping 2s infinite}
-.btn{background:transparent;color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:8px 14px;font:inherit;font-weight:500;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s,background-position .4s,filter .2s}
+.btn{background:var(--pn);color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:8px 14px;font:inherit;font-weight:500;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s,background-position .4s,filter .2s}
 .btn:hover{border-color:var(--gd);transform:translateY(-1px);box-shadow:0 8px 16px -10px var(--sh)}.btn:active{transform:translateY(0) scale(.97)}.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
 .btn.p{background:linear-gradient(120deg,#E8D4A2 0%,#C5A059 45%,#E8D4A2 100%);background-size:200% 100%;border-color:transparent;color:#1F1707;font-weight:600}.btn.p:hover{background-position:100% 0;filter:brightness(1.05)}
 .btn.er{color:var(--er);border-color:var(--er)}
@@ -133,7 +152,7 @@ dialog[open]{animation:pop .3s cubic-bezier(.2,.8,.2,1)}
 dialog[open]::backdrop{animation:fade .25s ease-out}
 #ts{margin:0;border:0;background:none;padding:0;inset:auto 16px calc(16px + env(safe-area-inset-bottom,0px)) auto;overflow:visible}
 #ts:popover-open{display:grid;gap:8px}
-.t{padding:10px 14px;border-radius:10px;background:var(--nv);color:var(--nvt);border-left:3px solid var(--gd);max-width:340px;font-size:13px;box-shadow:0 14px 30px -12px rgba(0,0,0,.5);animation:toast .35s cubic-bezier(.2,.8,.2,1)}
+.t{padding:10px 14px;border-radius:10px;background:var(--nv);color:var(--nvt);border-left:3px solid var(--gd);max-width:360px;font-size:13px;box-shadow:0 14px 30px -12px rgba(0,0,0,.5);animation:toast .35s cubic-bezier(.2,.8,.2,1)}
 .t.ok{border-color:var(--em)}.t.er{border-color:#C45A66}
 @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.96);filter:blur(4px)}}
 @keyframes fade{from{opacity:0}}
@@ -145,13 +164,27 @@ dialog[open]::backdrop{animation:fade .25s ease-out}
 .an svg rect{transform-box:fill-box;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) backwards}
 svg rect{transition:opacity .2s}svg rect:hover{opacity:.78}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media(max-width:860px){.app{grid-template-columns:1fr}aside{position:static;height:auto;overflow:visible;padding:14px;gap:8px;border-right:0;border-image:none}.brand{grid-template-columns:auto 1fr;justify-items:start;text-align:left;column-gap:12px}.brand .logo{grid-row:span 2;width:52px;height:52px;margin:0}.sub{display:none}nav{flex-direction:row;flex-wrap:wrap}.st{display:none}main{padding:18px}.strip>div{border-left:0;border-top:1px solid var(--ln)}.strip>div:first-child{border-top:0}}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr!important}
+  aside{position:static;height:auto;max-height:480px;overflow:hidden;padding:14px;border-right:0;border-image:none;transition:max-height .35s ease,opacity .25s ease,padding .35s ease}
+  body.sb-off aside{max-height:0;padding-top:0;padding-bottom:0;opacity:0}
+  .aside-in{min-width:0;gap:10px}
+  .brand{grid-template-columns:auto 1fr;justify-items:start;text-align:left;column-gap:12px}
+  .brand .logo{grid-row:span 2;width:52px;height:52px;margin:0}
+  .sub{display:none}
+  nav{flex-direction:row;flex-wrap:wrap}
+  .st{display:none}
+  main{padding:18px}
+  .strip>div{border-left:0;border-top:1px solid var(--ln)}
+  .strip>div:first-child{border-top:0}
+  #live-clk{margin-left:0}
+}
 </style>
 </head>
 <body>
-<div id="bgl" aria-hidden="true"></div>
+<div id="bgl" aria-hidden="true"><img id="bg-img" alt=""></div>
 <div class="app">
-<aside>
+<aside><div class="aside-in">
 <div class="brand">
 <div class="logo" id="logo" title="Politeknik Negeri Samarinda"><div class="lg3">
 <img src="./logo-polnes.png" alt="Logo Polnes" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
@@ -160,9 +193,23 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.78}
 <div class="lg">Presensi <em>RFID</em></div><div class="sub">Politeknik Negeri Samarinda</div>
 </div>
 <nav id="nv"></nav>
-<div class="st" id="side-st"><div><span class="dot"></span>Perangkat RFID</div><div>Memuat status...</div></div></aside>
+<div class="st" id="side-st"><div><span class="dot"></span>Perangkat RFID</div><div>Memuat status...</div></div>
+</div></aside>
 <main>
-<header><h1 id="ttl"></h1><div class="hr"><span class="b ok" id="sync-st">Live Sync</span><span class="b" id="md"></span><button class="btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema">◐</button><button class="btn" id="ab" onclick="adm?out():lgn()"></button></div></header>
+<header>
+  <div class="hd-l">
+    <button class="btn sb-btn" id="sbb" onclick="toggleSb()" aria-label="Tutup atau buka menu samping" title="Tutup / buka menu samping (tombol [ )">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="15 10 13 12 15 14"/></svg>
+    </button>
+    <h1 id="ttl"></h1>
+  </div>
+  <div class="hr">
+    <span class="b ok" id="sync-st">Live Sync</span>
+    <span class="b" id="md"></span>
+    <button class="btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema terang / gelap">◐</button>
+    <button class="btn" id="ab" onclick="adm?out():lgn()"></button>
+  </div>
+</header>
 <div id="v"><div class="card"><p class="mut">Menghubungkan ke database Supabase...</p></div></div>
 </main></div>
 <dialog id="dg"></dialog><div id="ts" popover="manual"></div>
@@ -172,7 +219,7 @@ const SUPABASE_KEY = 'sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0};
-let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,regTimer=null,lp=null,vtOn=0;
+let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTap=null,tapTmr=null;
 let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,ak:'',auto:1}};
 
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
@@ -192,7 +239,28 @@ const cl="$('#dg').close()";
 function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
 
-/* ===== Transisi perpindahan menu (View Transitions API + fallback CSS pageEnter) ===== */
+/* ===== Deteksi Otomatis Foto Kampus (kampus.jpg / .jpeg / .png / .webp) ===== */
+(()=>{
+  const kandidats=['./kampus.jpg','./kampus.jpeg','./kampus.png','./kampus.webp','./Kampus.jpg','./Kampus.jpeg','./Kampus.png'];
+  let idx=0;
+  function cobaMuat(){
+    if(idx>=kandidats.length)return;
+    const src=kandidats[idx++],probe=new Image();
+    probe.onload=()=>{const el=$('#bg-img'),box=$('#bgl');if(el&&box){el.src=src;box.classList.add('has-photo')}};
+    probe.onerror=cobaMuat;
+    probe.src=src;
+  }
+  cobaMuat();
+})();
+
+/* ===== Toggle Buka/Tutup Menu Samping (Sidebar) ===== */
+try{if(localStorage.getItem('sb')==='off')document.body.classList.add('sb-off')}catch(e){}
+function toggleSb(){
+  const off=document.body.classList.toggle('sb-off');
+  try{localStorage.setItem('sb',off?'off':'on')}catch(e){}
+}
+
+/* ===== Transisi Perpindahan Menu ===== */
 function enter(){const v=$('#v');v.classList.remove('pe');void v.offsetWidth;v.classList.add('pe')}
 function go(p){
   page=p;scrollTo(0,0);
@@ -201,9 +269,16 @@ function go(p){
   }else render();
 }
 
-/* ===== Tema manual (terang/gelap), default mengikuti sistem ===== */
+/* ===== Tema Terang / Gelap ===== */
 try{const t=localStorage.getItem('tm');if(t)document.documentElement.dataset.theme=t}catch(e){}
 function tema(){const r=document.documentElement,dk=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches,n=dk?'light':'dark';r.dataset.theme=n;try{localStorage.setItem('tm',n)}catch(e){}}
+
+/* ===== Pintasan Keyboard: '[' tutup/buka sidebar, '/' fokus pencarian ===== */
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+  if(e.key==='['){e.preventDefault();toggleSb()}
+  if(e.key==='/'){const inp=$('#v input[placeholder^="Cari"]');if(inp){e.preventDefault();inp.focus()}}
+});
 
 function devInfo(){
   const d=(S.dev||[]).find(x=>x.aktif)||S.dev[0];
@@ -296,17 +371,43 @@ async function loadAll(notify){
 
 function setupRealtime(){
   sb.channel('rfid-live-channel')
-    .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},payload=>{
-      loadAll(0);
-      if(payload.eventType==='INSERT'||payload.eventType==='UPDATE')toast('Data presensi baru masuk dari perangkat!','ok');
+    .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},async payload=>{
+      const row=payload.new;
+      await loadAll(0);
+      if((payload.eventType==='INSERT'||payload.eventType==='UPDATE')&&row){
+        const m=M(row.anggota_id),c=MK(row.mata_kuliah_id);
+        const tipe=row.pulang?'Pulang':'Masuk',jam=(row.pulang||row.masuk||'').slice(0,5);
+        liveTap={nama:m?m.nama:'Mahasiswa',nim:m?m.nim:'',mk:c?c.nama:'',waktu:jam,tipe,status:row.status||'Hadir'};
+        clearTimeout(tapTmr);
+        tapTmr=setTimeout(()=>{liveTap=null;if(page==='dash')render()},10000);
+        if(page==='dash')render();
+        toast(`${liveTap.nama} — ${tipe} ${jam} (${liveTap.status})`,'ok');
+      }
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'anggota'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'riwayat_kartu'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'perangkat'},()=>loadAll(0))
     .subscribe();
-  setInterval(()=>loadAll(0),15000);
+
+  setInterval(()=>{
+    const tag=document.activeElement?.tagName;
+    if($('#dg')?.open || tag==='INPUT' || tag==='TEXTAREA')return;
+    loadAll(0);
+  },15000);
 }
+
+function updateClock(){
+  const el=$('#live-clk');if(!el)return;
+  const d=new Date(),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');
+  const c=MK(kk());let extra='';
+  if(c&&c.mulai&&d.getDay()==c.hari){
+    const n=d.getHours()*60+d.getMinutes(),s=mn(c.mulai),e=mn(c.selesai);
+    if(n>=s&&n<=e)extra=` • Sisa ${e-n} mnt`;
+  }
+  el.textContent=`${hh}:${mm}:${ss}${extra}`;
+}
+setInterval(updateClock,1000);
 
 function render(){
  const di=devInfo();
@@ -319,6 +420,7 @@ function render(){
  $('#ttl').textContent=P.find(x=>x[0]==page)[1];
  if(loading)return;
  $('#v').innerHTML=({dash:vDash,att:vAtt,mk:vMk,mem:vMem,reg:vReg,rep:vRep,set:vSet})[page]();first=0;
+ updateClock();
  if(lp!==page){if(lp!==null&&!vtOn)enter();lp=page}}
 
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -341,9 +443,10 @@ function recent(k){
  return e.length?'<ul class="ls">'+e.sort().reverse().slice(0,6).map(x=>`<li><span>${esc(x[1])}</span><span class="mut">${x[3].slice(8)}/${x[3].slice(5,7)}, ${x[2]}</span></li>`).join('')+'</ul>':'<p class="mut">Belum ada aktivitas.</p>'}
 
 function vDash(){
- if(!S.mk.length)return `<div class="card"><h3>Belum ada mata kuliah</h3><p class="mut">${adm?'Tambahkan mata kuliah beserta jadwalnya melalui menu Mata kuliah.':'Data akan tampil setelah administrator menambahkan mata kuliah.'}</p></div>`+dv();
+ const spot=liveTap?`<div class="tap-spot"><div><div class="tap-badge">Pemindaian Kartu Terbaru</div><div><strong>${esc(liveTap.nama)}</strong> ${liveTap.nim?`(${esc(liveTap.nim)})`:''} — ${esc(liveTap.tipe)} pukul <strong>${esc(liveTap.waktu)}</strong></div></div><div class="hr">${bd(liveTap.status)}<button class="lk" style="color:#E8D4A2" onclick="liveTap=null;render()">Tutup</button></div></div>`:'';
+ if(!S.mk.length)return spot+`<div class="card"><h3>Belum ada mata kuliah</h3><p class="mut">${adm?'Tambahkan mata kuliah beserta jadwalnya melalui menu Mata kuliah.':'Data akan tampil setelah administrator menambahkan mata kuliah.'}</p></div>`+dv();
  const k=kk(),c=MK(k),td=TD(),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==td&&x.mk==k),h=t.length,l=t.filter(x=>x.st=='Terlambat').length,pc=a.length?Math.round(h/a.length*100):0,st=sesi(c),ak=aktif(),hd=new Set(t.map(x=>x.id)),bl=a.filter(x=>!hd.has(x.id)),hari=S.mk.filter(x=>x.mulai&&x.hari==new Date().getDay()).sort((x,y)=>x.mulai.localeCompare(y.mulai));
- return `<section class="hero${first?' an':''}"><div class="hh"><select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select><span class="b ${st[0]}">${st[1]}</span>${ak&&ak.id==k?'<span class="b">Sesi pencatatan</span>':''}</div>
+ return spot+`<section class="hero${first?' an':''}"><div class="hh"><select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select><span class="b ${st[0]}">${st[1]}</span>${ak&&ak.id==k?'<span class="b">Sesi pencatatan</span>':''}<span class="b" id="live-clk"></span></div>
  <div class="hn">${esc(c.nama)}</div><div class="hm">${esc(c.kode)}, ${jd(c)}</div>
  <div class="bar"><i style="width:${pc}%"></i></div><div class="hm">${h} dari ${a.length} peserta hadir (${pc}%)</div></section>
  <div class="strip">${[['Peserta aktif',fmt(a.length)],['Hadir hari ini',h],['Terlambat',l],['Belum hadir',bl.length]].map(x=>`<div><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('')}</div>
@@ -366,7 +469,7 @@ function pnl(){const k=aktif();if(!k)return `<div class="card"><h3>Input presens
  return `<div class="card"><h3>Input presensi manual</h3><p class="mut">Sesi aktif: ${esc(k.nama)} (${esc(k.kode)}), ${jd(k)}</p><div class="rw"><select id="sm">${o}</select><input type="time" id="st" value="${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}"><button class="btn p" onclick="manual()">Catat presensi</button></div></div>`}
 
 function vAtt(){const u="F.p=0;$('#tb').innerHTML=tbl()";
- return `<div class="rw"><input placeholder="Cari nama, NIM${adm?', UID':''}" value="${esc(F.q)}" oninput="F.q=this.value;${u}"><select onchange="F.f=this.value;${u}">${kopt(F.f,1)}</select><input type="date" value="${F.d}" onchange="F.d=this.value;${u}"><select onchange="F.s=this.value;${u}"><option value="">Semua status<option ${F.s=='Hadir'?'selected':''}>Hadir<option ${F.s=='Terlambat'?'selected':''}>Terlambat</select><select onchange="F.o=this.value;${u}"><option value="t">Terbaru<option value="n" ${F.o=='n'?'selected':''}>Nama A–Z</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div><div class="card" id="tb">${tbl()}</div>`+(adm?pnl():'')}
+ return `<div class="rw"><input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.q)}" oninput="F.q=this.value;${u}"><select onchange="F.f=this.value;${u}">${kopt(F.f,1)}</select><input type="date" value="${F.d}" onchange="F.d=this.value;${u}"><select onchange="F.s=this.value;${u}"><option value="">Semua status<option ${F.s=='Hadir'?'selected':''}>Hadir<option ${F.s=='Terlambat'?'selected':''}>Terlambat</select><select onchange="F.o=this.value;${u}"><option value="t">Terbaru<option value="n" ${F.o=='n'?'selected':''}>Nama A–Z</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div><div class="card" id="tb">${tbl()}</div>`+(adm?pnl():'')}
 
 async function manual(){
  const m=M($('#sm').value),t=$('#st').value,c=aktif(),td=TD();
@@ -437,7 +540,7 @@ async function khps(id){
 function mtbl(){const q=F.mq.toLowerCase(),r=S.mem.filter(m=>!q||m.nama.toLowerCase().includes(q)||m.nim.includes(q)||(adm&&m.uid.toLowerCase().includes(q))),n=Math.max(1,Math.ceil(r.length/20));F.mp=Math.min(F.mp,n-1);
  return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td>${esc(m.nama)}<td>${esc(m.nim)}<td>${esc(m.kelas)}<td>${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
 function mpg(d){F.mp+=d;$('#mt').innerHTML=mtbl()}
-function vMem(){return `<div class="rw">${adm?'<button class="btn p" onclick="mdlg()">Tambah anggota</button><button class="btn" onclick="imp()">Impor daftar</button>':''}<input placeholder="Cari nama, NIM${adm?', UID':''}" value="${esc(F.mq)}" oninput="F.mq=this.value;F.mp=0;$('#mt').innerHTML=mtbl()"><span class="mut">${fmt(S.mem.length)} dari ${fmt(MAXM)} anggota</span></div><div class="card" id="mt">${mtbl()}</div>`}
+function vMem(){return `<div class="rw">${adm?'<button class="btn p" onclick="mdlg()">Tambah anggota</button><button class="btn" onclick="imp()">Impor daftar</button>':''}<input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.mq)}" oninput="F.mq=this.value;F.mp=0;$('#mt').innerHTML=mtbl()"><span class="mut">${fmt(S.mem.length)} dari ${fmt(MAXM)} anggota</span></div><div class="card" id="mt">${mtbl()}</div>`}
 
 function mdlg(id){const m=id?M(id):{nama:'',nim:'',kelas:'',mk:[]};
  dlg(`<h3>${id?'Ubah':'Tambah'} anggota</h3><label>Nama lengkap<input id="f1" maxlength="80" value="${esc(m.nama)}"></label><label>NIM<input id="f2" maxlength="12" value="${esc(m.nim)}" ${id?'readonly':''}></label><label>Kelas<input id="f3" maxlength="20" value="${esc(m.kelas)}"></label><label>Mata kuliah yang diikuti</label><div class="cb">${S.mk.map(k=>`<label><input type="checkbox" class="mkc" value="${k.id}" ${(m.mk||[]).includes(k.id)?'checked':''}> ${esc(k.nama)} (${esc(k.kode)})</label>`).join('')||'<span class="mut">Belum ada mata kuliah</span>'}</div><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="simM('${id||''}')">Simpan</button></div>`)}
@@ -588,7 +691,12 @@ async function pw(){
 }
 
 function csv(){return 'Tanggal,Mata kuliah,NIM,Nama,Masuk,Pulang,Status\n'+S.rec.map(x=>[x.tgl,'"'+((MK(x.mk)||{}).kode||'')+'"',((M(x.id)||{}).nim||''),'"'+((M(x.id)||{}).nama||'')+'"',x.ms,x.pl,x.st].join(',')).join('\n')}
-function ex(){dlg(`<h3>Ekspor CSV</h3><p class="mut">Salin teks di bawah ke Excel atau Google Sheets.</p><textarea readonly rows="8" onfocus="this.select()">${esc(csv())}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
+function dlCsv(){
+ const blob=new Blob(['\uFEFF'+csv()],{type:'text/csv;charset=utf-8;'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='presensi-polnes-'+TD()+'.csv';a.click();
+ URL.revokeObjectURL(a.href);toast('File CSV berhasil diunduh','ok');
+}
+function ex(){dlg(`<h3>Ekspor CSV</h3><p class="mut">Unduh langsung sebagai file Excel (.csv) atau salin teks di bawah.</p><textarea readonly rows="7" onfocus="this.select()">${esc(csv())}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button><button class="btn p" onclick="dlCsv()">Unduh File .CSV</button></div>`)}
 function bk(){dlg(`<h3>Cadangan JSON</h3><p class="mut">Salin dan simpan teks ini di tempat yang aman.</p><textarea readonly rows="8" onfocus="this.select()">${esc(JSON.stringify(S))}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
 
 function lgn(){
