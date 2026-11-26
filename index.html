@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:linear-gradient(180deg,#FBF8F1 0%,#F2EBDC 100%);--pn:#FFFDF8;--ink:#14203A;--mut:#697086;--ln:#E4DAC6;--nv:#101A33;--nvg:linear-gradient(170deg,#1D2C52 0%,#111B36 55%,#0A1124 100%);--nvt:#EEE7D6;--gd:#B8913F;--gdg:linear-gradient(135deg,#E3CB8E 0%,#BE9644 50%,#94722D 100%);--gt:#7A5E24;--gdt:#F3EAD3;--hero:radial-gradient(520px 200px at 100% 0%,rgba(227,203,142,.28),transparent 65%),linear-gradient(135deg,#1F3059 0%,#14213F 58%,#0E1730 100%);--bar:#1A2A50;--ok:#16213B;--okb:#E4E8F1;--er:#8C2F39;--erb:#F3E1E2;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:linear-gradient(180deg,#0C1426 0%,#070C18 100%);--pn:#121B31;--ink:#EEE7D6;--mut:#9AA3B8;--ln:#26324F;--nv:#080E1C;--nvg:linear-gradient(170deg,#0F1A33 0%,#0A1226 55%,#060B18 100%);--gd:#D2B572;--gdg:linear-gradient(135deg,#EAD6A0 0%,#CDAA5C 50%,#A27F3A 100%);--gt:#E3C985;--gdt:#2D2A22;--hero:radial-gradient(520px 200px at 100% 0%,rgba(227,203,142,.2),transparent 65%),linear-gradient(135deg,#1E2F5A 0%,#14213F 58%,#0D162D 100%);--bar:#8DA0D0;--ok:#C9D3EC;--okb:#1D2A48;--er:#E08B94;--erb:#3A2227;color-scheme:dark}}
@@ -23,7 +24,9 @@ nav{display:flex;flex-direction:column;gap:2px}
 nav button{background:none;border:0;color:inherit;text-align:left;padding:10px 12px;font:inherit;cursor:pointer;opacity:.7;border-radius:8px;transition:opacity .15s,background .15s}
 nav button:hover{opacity:1;background:rgba(255,255,255,.05)}
 nav button.on{opacity:1;background:linear-gradient(90deg,rgba(227,203,142,.2),rgba(227,203,142,0));box-shadow:inset 2px 0 0 var(--gd)}
-.st{margin-top:auto;font-size:12px;opacity:.7;padding:0 12px;display:grid;gap:2px}
+.st{margin-top:auto;font-size:12px;opacity:.85;padding:0 12px;display:grid;gap:4px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#8892A8}
+.dot.on{background:#4ADE80;box-shadow:0 0 8px #4ADE80}
 main{padding:32px 36px;min-width:0;max-width:1120px;width:100%}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid transparent;border-image:linear-gradient(90deg,var(--gd),rgba(184,145,63,0) 60%) 1}
 .hero{background:var(--hero);color:var(--nvt);border-radius:18px;padding:26px 28px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 18px 40px -24px rgba(10,17,36,.7)}
@@ -68,7 +71,7 @@ dialog::backdrop{background:rgba(10,16,30,.55)}
 dialog[open]{animation:pop .18s ease-out}
 #ts{margin:0;border:0;background:none;padding:0;inset:auto 16px calc(16px + env(safe-area-inset-bottom,0px)) auto;overflow:visible}
 #ts:popover-open{display:grid;gap:8px}
-.t{padding:10px 14px;border-radius:10px;background:var(--nv);color:var(--nvt);border-left:3px solid var(--gd);max-width:320px;font-size:13px}
+.t{padding:10px 14px;border-radius:10px;background:var(--nv);color:var(--nvt);border-left:3px solid var(--gd);max-width:340px;font-size:13px}
 .t.er{border-color:#C45A66}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
@@ -81,52 +84,161 @@ dialog[open]{animation:pop .18s ease-out}
 <body>
 <div class="app">
 <aside><div class="lg">Presensi <em>RFID</em></div><nav id="nv"></nav>
-<div class="st"><div>Perangkat RFID</div><div>Tidak terhubung</div></div></aside>
+<div class="st" id="side-st"><div><span class="dot"></span>Perangkat RFID</div><div>Memuat status...</div></div></aside>
 <main>
-<header><h1 id="ttl"></h1><div class="hr"><span class="b" id="md"></span><button class="btn" id="ab" onclick="adm?out():lgn()"></button></div></header>
-<div id="v"></div>
+<header><h1 id="ttl"></h1><div class="hr"><span class="b ok" id="sync-st">Live Sync</span><span class="b" id="md"></span><button class="btn" id="ab" onclick="adm?out():lgn()"></button></div></header>
+<div id="v"><div class="card"><p class="mut">Menghubungkan ke database Supabase...</p></div></div>
 </main></div>
 <dialog id="dg"></dialog><div id="ts" popover="manual"></div>
 <script>
-const $=s=>document.querySelector(s),K='rfid-presensi-v2',MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0};
-let adm=0,page='dash',S,first=1;
+const SUPABASE_URL = 'https://muwlrysxpuygrinrnere.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0};
+let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,regTimer=null;
+let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,ak:'',auto:1}};
+
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const TD=iso(new Date()),now=()=>new Date().toISOString(),fmt=n=>n.toLocaleString('id-ID');
-const mn=t=>{const a=t.split(':');return a[0]*60+ +a[1]};
-const ds=d=>d.slice(8)+'/'+d.slice(5,7)+'/'+d.slice(0,4);
-const dur=(a,b)=>{const m=mn(b)-mn(a);return Math.floor(m/60)+'j '+m%60+'m'};
+const TD=()=>iso(new Date()),fmt=n=>n.toLocaleString('id-ID');
+const mn=t=>{if(!t)return 0;const a=t.split(':');return a[0]*60+ +a[1]};
+const ds=d=>d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4):'-';
+const dur=(a,b)=>{const m=mn(b)-mn(a);return m>0?Math.floor(m/60)+'j '+m%60+'m':'0m'};
 const wk=d=>{const x=new Date(d+'T00:00');x.setDate(x.getDate()-(x.getDay()+6)%7);return iso(x)};
 const M=id=>S.mem.find(x=>x.id==id),MK=id=>S.mk.find(x=>x.id==id);
-const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':'no'}">${s}</span>`;
+const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':'no'}">${esc(s)}</span>`;
 const kk=()=>MK(F.k)?F.k:MK(S.set.ak)?S.set.ak:(S.mk[0]||{}).id||'';
 const kopt=(sel,all)=>(all?'<option value="">Semua mata kuliah</option>':'')+S.mk.map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)} (${esc(k.kode)})</option>`).join('');
 const pgn=(len,p,n,fn)=>`<div class="rw"><span class="mut">${fmt(len)} data</span><button class="btn" ${p?'':'disabled'} onclick="${fn}(-1)">Sebelumnya</button><span>${p+1}/${n}</span><button class="btn" ${p<n-1?'':'disabled'} onclick="${fn}(1)">Berikutnya</button></div>`;
-const dv=()=>`<div class="card"><h3>Perangkat RFID</h3><span class="b no">Tidak terhubung</span> <span class="mut">Presensi dapat dicatat manual oleh admin melalui menu Presensi.</span></div>`;
 const cl="$('#dg').close()";
-async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function seed(){return{mem:[],mk:[],rec:[],reg:[],aud:[],set:{masuk:'08:00',tol:15,pulang:'15:00',jeda:60,deb:10,dl:1,h:'',ak:'',n:0,auto:1}}}
-try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
-if(!S||!S.mem)S=seed();
-function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
-function log(a,d){S.aud.push({t:now(),w:'admin',a,d:d||''})}
-function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3500)}
+
+function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
 function go(p){page=p;render()}
+
+function devInfo(){
+  const d=(S.dev||[]).find(x=>x.aktif)||S.dev[0];
+  if(!d||!d.terakhir_terlihat)return{on:false,txt:'Belum pernah terhubung',nama:d?d.nama:'Reader utama'};
+  const diffSec=Math.floor((Date.now()-new Date(d.terakhir_terlihat).getTime())/1000);
+  if(diffSec<=90)return{on:true,txt:'Online ('+(diffSec<5?'baru saja':diffSec+' dtk lalu')+')',nama:d.nama};
+  const m=Math.floor(diffSec/60);
+  return{on:false,txt:'Offline ('+(m<60?m+' mnt lalu':new Date(d.terakhir_terlihat).toLocaleString('id-ID'))+')',nama:d.nama};
+}
+
+const dv=()=>{const i=devInfo();return `<div class="card"><div class="hr" style="justify-content:space-between"><div><h3 style="margin-bottom:4px">Perangkat RFID (${esc(i.nama)})</h3><span class="b ${i.on?'ok':'no'}">${i.on?'Terhubung':'Tidak terhubung'}</span> <span class="mut">${esc(i.txt)} — data kartu otomatis masuk ke database.</span></div><button class="btn" onclick="loadAll(1)">Segarkan data</button></div></div>`};
+
+async function checkAuth(){
+  const {data:{session}}=await sb.auth.getSession();
+  const u=session?.user;
+  adm=(u && u.app_metadata && u.app_metadata.role==='admin')?1:0;
+  userEmail=u?.email||'';
+}
+
+async function loadAll(notify){
+  try{
+    const [qMk,qAng,qPes,qPres,qSet,qDev]=await Promise.all([
+      sb.from('mata_kuliah').select('*').order('kode'),
+      sb.from('anggota').select(adm?'id,nim,nama,kelas,aktif,uid_kartu,punya_kartu':'id,nim,nama,kelas,aktif,punya_kartu').order('nama'),
+      sb.from('peserta').select('anggota_id,mata_kuliah_id'),
+      sb.from('presensi').select('*').order('tanggal',{ascending:false}).order('masuk',{ascending:false}).limit(2000),
+      sb.from('pengaturan').select('*').limit(1).maybeSingle(),
+      sb.from('perangkat').select('id,nama,aktif,terakhir_terlihat')
+    ]);
+    if(qMk.error)throw qMk.error;
+    if(qAng.error)throw qAng.error;
+    if(qPres.error)throw qPres.error;
+
+    const pesMap={};
+    (qPes.data||[]).forEach(p=>{
+      if(!pesMap[p.anggota_id])pesMap[p.anggota_id]=[];
+      pesMap[p.anggota_id].push(p.mata_kuliah_id);
+    });
+
+    S.mk=(qMk.data||[]).map(k=>({
+      id:k.id,kode:k.kode,nama:k.nama,hari:k.hari,
+      mulai:(k.mulai||'').slice(0,5),selesai:(k.selesai||'').slice(0,5),
+      tol:k.toleransi_menit
+    }));
+
+    S.mem=(qAng.data||[]).map(m=>({
+      id:m.id,nim:m.nim,nama:m.nama,kelas:m.kelas||'',
+      aktif:m.aktif?1:0,uid:m.uid_kartu||'',punya:!!m.punya_kartu,
+      mk:pesMap[m.id]||[]
+    }));
+
+    S.rec=(qPres.data||[]).map(r=>({
+      rid:r.id,tgl:r.tanggal,id:r.anggota_id,mk:r.mata_kuliah_id,
+      ms:(r.masuk||'').slice(0,5),pl:r.pulang?(r.pulang||'').slice(0,5):'',
+      st:r.status,sumber:r.sumber
+    }));
+
+    if(qSet.data){
+      S.set={
+        tol:qSet.data.toleransi_menit,
+        jeda:qSet.data.jeda_minimal_menit,
+        deb:qSet.data.abaikan_ulang_detik,
+        auto:qSet.data.sesi_otomatis?1:0,
+        ak:qSet.data.sesi_aktif_id||'',
+        dl:qSet.data.izinkan_ekspor?1:0
+      };
+    }
+    S.dev=qDev.data||[];
+
+    if(adm){
+      const [qReg,qAud,qSesi]=await Promise.all([
+        sb.from('riwayat_kartu').select('*').order('waktu',{ascending:false}).limit(20),
+        sb.from('log_audit').select('*').order('waktu',{ascending:false}).limit(25),
+        sb.from('sesi_registrasi').select('*').eq('selesai',false).gt('kedaluwarsa',new Date().toISOString()).order('dibuat_pada',{ascending:false}).limit(1).maybeSingle()
+      ]);
+      S.reg=(qReg.data||[]).map(x=>({t:x.waktu,id:x.anggota_id,u:x.uid,h:x.hasil}));
+      S.aud=(qAud.data||[]).map(x=>({t:x.waktu,w:x.aktor?'admin':'perangkat',a:x.aksi,d:JSON.stringify(x.detail||{})}));
+      regWait=qSesi.data||null;
+    }else{
+      S.reg=[];S.aud=[];regWait=null;
+    }
+    loading=0;
+    render();
+    if(notify)toast('Data berhasil disegarkan','ok');
+  }catch(e){
+    loading=0;
+    toast('Gagal memuat data: '+(e.message||e),'er');
+  }
+}
+
+function setupRealtime(){
+  sb.channel('rfid-live-channel')
+    .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},payload=>{
+      loadAll(0);
+      if(payload.eventType==='INSERT'||payload.eventType==='UPDATE')toast('Data presensi baru masuk dari perangkat!','ok');
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'anggota'},()=>loadAll(0))
+    .on('postgres_changes',{event:'*',schema:'public',table:'riwayat_kartu'},()=>loadAll(0))
+    .on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},()=>loadAll(0))
+    .on('postgres_changes',{event:'*',schema:'public',table:'perangkat'},()=>loadAll(0))
+    .subscribe();
+  setInterval(()=>loadAll(0),15000);
+}
+
 function render(){
+ const di=devInfo();
+ $('#side-st').innerHTML=`<div><span class="dot ${di.on?'on':''}"></span>${esc(di.nama)}</div><div style="opacity:.75">${esc(di.txt)}</div>`;
  $('#md').className='b '+(adm?'lt':'no');$('#md').textContent=adm?'Mode admin':'Mode lihat';
  $('#ab').textContent=adm?'Keluar':'Masuk admin';
  const P=[['dash','Dashboard'],['att','Presensi'],['mk','Mata kuliah'],['mem','Anggota'],['reg','Registrasi RFID',1],['rep','Laporan'],['set','Pengaturan',1]].filter(x=>!x[2]||adm);
  if(!P.some(x=>x[0]==page))page='dash';
  $('#nv').innerHTML=P.map(x=>`<button class="${x[0]==page?'on':''}" onclick="go('${x[0]}')">${x[1]}</button>`).join('');
  $('#ttl').textContent=P.find(x=>x[0]==page)[1];
+ if(loading)return;
  $('#v').innerHTML=({dash:vDash,att:vAtt,mk:vMk,mem:vMem,reg:vReg,rep:vRep,set:vSet})[page]();first=0}
+
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 const jd=k=>k.mulai?DN[k.hari]+', '+k.mulai+'–'+k.selesai:'Jadwal belum diatur';
-const tl=(k,t)=>mn(t)>mn((k&&k.mulai)||S.set.masuk)+((k&&k.tol!=null&&k.tol!=='')?+k.tol:S.set.tol);
+const tl=(k,t)=>mn(t)>mn(k.mulai)+((k&&k.tol!=null&&k.tol!=='')?+k.tol:S.set.tol);
 const nowm=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 function sesi(k){if(!k.mulai)return['no','Tanpa jadwal'];if(new Date().getDay()!=k.hari)return['no',DN[k.hari]];const n=nowm();return n<mn(k.mulai)?['lt','Akan dimulai']:n<=mn(k.selesai)?['ok','Berlangsung']:['no','Selesai']}
 function aktif(){if(S.set.auto){const n=nowm(),d=new Date().getDay(),k=S.mk.find(x=>x.mulai&&x.hari==d&&mn(x.mulai)<=n&&n<=mn(x.selesai));if(k)return k}return MK(S.set.ak)}
+
 function chart(a,k){
  const R=S.rec.filter(x=>x.mk==k),d=[...new Set(R.map(x=>x.tgl))].sort().slice(-7);
  if(!d.length)return '<p class="mut">Belum ada data presensi.</p>';
@@ -134,90 +246,216 @@ function chart(a,k){
  return `<svg viewBox="0 0 ${W} 140" width="100%" role="img" aria-label="Grafik kehadiran 7 pertemuan terakhir">`+d.map((t,i)=>{
   const r=R.filter(x=>x.tgl==t),L=r.filter(x=>x.st=='Terlambat').length,O=r.length-L,x=g+i*(bw+g);
   return `<rect x="${x}" y="${110-O*sc}" width="${bw}" height="${O*sc}" rx="3" style="fill:var(--bar)"/><rect x="${x}" y="${110-(O+L)*sc}" width="${bw}" height="${L*sc}" rx="3" style="fill:var(--gd)"/><text x="${x+bw/2}" y="128" text-anchor="middle" font-size="11" style="fill:var(--mut)">${t.slice(8)}/${t.slice(5,7)}</text>`}).join('')+`</svg><p class="mut">Gelap: tepat waktu. Emas: terlambat.</p>`}
+
 function recent(k){
  const e=[];S.rec.filter(x=>x.mk==k).forEach(x=>{const m=M(x.id);if(m)e.push([x.tgl+(x.pl||x.ms),m.nama,x.pl?'pulang '+x.pl:'masuk '+x.ms,x.tgl])});
  return e.length?'<ul class="ls">'+e.sort().reverse().slice(0,6).map(x=>`<li><span>${esc(x[1])}</span><span class="mut">${x[3].slice(8)}/${x[3].slice(5,7)}, ${x[2]}</span></li>`).join('')+'</ul>':'<p class="mut">Belum ada aktivitas.</p>'}
+
 function vDash(){
  if(!S.mk.length)return `<div class="card"><h3>Belum ada mata kuliah</h3><p class="mut">${adm?'Tambahkan mata kuliah beserta jadwalnya melalui menu Mata kuliah.':'Data akan tampil setelah administrator menambahkan mata kuliah.'}</p></div>`+dv();
- const k=kk(),c=MK(k),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==TD&&x.mk==k),h=t.length,l=t.filter(x=>x.st=='Terlambat').length,pc=a.length?Math.round(h/a.length*100):0,st=sesi(c),ak=aktif(),hd=new Set(t.map(x=>x.id)),bl=a.filter(x=>!hd.has(x.id)),hari=S.mk.filter(x=>x.mulai&&x.hari==new Date().getDay()).sort((x,y)=>x.mulai.localeCompare(y.mulai));
+ const k=kk(),c=MK(k),td=TD(),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==td&&x.mk==k),h=t.length,l=t.filter(x=>x.st=='Terlambat').length,pc=a.length?Math.round(h/a.length*100):0,st=sesi(c),ak=aktif(),hd=new Set(t.map(x=>x.id)),bl=a.filter(x=>!hd.has(x.id)),hari=S.mk.filter(x=>x.mulai&&x.hari==new Date().getDay()).sort((x,y)=>x.mulai.localeCompare(y.mulai));
  return `<section class="hero${first?' an':''}"><div class="hh"><select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select><span class="b ${st[0]}">${st[1]}</span>${ak&&ak.id==k?'<span class="b">Sesi pencatatan</span>':''}</div>
  <div class="hn">${esc(c.nama)}</div><div class="hm">${esc(c.kode)}, ${jd(c)}</div>
  <div class="bar"><i style="width:${pc}%"></i></div><div class="hm">${h} dari ${a.length} peserta hadir (${pc}%)</div></section>
  <div class="strip">${[['Peserta aktif',fmt(a.length)],['Hadir hari ini',h],['Terlambat',l],['Belum hadir',bl.length]].map(x=>`<div><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('')}</div>
  <div class="two"><div class="card"><h3>Kehadiran 7 pertemuan terakhir</h3>${chart(a.length,k)}</div><div class="card"><h3>Aktivitas terbaru</h3>${recent(k)}</div></div>
  <div class="two"><div class="card"><h3>Jadwal hari ini</h3>${hari.length?'<ul class="ls">'+hari.map(x=>{const s=sesi(x);return `<li><button class="lk" onclick="F.k='${x.id}';render()">${esc(x.nama)}</button><span class="mut">${x.mulai}–${x.selesai} <span class="b ${s[0]}">${s[1]}</span></span></li>`}).join('')+'</ul>':'<p class="mut">Tidak ada mata kuliah terjadwal hari ini.</p>'}</div>
- <div class="card"><h3>Belum hadir</h3>${bl.length?'<ul class="ls">'+bl.slice(0,8).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut">${x.id}</span></li>`).join('')+'</ul>'+(bl.length>8?`<p class="mut">dan ${bl.length-8} lainnya</p>`:''):'<p class="mut">Semua peserta sudah hadir.</p>'}</div></div>`+dv()}
+ <div class="card"><h3>Belum hadir</h3>${bl.length?'<ul class="ls">'+bl.slice(0,8).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut">${esc(x.nim)}</span></li>`).join('')+'</ul>'+(bl.length>8?`<p class="mut">dan ${bl.length-8} lainnya</p>`:''):'<p class="mut">Semua peserta sudah hadir.</p>'}</div></div>`+dv()}
+
 function tbl(){
  let r=S.rec.map((x,i)=>({...x,i,m:M(x.id)||{},c:MK(x.mk)||{}}));const q=F.q.toLowerCase();
- r=r.filter(x=>(!F.f||x.mk==F.f)&&(!q||(x.m.nama||'').toLowerCase().includes(q)||x.id.includes(q)||(adm&&(x.m.uid||'').toLowerCase().includes(q)))&&(!F.d||x.tgl==F.d)&&(!F.s||x.st==F.s));
+ r=r.filter(x=>(!F.f||x.mk==F.f)&&(!q||(x.m.nama||'').toLowerCase().includes(q)||(x.m.nim||'').includes(q)||(adm&&(x.m.uid||'').toLowerCase().includes(q)))&&(!F.d||x.tgl==F.d)&&(!F.s||x.st==F.s));
  r.sort((a,b)=>F.o=='n'?(a.m.nama||'').localeCompare(b.m.nama||''):(b.tgl+b.ms).localeCompare(a.tgl+a.ms));
  const n=Math.max(1,Math.ceil(r.length/10));F.p=Math.min(F.p,n-1);
  return `<div class="tw"><table><tr><th>Tanggal<th>Mata kuliah<th>Nama<th>NIM<th>Masuk<th>Pulang<th>Durasi<th>Status${adm?'<th>':''}</tr>`+
- (r.slice(F.p*10,F.p*10+10).map(x=>`<tr><td>${ds(x.tgl)}<td>${esc(x.c.kode||'-')}<td>${esc(x.m.nama||'-')}<td>${x.id}<td>${x.ms}<td>${x.pl||'—'}<td>${x.pl?dur(x.ms,x.pl):'—'}<td>${bd(x.st)}${adm?`<td><button class="lk" onclick="koreksi(${x.i})">Koreksi</button>`:''}</tr>`).join('')||`<tr><td colspan="9">Belum ada catatan presensi</tr>`)+
+ (r.slice(F.p*10,F.p*10+10).map(x=>`<tr><td>${ds(x.tgl)}<td>${esc(x.c.kode||'-')}<td>${esc(x.m.nama||'-')}<td>${esc(x.m.nim||'-')}<td>${x.ms}<td>${x.pl||'—'}<td>${x.pl?dur(x.ms,x.pl):'—'}<td>${bd(x.st)}${adm?`<td><button class="lk" onclick="koreksi(${x.i})">Koreksi</button>`:''}</tr>`).join('')||`<tr><td colspan="9">Belum ada catatan presensi</tr>`)+
  `</table></div>`+pgn(r.length,F.p,n,'ap')}
 function ap(d){F.p+=d;$('#tb').innerHTML=tbl()}
+
 function pnl(){const k=aktif();if(!k)return `<div class="card"><h3>Input presensi manual</h3><p class="mut">Tentukan sesi aktif pada menu Mata kuliah.</p></div>`;
- const o=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k.id)).map(x=>`<option value="${x.id}">${esc(x.nama)} (${x.id})</option>`).join(''),d=new Date();
+ const o=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k.id)).map(x=>`<option value="${x.id}">${esc(x.nama)} (${esc(x.nim)})</option>`).join(''),d=new Date();
  return `<div class="card"><h3>Input presensi manual</h3><p class="mut">Sesi aktif: ${esc(k.nama)} (${esc(k.kode)}), ${jd(k)}</p><div class="rw"><select id="sm">${o}</select><input type="time" id="st" value="${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}"><button class="btn p" onclick="manual()">Catat presensi</button></div></div>`}
+
 function vAtt(){const u="F.p=0;$('#tb').innerHTML=tbl()";
  return `<div class="rw"><input placeholder="Cari nama, NIM${adm?', UID':''}" value="${esc(F.q)}" oninput="F.q=this.value;${u}"><select onchange="F.f=this.value;${u}">${kopt(F.f,1)}</select><input type="date" value="${F.d}" onchange="F.d=this.value;${u}"><select onchange="F.s=this.value;${u}"><option value="">Semua status<option ${F.s=='Hadir'?'selected':''}>Hadir<option ${F.s=='Terlambat'?'selected':''}>Terlambat</select><select onchange="F.o=this.value;${u}"><option value="t">Terbaru<option value="n" ${F.o=='n'?'selected':''}>Nama A–Z</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div><div class="card" id="tb">${tbl()}</div>`+(adm?pnl():'')}
-function manual(){const m=M($('#sm').value),t=$('#st').value,c=aktif();if(!m||!t||!c){toast('Pilih anggota dan isi jam','er');return}
- const r=S.rec.find(x=>x.tgl==TD&&x.id==m.id&&x.mk==c.id);
- if(!r){const late=tl(c,t);S.rec.push({tgl:TD,id:m.id,mk:c.id,ms:t,pl:'',st:late?'Terlambat':'Hadir'});toast(m.nama+': masuk '+t+(late?' (terlambat)':''),'ok')}
- else if(!r.pl){if(mn(t)-mn(r.ms)<S.set.jeda){toast('Jeda minimal presensi pulang adalah '+S.set.jeda+' menit','no');return}r.pl=t;toast(m.nama+': pulang '+t,'ok')}
- else{toast('Presensi anggota ini sudah lengkap','no');return}
- log('Presensi manual',m.nama+', '+t);save();render()}
+
+async function manual(){
+ const m=M($('#sm').value),t=$('#st').value,c=aktif(),td=TD();
+ if(!m||!t||!c){toast('Pilih anggota dan isi jam','er');return}
+ const r=S.rec.find(x=>x.tgl==td&&x.id==m.id&&x.mk==c.id);
+ if(!r){
+   const late=tl(c,t),st=late?'Terlambat':'Hadir';
+   const {error}=await sb.from('presensi').insert({anggota_id:m.id,mata_kuliah_id:c.id,tanggal:td,masuk:t+':00',status:st,sumber:'manual'});
+   if(error){toast('Gagal menyimpan: '+error.message,'er');return}
+   toast(m.nama+': masuk '+t+(late?' (terlambat)':''),'ok');
+ }else if(!r.pl){
+   if(mn(t)-mn(r.ms)<S.set.jeda){toast('Jeda minimal presensi pulang adalah '+S.set.jeda+' menit','no');return}
+   const {error}=await sb.from('presensi').update({pulang:t+':00'}).eq('id',r.rid);
+   if(error){toast('Gagal menyimpan: '+error.message,'er');return}
+   toast(m.nama+': pulang '+t,'ok');
+ }else{toast('Presensi anggota ini sudah lengkap','no');return}
+ await loadAll(0);
+}
+
 function koreksi(i){const x=S.rec[i],m=M(x.id)||{};
- dlg(`<h3>Koreksi presensi</h3><p class="mut">${esc(m.nama||x.id)}, ${ds(x.tgl)}</p><label>Masuk<input type="time" id="a1" value="${x.ms}"></label><label>Pulang<input type="time" id="a2" value="${x.pl}"></label><label>Alasan (wajib)<input id="a3" placeholder="Contoh: kesalahan pencatatan"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="kor(${i},0)">Simpan</button><button class="btn er" onclick="kor(${i},1)">Hapus catatan</button></div>`)}
-function kor(i,del){const al=$('#a3').value.trim();if(!al){toast('Alasan wajib diisi','er');return}
- const x=S.rec[i],m=M(x.id)||{};
- if(del){S.rec.splice(i,1);log('Hapus presensi',(m.nama||x.id)+' '+x.tgl+' — '+al)}
- else{const a=$('#a1').value,b=$('#a2').value;if(!a){toast('Jam masuk wajib diisi','er');return}x.ms=a;x.pl=b;x.st=tl(MK(x.mk),a)?'Terlambat':'Hadir';log('Koreksi presensi',(m.nama||x.id)+' '+x.tgl+' — '+al)}
- save();$('#dg').close();render()}
+ dlg(`<h3>Koreksi presensi</h3><p class="mut">${esc(m.nama||'-')}, ${ds(x.tgl)}</p><label>Masuk<input type="time" id="a1" value="${x.ms}"></label><label>Pulang<input type="time" id="a2" value="${x.pl}"></label><label>Alasan (wajib)<input id="a3" placeholder="Contoh: kesalahan pencatatan"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="kor(${i},0)">Simpan</button><button class="btn er" onclick="kor(${i},1)">Hapus catatan</button></div>`)}
+
+async function kor(i,del){
+ const al=$('#a3').value.trim();if(!al){toast('Alasan wajib diisi','er');return}
+ const x=S.rec[i];
+ if(del){
+   const {error}=await sb.from('presensi').delete().eq('id',x.rid);
+   if(error){toast('Gagal menghapus: '+error.message,'er');return}
+ }else{
+   const a=$('#a1').value,b=$('#a2').value;if(!a){toast('Jam masuk wajib diisi','er');return}
+   const st=tl(MK(x.mk),a)?'Terlambat':'Hadir';
+   const {error}=await sb.from('presensi').update({masuk:a+':00',pulang:b?b+':00':null,status:st}).eq('id',x.rid);
+   if(error){toast('Gagal mengubah: '+error.message,'er');return}
+ }
+ await sb.from('log_audit').insert({aksi:del?'Hapus presensi manual':'Koreksi presensi manual',detail:{presensi_id:x.rid,alasan:al}});
+ $('#dg').close();toast('Perubahan disimpan','ok');await loadAll(0);
+}
+
 function vMk(){const a=aktif();return `<div class="rw">${adm?'<button class="btn p" onclick="kdlg()">Tambah mata kuliah</button>':''}<span class="mut">${S.mk.length} dari ${MAXK} mata kuliah</span></div><div class="card tw"><table><tr><th>Kode<th>Mata kuliah<th>Jadwal<th>Toleransi<th>Peserta<th>Sesi${adm?'<th>':''}</tr>`+(S.mk.map(k=>`<tr><td>${esc(k.kode)}<td>${esc(k.nama)}<td>${jd(k)}<td>${k.tol==null||k.tol===''?S.set.tol:k.tol} menit<td>${S.mem.filter(x=>(x.mk||[]).includes(k.id)).length}<td>${a&&a.id==k.id?'<span class="b lt">Aktif</span>':''}${adm?`<td><button class="lk" onclick="kdlg('${k.id}')">Ubah</button>${a&&a.id==k.id?'':`<button class="lk" onclick="akt('${k.id}')">Jadikan aktif</button>`}<button class="lk" onclick="khps('${k.id}')">Hapus</button>`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada mata kuliah</tr>')+'</table></div>'}
+
 function kdlg(id){const k=id?MK(id):{kode:'',nama:'',hari:1,mulai:'08:00',selesai:'09:40',tol:''};
  dlg(`<h3>${id?'Ubah':'Tambah'} mata kuliah</h3><label>Kode<input id="k1" maxlength="12" value="${esc(k.kode)}"></label><label>Nama mata kuliah<input id="k2" maxlength="80" value="${esc(k.nama)}"></label><label>Hari<select id="k3">${[1,2,3,4,5,6,0].map(d=>`<option value="${d}" ${d==(k.hari==null?1:k.hari)?'selected':''}>${DN[d]}</option>`).join('')}</select></label><div class="rw"><label>Jam mulai<input type="time" id="k4" value="${k.mulai||'08:00'}"></label><label>Jam selesai<input type="time" id="k5" value="${k.selesai||'09:40'}"></label></div><label>Toleransi terlambat (menit). Kosongkan untuk mengikuti pengaturan umum<input type="number" min="0" id="k6" value="${k.tol==null?'':k.tol}"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="ksim('${id||''}')">Simpan</button></div>`)}
-function ksim(id){const c=$('#k1').value.trim(),n=$('#k2').value.trim(),h=+$('#k3').value,a=$('#k4').value,b=$('#k5').value,v=$('#k6').value,tol=v===''?null:Math.max(0,+v);
+
+async function ksim(id){
+ const c=$('#k1').value.trim(),n=$('#k2').value.trim(),h=+$('#k3').value,a=$('#k4').value,b=$('#k5').value,v=$('#k6').value,tol=v===''?null:Math.max(0,+v);
  if(!c||!n||!a||!b){toast('Kode, nama, dan jam wajib diisi','er');return}
  if(mn(b)<=mn(a)){toast('Jam selesai harus setelah jam mulai','er');return}
- if(S.mk.some(x=>x.kode.toLowerCase()==c.toLowerCase()&&x.id!=id)){toast('Kode mata kuliah sudah digunakan','er');return}
- if(id){Object.assign(MK(id),{kode:c,nama:n,hari:h,mulai:a,selesai:b,tol});log('Ubah mata kuliah',c)}
- else{if(S.mk.length>=MAXK){toast('Batas '+MAXK+' mata kuliah telah tercapai','er');return}const i='k'+(++S.set.n);S.mk.push({id:i,kode:c,nama:n,hari:h,mulai:a,selesai:b,tol});if(!S.set.ak)S.set.ak=i;log('Tambah mata kuliah',c+', '+n)}
- save();$('#dg').close();render()}
-function akt(id){S.set.ak=id;log('Ubah sesi aktif',MK(id).kode);save();render()}
-function khps(id){const k=MK(id);if(S.rec.some(x=>x.mk==id)){toast('Mata kuliah memiliki data presensi dan tidak dapat dihapus','er');return}
- S.mk=S.mk.filter(x=>x.id!=id);S.mem.forEach(m=>m.mk=(m.mk||[]).filter(x=>x!=id));if(S.set.ak==id)S.set.ak=(S.mk[0]||{}).id||'';log('Hapus mata kuliah',k.kode);save();render()}
-function mtbl(){const q=F.mq.toLowerCase(),r=S.mem.filter(m=>!q||m.nama.toLowerCase().includes(q)||m.id.includes(q)||(adm&&m.uid.toLowerCase().includes(q))),n=Math.max(1,Math.ceil(r.length/20));F.mp=Math.min(F.mp,n-1);
- return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td>${esc(m.nama)}<td>${m.id}<td>${esc(m.kelas)}<td>${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.uid?`<span class="b ok">Terdaftar</span> <span class="mut">${adm?m.uid:'••'+m.uid.slice(-2)}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
+ const payload={kode:c,nama:n,hari:h,mulai:a+':00',selesai:b+':00',toleransi_menit:tol};
+ const res=id?await sb.from('mata_kuliah').update(payload).eq('id',id):await sb.from('mata_kuliah').insert(payload).select().single();
+ if(res.error){toast('Gagal menyimpan: '+res.error.message,'er');return}
+ if(!id && !S.set.ak && res.data){await sb.from('pengaturan').update({sesi_aktif_id:res.data.id}).eq('id',true)}
+ $('#dg').close();toast('Mata kuliah tersimpan','ok');await loadAll(0);
+}
+
+async function akt(id){
+ const {error}=await sb.from('pengaturan').update({sesi_aktif_id:id}).eq('id',true);
+ if(error){toast('Gagal mengubah sesi: '+error.message,'er');return}
+ toast('Sesi aktif diperbarui','ok');await loadAll(0);
+}
+
+async function khps(id){
+ if(S.rec.some(x=>x.mk==id)){toast('Mata kuliah memiliki data presensi dan tidak dapat dihapus','er');return}
+ const {error}=await sb.from('mata_kuliah').delete().eq('id',id);
+ if(error){toast('Gagal menghapus: '+error.message,'er');return}
+ toast('Mata kuliah dihapus','ok');await loadAll(0);
+}
+
+function mtbl(){const q=F.mq.toLowerCase(),r=S.mem.filter(m=>!q||m.nama.toLowerCase().includes(q)||m.nim.includes(q)||(adm&&m.uid.toLowerCase().includes(q))),n=Math.max(1,Math.ceil(r.length/20));F.mp=Math.min(F.mp,n-1);
+ return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td>${esc(m.nama)}<td>${esc(m.nim)}<td>${esc(m.kelas)}<td>${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
 function mpg(d){F.mp+=d;$('#mt').innerHTML=mtbl()}
 function vMem(){return `<div class="rw">${adm?'<button class="btn p" onclick="mdlg()">Tambah anggota</button><button class="btn" onclick="imp()">Impor daftar</button>':''}<input placeholder="Cari nama, NIM${adm?', UID':''}" value="${esc(F.mq)}" oninput="F.mq=this.value;F.mp=0;$('#mt').innerHTML=mtbl()"><span class="mut">${fmt(S.mem.length)} dari ${fmt(MAXM)} anggota</span></div><div class="card" id="mt">${mtbl()}</div>`}
-function mdlg(id){const m=id?M(id):{nama:'',id:'',kelas:'',mk:[]};
- dlg(`<h3>${id?'Ubah':'Tambah'} anggota</h3><label>Nama lengkap<input id="f1" maxlength="80" value="${esc(m.nama)}"></label><label>NIM<input id="f2" maxlength="12" value="${m.id}" ${id?'readonly':''}></label><label>Kelas<input id="f3" maxlength="20" value="${esc(m.kelas)}"></label><label>Mata kuliah yang diikuti</label><div class="cb">${S.mk.map(k=>`<label><input type="checkbox" class="mkc" value="${k.id}" ${(m.mk||[]).includes(k.id)?'checked':''}> ${esc(k.nama)} (${esc(k.kode)})</label>`).join('')||'<span class="mut">Belum ada mata kuliah</span>'}</div><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="simM('${id||''}')">Simpan</button></div>`)}
-function simM(id){const n=$('#f1').value.trim(),i=$('#f2').value.trim(),k=$('#f3').value.trim(),c=[...document.querySelectorAll('.mkc:checked')].map(x=>x.value);
- if(!n||!/^\d{6,12}$/.test(i)){toast('Nama dan NIM (6–12 digit) wajib diisi','er');return}
- if(id){const m=M(id);m.nama=n;m.kelas=k;m.mk=c;log('Ubah anggota',n)}
- else{if(M(i)){toast('NIM sudah terdaftar','er');return}if(S.mem.length>=MAXM){toast('Batas '+fmt(MAXM)+' anggota telah tercapai','er');return}S.mem.push({id:i,nama:n,kelas:k,aktif:1,uid:'',mk:c});log('Tambah anggota',n+' ('+i+')')}
- save();$('#dg').close();render()}
+
+function mdlg(id){const m=id?M(id):{nama:'',nim:'',kelas:'',mk:[]};
+ dlg(`<h3>${id?'Ubah':'Tambah'} anggota</h3><label>Nama lengkap<input id="f1" maxlength="80" value="${esc(m.nama)}"></label><label>NIM<input id="f2" maxlength="12" value="${esc(m.nim)}" ${id?'readonly':''}></label><label>Kelas<input id="f3" maxlength="20" value="${esc(m.kelas)}"></label><label>Mata kuliah yang diikuti</label><div class="cb">${S.mk.map(k=>`<label><input type="checkbox" class="mkc" value="${k.id}" ${(m.mk||[]).includes(k.id)?'checked':''}> ${esc(k.nama)} (${esc(k.kode)})</label>`).join('')||'<span class="mut">Belum ada mata kuliah</span>'}</div><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="simM('${id||''}')">Simpan</button></div>`)}
+
+async function simM(id){
+ const n=$('#f1').value.trim(),nim=$('#f2').value.trim(),k=$('#f3').value.trim(),c=[...document.querySelectorAll('.mkc:checked')].map(x=>x.value);
+ if(!n||!/^\d{6,12}$/.test(nim)){toast('Nama dan NIM (6–12 digit) wajib diisi','er');return}
+ let angId=id;
+ if(id){
+   const {error}=await sb.from('anggota').update({nama:n,kelas:k}).eq('id',id);
+   if(error){toast('Gagal mengubah: '+error.message,'er');return}
+   await sb.from('peserta').delete().eq('anggota_id',id);
+ }else{
+   const {data,error}=await sb.from('anggota').insert({nim,nama:n,kelas:k,aktif:true}).select().single();
+   if(error){toast('Gagal menambah: '+error.message,'er');return}
+   angId=data.id;
+ }
+ if(c.length){
+   await sb.from('peserta').insert(c.map(mkId=>({anggota_id:angId,mata_kuliah_id:mkId})));
+ }
+ $('#dg').close();toast('Data anggota tersimpan','ok');await loadAll(0);
+}
+
 function imp(){dlg(`<h3>Impor anggota</h3><p class="mut">Tempel data dari Excel atau Google Sheets. Satu anggota per baris: NIM, nama, kelas (pisahkan dengan tab atau koma).</p><textarea id="im" rows="7" placeholder="256661001, Nama Lengkap, TRK-3A"></textarea><label>Daftarkan ke mata kuliah<select id="imk"><option value="">Tidak ada</option>${kopt('')}</select></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="imp2()">Impor</button></div>`)}
-function imp2(){let ok=0,sk=0;const k=$('#imk').value;
- $('#im').value.split('\n').forEach(l=>{if(!l.trim())return;const p=l.split(/\t|,/).map(x=>x.trim());
-  if(p.length<2||!/^\d{6,12}$/.test(p[0])||!p[1]||M(p[0])||S.mem.length>=MAXM){sk++;return}
-  S.mem.push({id:p[0],nama:p[1],kelas:p[2]||'',aktif:1,uid:'',mk:k?[k]:[]});ok++});
- log('Impor anggota',ok+' ditambahkan');save();$('#dg').close();render();toast(ok+' anggota ditambahkan'+(sk?', '+sk+' dilewati':''),ok?'ok':'no')}
-function tg(id){const m=M(id);m.aktif=m.aktif?0:1;log(m.aktif?'Aktifkan anggota':'Nonaktifkan anggota',m.nama);save();render()}
-function cabut(id){const m=M(id);S.reg.push({t:now(),id,u:m.uid,h:'Kartu dicabut'});log('Cabut kartu',m.nama+' · '+m.uid);m.uid='';save();render()}
+
+async function imp2(){
+ const k=$('#imk').value,rows=[];
+ $('#im').value.split('\n').forEach(l=>{
+   if(!l.trim())return;const p=l.split(/\t|,/).map(x=>x.trim());
+   if(p.length>=2 && /^\d{6,12}$/.test(p[0]) && p[1])rows.push({nim:p[0],nama:p[1],kelas:p[2]||'',aktif:true});
+ });
+ if(!rows.length){toast('Tidak ada baris data yang valid','er');return}
+ const {data,error}=await sb.from('anggota').upsert(rows,{onConflict:'nim',ignoreDuplicates:true}).select();
+ if(error){toast('Gagal impor: '+error.message,'er');return}
+ if(k && data && data.length){
+   await sb.from('peserta').upsert(data.map(a=>({anggota_id:a.id,mata_kuliah_id:k})),{ignoreDuplicates:true});
+ }
+ $('#dg').close();toast((data?data.length:0)+' anggota berhasil diimpor','ok');await loadAll(0);
+}
+
+async function tg(id){
+ const m=M(id);
+ const {error}=await sb.from('anggota').update({aktif:!m.aktif}).eq('id',id);
+ if(error){toast('Gagal: '+error.message,'er');return}
+ toast('Status anggota diperbarui','ok');await loadAll(0);
+}
+
+async function cabut(id){
+ const m=M(id),oldUid=m.uid;
+ const {error}=await sb.from('anggota').update({uid_kartu:null}).eq('id',id);
+ if(error){toast('Gagal mencabut kartu: '+error.message,'er');return}
+ await sb.from('riwayat_kartu').insert({anggota_id:id,uid:oldUid,hasil:'Kartu dicabut'});
+ toast('Kartu dicabut dari '+m.nama,'ok');await loadAll(0);
+}
+
 function vReg(){
- const o=S.mem.filter(x=>x.aktif).map(x=>`<option value="${x.id}">${esc(x.nama)} (${x.id}), ${x.uid?'ganti kartu':'belum ada kartu'}</option>`).join('');
- return `<div class="card"><div class="rw"><span class="b no">Perangkat: tidak terhubung</span><span class="mut">UID dapat dimasukkan secara manual hingga perangkat terhubung.</span></div>
- <label>1. Pilih anggota<select id="rm">${o}</select></label>
- <label>2. UID kartu (8–14 karakter heksadesimal)<input id="ru" placeholder="Contoh: 04A1B2C3" maxlength="14"></label>
- <div class="ac"><button class="btn p" onclick="hub()">3. Hubungkan kartu</button></div></div>
- <div class="card tw"><h3>Riwayat registrasi</h3><table><tr><th>Waktu<th>Anggota<th>UID<th>Hasil</tr>${S.reg.slice(-15).reverse().map(x=>`<tr><td>${new Date(x.t).toLocaleString('id-ID')}<td>${esc((M(x.id)||{}).nama||x.id)}<td>${x.u}<td><span class="b ${x.h=='Berhasil'?'ok':'er'}">${x.h}</span></tr>`).join('')||'<tr><td colspan="4">Belum ada riwayat</tr>'}</table></div>`}
-function hub(){const id=$('#rm').value,u=$('#ru').value.trim().toUpperCase(),m=M(id);if(!m){toast('Pilih anggota terlebih dahulu','er');return}
+ const di=devInfo();
+ const o=S.mem.filter(x=>x.aktif).map(x=>`<option value="${x.id}">${esc(x.nama)} (${esc(x.nim)}), ${x.uid?'ganti kartu':'belum ada kartu'}</option>`).join('');
+ const waitMem=regWait?M(regWait.anggota_id):null;
+ return `<div class="two">
+   <div class="card">
+     <h3>Cara 1: Tap Langsung di Alat (Otomatis)</h3>
+     <div class="rw"><span class="b ${di.on?'ok':'no'}">${di.on?'Perangkat online':'Perangkat offline'}</span><span class="mut">${esc(di.txt)}</span></div>
+     <label>1. Pilih anggota<select id="rm1">${o}</select></label>
+     <div class="ac"><button class="btn p" onclick="mulaiTapReg()">2. Aktifkan Mode Tap (2 Menit)</button></div>
+     ${waitMem?`<div class="card" style="margin-top:12px;border-color:var(--gd)"><strong>Menunggu kartu ditempelkan...</strong><p class="mut">Tempelkan kartu baru ke pembaca RFID untuk didaftarkan ke <strong>${esc(waitMem.nama)}</strong>. Berlaku s/d ${new Date(regWait.kedaluwarsa).toLocaleTimeString('id-ID')}.</p><button class="btn" onclick="batalTapReg()">Batalkan</button></div>`:''}
+   </div>
+   <div class="card">
+     <h3>Cara 2: Input UID Manual</h3>
+     <p class="mut">Gunakan cara ini jika kamu sudah mengetahui kode UID heksadesimal kartu.</p>
+     <label>1. Pilih anggota<select id="rm2">${o}</select></label>
+     <label>2. UID kartu (8–14 karakter heksadesimal)<input id="ru" placeholder="Contoh: 4C036B22" maxlength="14"></label>
+     <div class="ac"><button class="btn" onclick="hub()">3. Simpan UID Manual</button></div>
+   </div>
+ </div>
+ <div class="card tw"><h3>Riwayat registrasi</h3><table><tr><th>Waktu<th>Anggota<th>UID<th>Hasil</tr>${S.reg.map(x=>`<tr><td>${new Date(x.t).toLocaleString('id-ID')}<td>${esc((M(x.id)||{}).nama||'-')}<td>${esc(x.u)}<td><span class="b ${x.h=='Berhasil'?'ok':'er'}">${esc(x.h)}</span></tr>`).join('')||'<tr><td colspan="4">Belum ada riwayat</tr>'}</table></div>`}
+
+async function mulaiTapReg(){
+ const id=$('#rm1').value;if(!id){toast('Pilih anggota terlebih dahulu','er');return}
+ await sb.from('sesi_registrasi').update({selesai:true}).eq('selesai',false);
+ const {error}=await sb.from('sesi_registrasi').insert({anggota_id:id});
+ if(error){toast('Gagal memulai mode tap: '+error.message,'er');return}
+ toast('Mode registrasi aktif! Tempelkan kartu baru ke alat RFID sekarang.','ok');
+ await loadAll(0);
+}
+
+async function batalTapReg(){
+ if(!regWait)return;
+ await sb.from('sesi_registrasi').update({selesai:true}).eq('id',regWait.id);
+ regWait=null;render();toast('Mode registrasi dibatalkan','no');
+}
+
+async function hub(){
+ const id=$('#rm2').value,u=$('#ru').value.trim().toUpperCase(),m=M(id);if(!m){toast('Pilih anggota terlebih dahulu','er');return}
  if(!/^[0-9A-F]{8,14}$/.test(u)){toast('UID tidak valid (8–14 karakter heksadesimal)','er');return}
  const d=S.mem.find(x=>x.uid==u&&x.id!=id);
- if(d){toast('Gagal: UID sudah dipakai oleh '+d.nama,'er');S.reg.push({t:now(),id,u,h:'Gagal: duplikat'});save();render();return}
- m.uid=u;S.reg.push({t:now(),id,u,h:'Berhasil'});log('Registrasi kartu',m.nama+' · '+u);save();render();toast('Kartu terhubung ke '+m.nama,'ok')}
+ if(d){
+   toast('Gagal: UID sudah dipakai oleh '+d.nama,'er');
+   await sb.from('riwayat_kartu').insert({anggota_id:id,uid:u,hasil:'Gagal: duplikat'});
+   await loadAll(0);return;
+ }
+ const {error}=await sb.from('anggota').update({uid_kartu:u}).eq('id',id);
+ if(error){toast('Gagal menyimpan UID: '+error.message,'er');return}
+ await sb.from('riwayat_kartu').insert({anggota_id:id,uid:u,hasil:'Berhasil'});
+ toast('Kartu terhubung ke '+m.nama,'ok');await loadAll(0);
+}
+
 function vRep(){
  if(!S.mk.length)return '<div class="card"><p class="mut">Belum ada data untuk dilaporkan.</p></div>';
  const k=kk(),p=F.r,key=d=>p=='h'?d:p=='b'?d.slice(0,7):wk(d),g={},R=S.rec.filter(x=>x.mk==k);
@@ -227,6 +465,7 @@ function vRep(){
  return `<div class="rw"><select onchange="F.k=this.value;render()">${kopt(k)}</select><select onchange="F.r=this.value;render()"><option value="h" ${p=='h'?'selected':''}>Rekap harian<option value="m" ${p=='m'?'selected':''}>Rekap mingguan<option value="b" ${p=='b'?'selected':''}>Rekap bulanan</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div>
  <div class="two"><div class="card tw"><h3>${p=='m'?'Rekap per minggu (mulai)':'Rekap per periode'}</h3><table><tr><th>Periode<th>Tepat waktu<th>Terlambat</tr>${Object.keys(g).sort().reverse().slice(0,12).map(q=>`<tr><td>${p=='b'?q:ds(q)}<td>${g[q][0]}<td>${g[q][1]}</tr>`).join('')||'<tr><td colspan="3">Belum ada data</tr>'}</table></div>
  <div class="card tw"><h3>Kehadiran per anggota</h3><p class="mut">Dari ${days} pertemuan tercatat, 50 teratas</p><table><tr><th>Nama<th>Hadir<th>Terlambat<th>%</tr>${pm.map(x=>`<tr><td>${esc(x[0])}<td>${x[1]}<td>${x[2]}<td>${x[3]}%</tr>`).join('')||'<tr><td colspan="4">Belum ada peserta</tr>'}</table></div></div>`}
+
 function vSet(){const s=S.set;return `<div class="two"><div class="card"><h3>Aturan presensi</h3>
 <label>Toleransi keterlambatan umum (menit)<input type="number" min="0" id="s2" value="${s.tol}"></label>
 <label>Jeda minimal masuk ke pulang (menit)<input type="number" min="0" id="s4" value="${s.jeda}"></label>
@@ -235,24 +474,63 @@ function vSet(){const s=S.set;return `<div class="two"><div class="card"><h3>Atu
 <label class="ck"><input type="checkbox" id="s6" ${s.dl?'checked':''}> Izinkan pengunjung mengekspor data</label>
 <p class="mut">Jam mulai, jam selesai, dan toleransi khusus diatur pada setiap mata kuliah.</p>
 <div class="ac"><button class="btn p" onclick="ss()">Simpan</button></div></div>
-<div class="card"><h3>Kata sandi admin</h3><label>Kata sandi lama<input type="password" id="p1" autocomplete="current-password"></label><label>Kata sandi baru (minimal 8 karakter)<input type="password" id="p2" autocomplete="new-password"></label><div class="ac"><button class="btn" onclick="pw()">Ganti kata sandi</button></div>
-<h3 style="margin-top:20px">Cadangan data</h3><div class="ac" style="justify-content:flex-start"><button class="btn" onclick="bk()">Ekspor JSON</button><button class="btn er" onclick="rsd()">Hapus seluruh data</button></div></div></div>
-<div class="card tw"><h3>Aktivitas admin</h3><table><tr><th>Waktu<th>Pelaku<th>Aksi<th>Detail</tr>${S.aud.slice(-20).reverse().map(a=>`<tr><td>${new Date(a.t).toLocaleString('id-ID')}<td>${esc(a.w)}<td>${esc(a.a)}<td>${esc(a.d)}</tr>`).join('')||'<tr><td colspan="4">Belum ada aktivitas</tr>'}</table></div>`}
-function ss(){const s=S.set;s.tol=Math.max(0,+$('#s2').value||0);s.jeda=Math.max(0,+$('#s4').value||0);s.deb=Math.max(0,+$('#s5').value||0);s.auto=$('#s7').checked?1:0;s.dl=$('#s6').checked?1:0;log('Ubah pengaturan','');save();toast('Pengaturan tersimpan','ok')}
-async function pw(){const a=$('#p1').value,b=$('#p2').value;if(await sha(a)!=S.set.h){toast('Kata sandi lama salah','er');return}if(b.length<8){toast('Kata sandi baru minimal 8 karakter','er');return}S.set.h=await sha(b);log('Ganti kata sandi','');save();$('#p1').value=$('#p2').value='';toast('Kata sandi diganti','ok')}
-function csv(){return 'Tanggal,Mata kuliah,NIM,Nama,Masuk,Pulang,Status\n'+S.rec.map(x=>[x.tgl,'"'+((MK(x.mk)||{}).kode||'')+'"',x.id,'"'+((M(x.id)||{}).nama||'')+'"',x.ms,x.pl,x.st].join(',')).join('\n')}
+<div class="card"><h3>Akun admin (${esc(userEmail)})</h3><label>Kata sandi baru (minimal 8 karakter)<input type="password" id="p2" autocomplete="new-password"></label><div class="ac"><button class="btn" onclick="pw()">Ganti kata sandi</button></div>
+<h3 style="margin-top:20px">Cadangan data</h3><div class="ac" style="justify-content:flex-start"><button class="btn" onclick="bk()">Ekspor JSON</button></div></div></div>
+<div class="card tw"><h3>Log audit sistem</h3><table><tr><th>Waktu<th>Pelaku<th>Aksi<th>Detail</tr>${S.aud.map(a=>`<tr><td>${new Date(a.t).toLocaleString('id-ID')}<td>${esc(a.w)}<td>${esc(a.a)}<td class="mut">${esc(a.d.slice(0,80))}</tr>`).join('')||'<tr><td colspan="4">Belum ada aktivitas</tr>'}</table></div>`}
+
+async function ss(){
+ const payload={
+   toleransi_menit:Math.max(0,+$('#s2').value||0),
+   jeda_minimal_menit:Math.max(0,+$('#s4').value||0),
+   abaikan_ulang_detik:Math.max(0,+$('#s5').value||0),
+   sesi_otomatis:$('#s7').checked,
+   izinkan_ekspor:$('#s6').checked
+ };
+ const {error}=await sb.from('pengaturan').update(payload).eq('id',true);
+ if(error){toast('Gagal menyimpan: '+error.message,'er');return}
+ toast('Pengaturan tersimpan','ok');await loadAll(0);
+}
+
+async function pw(){
+ const b=$('#p2').value;if(b.length<8){toast('Kata sandi baru minimal 8 karakter','er');return}
+ const {error}=await sb.auth.updateUser({password:b});
+ if(error){toast('Gagal mengganti kata sandi: '+error.message,'er');return}
+ $('#p2').value='';toast('Kata sandi admin diperbarui','ok');
+}
+
+function csv(){return 'Tanggal,Mata kuliah,NIM,Nama,Masuk,Pulang,Status\n'+S.rec.map(x=>[x.tgl,'"'+((MK(x.mk)||{}).kode||'')+'"',((M(x.id)||{}).nim||''),'"'+((M(x.id)||{}).nama||'')+'"',x.ms,x.pl,x.st].join(',')).join('\n')}
 function ex(){dlg(`<h3>Ekspor CSV</h3><p class="mut">Salin teks di bawah ke Excel atau Google Sheets.</p><textarea readonly rows="8" onfocus="this.select()">${esc(csv())}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
-function bk(){dlg(`<h3>Cadangan JSON</h3><p class="mut">Salin dan simpan teks ini di tempat yang aman.</p><textarea readonly rows="8" onfocus="this.select()">${esc(JSON.stringify({...S,set:{...S.set,h:undefined}}))}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
-function rsd(){dlg(`<h3>Hapus seluruh data</h3><p class="mut">Seluruh mata kuliah, anggota, dan data presensi akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.</p><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn er" onclick="rs()">Hapus</button></div>`)}
-function rs(){const h=S.set.h;S=seed();S.set.h=h;save();$('#dg').close();render();toast('Seluruh data dihapus','ok')}
-function lgn(){const n=!S.set.h;
- dlg(`<h3>${n?'Buat kata sandi admin':'Masuk admin'}</h3><label>Kata sandi<input type="password" id="pw" autocomplete="${n?'new-password':'current-password'}"></label>${n?'<label>Ulangi kata sandi<input type="password" id="pw2" autocomplete="new-password"></label><p class="mut">Minimal 8 karakter.</p>':''}<div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="masuk()">${n?'Simpan dan masuk':'Masuk'}</button></div>`);$('#pw').focus()}
-async function masuk(){const p=$('#pw').value;
- if(!S.set.h){if(p.length<8){toast('Kata sandi minimal 8 karakter','er');return}if(p!=$('#pw2').value){toast('Kata sandi tidak sama','er');return}S.set.h=await sha(p)}
- else if(await sha(p)!=S.set.h){toast('Kata sandi salah','er');return}
- adm=1;log('Masuk admin','');save();$('#dg').close();render()}
-function out(){adm=0;render()}
-render();
+function bk(){dlg(`<h3>Cadangan JSON</h3><p class="mut">Salin dan simpan teks ini di tempat yang aman.</p><textarea readonly rows="8" onfocus="this.select()">${esc(JSON.stringify(S))}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
+
+function lgn(){
+ dlg(`<h3>Masuk admin Supabase</h3><label>Email admin<input type="email" id="em" value="yonariviansyah715@gmail.com" autocomplete="username"></label><label>Kata sandi<input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')masuk()"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="masuk()">Masuk</button></div>`);
+ $('#pw').focus();
+}
+
+async function masuk(){
+ const email=$('#em').value.trim(),password=$('#pw').value;
+ if(!email||!password){toast('Isi email dan kata sandi','er');return}
+ const {data,error}=await sb.auth.signInWithPassword({email,password});
+ if(error){toast('Gagal masuk: '+error.message,'er');return}
+ const role=data?.user?.app_metadata?.role;
+ if(role!=='admin'){
+   await sb.auth.signOut();
+   toast('Akun ini tidak memiliki hak akses admin','er');return;
+ }
+ adm=1;userEmail=data.user.email;$('#dg').close();
+ toast('Berhasil masuk sebagai admin','ok');await loadAll(0);
+}
+
+async function out(){
+ await sb.auth.signOut();
+ adm=0;userEmail='';toast('Keluar dari mode admin','no');await loadAll(0);
+}
+
+(async()=>{
+ await checkAuth();
+ await loadAll(0);
+ setupRealtime();
+})();
 </script>
 </body>
 </html>
