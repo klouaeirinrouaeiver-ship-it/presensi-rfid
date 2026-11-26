@@ -6,443 +6,259 @@
 <title>Presensi RFID | Politeknik Negeri Samarinda</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ===== POLNES SPATIAL GLASS & FLOATING DOCK · EMERALD · WHITE · GOLD ===== */
+/* ===== POLNES ACADEMIC COMMAND CENTER & HARDWARE TELEMETRY ===== */
 :root{
-  --fallback-pano:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='600' viewBox='0 0 1600 600'%3E%3Cdefs%3E%3CradialGradient id='g1' cx='75%25' cy='25%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%2310B981' stop-opacity='.34'/%3E%3Cstop offset='55%25' stop-color='%230B5D44' stop-opacity='.14'/%3E%3Cstop offset='100%25' stop-color='%23063B2B' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cpattern id='arch' width='64' height='64' patternUnits='userSpaceOnUse'%3E%3Cpath d='M64 0H0V64' fill='none' stroke='%23ffffff' stroke-opacity='.07' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='1600' height='600' fill='url(%23arch)'/%3E%3Crect width='1600' height='600' fill='url(%23g1)'/%3E%3Cg fill='none' stroke='%23E8D4A2' stroke-opacity='.22' stroke-width='1.5'%3E%3Ccircle cx='1240' cy='190' r='170'/%3E%3Ccircle cx='1240' cy='190' r='245' stroke-dasharray='6 8'/%3E%3Cpath d='M860 440C1020 310 1240 290 1560 390'/%3E%3C/g%3E%3C/svg%3E");
-  --bg:#EEF3F0;
-  --bg-mesh:
-    radial-gradient(1100px 520px at 50% -80px,rgba(11,93,68,.16),transparent 70%),
-    radial-gradient(700px 420px at 88% 35%,rgba(16,185,129,.10),transparent 65%),
-    radial-gradient(600px 400px at 12% 65%,rgba(197,160,89,.08),transparent 65%);
-  --glass:rgba(255,255,255,.72);
-  --glass-strong:rgba(255,255,255,.88);
-  --glass-dark:rgba(6,44,32,.66);
-  --dlg:#FFFFFF;
-  --in:rgba(255,255,255,.82);
-  --ink:#0A211A;
-  --mut:#4F685E;
-  --ln:rgba(11,93,68,.12);
-  --ln-strong:rgba(11,93,68,.22);
-  --spec:inset 0 1px 0 rgba(255,255,255,.85);
-  --nv:#063B2B;
-  --nvt:#F0F7F4;
-  --em:#10B981;
-  --em-deep:#0B5D44;
-  --gd:#C5A059;
-  --gdg:linear-gradient(135deg,#EFE0B9 0%,#C5A059 52%,#9B7832 100%);
-  --gt:#7E5C1B;
-  --gdt:rgba(197,160,89,.18);
-  --ok:#066B4B;
-  --okb:rgba(16,185,129,.15);
-  --er:#B42336;
-  --erb:rgba(180,35,54,.12);
-  --bar:#0B5D44;
-  --sh:0 4px 20px -4px rgba(6,44,32,.07),0 20px 44px -18px rgba(6,44,32,.14);
-  --sh-hover:0 8px 26px -4px rgba(6,44,32,.10),0 26px 52px -16px rgba(6,44,32,.20);
-  --dock-bg:rgba(7,43,32,.82);
-  --dock-ln:rgba(232,212,162,.28);
-  color-scheme:light;
+  --bg:#F4F7F6;--panel:#FFFFFF;--panel2:#F8FBFA;--in:#FFFFFF;
+  --ink:#08241B;--mut:#53695F;--ln:#D6E2DC;--ln2:#B7CCC2;
+  --grid:rgba(6,59,43,.055);
+  --em:#10B981;--emd:#063B2B;--emt:#0A7A57;--gd:#C5A059;--gt:#7E5C1B;--gdt:rgba(197,160,89,.18);
+  --ok:#066B4B;--okb:rgba(16,185,129,.14);--er:#B42336;--erb:rgba(180,35,54,.12);
+  --term:#06231A;--termt:#9BE9C6;--termm:#5E8F7C;
+  --sh:0 1px 0 rgba(255,255,255,.8) inset,0 10px 30px -18px rgba(6,59,43,.28);
+  --hd:rgba(244,247,246,.86);color-scheme:light;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#050E0B;
-  --bg-mesh:
-    radial-gradient(1100px 520px at 50% -80px,rgba(16,185,129,.20),transparent 70%),
-    radial-gradient(700px 420px at 88% 35%,rgba(16,185,129,.10),transparent 65%),
-    radial-gradient(600px 400px at 12% 65%,rgba(214,182,114,.08),transparent 65%);
-  --glass:rgba(12,29,23,.68);
-  --glass-strong:rgba(14,34,27,.86);
-  --glass-dark:rgba(4,20,15,.72);
-  --dlg:#0D211A;
-  --in:rgba(7,19,15,.78);
-  --ink:#EDF4F1;
-  --mut:#8CA69A;
-  --ln:rgba(52,211,153,.14);
-  --ln-strong:rgba(52,211,153,.26);
-  --spec:inset 0 1px 0 rgba(255,255,255,.09);
-  --nv:#08221A;
-  --nvt:#EDF4F1;
-  --em:#10B981;
-  --em-deep:#34D399;
-  --gd:#D6B672;
-  --gdg:linear-gradient(135deg,#F2E2B8 0%,#D6B672 52%,#A38036 100%);
-  --gt:#E8CC8C;
-  --gdt:rgba(214,182,114,.18);
-  --ok:#6EE7B7;
-  --okb:rgba(16,185,129,.18);
-  --er:#FDA4AF;
-  --erb:rgba(244,63,94,.18);
-  --bar:#10B981;
-  --sh:0 6px 24px -4px rgba(0,0,0,.45),0 24px 48px -18px rgba(0,0,0,.72);
-  --sh-hover:0 10px 30px -4px rgba(0,0,0,.55),0 30px 56px -16px rgba(0,0,0,.82);
-  --dock-bg:rgba(8,26,20,.82);
-  --dock-ln:rgba(214,182,114,.30);
-  color-scheme:dark;
+  --bg:#050C0A;--panel:#0A1612;--panel2:#0D1C17;--in:#071210;
+  --ink:#E9F4EF;--mut:#86A196;--ln:#183027;--ln2:#25483B;--grid:rgba(52,211,153,.045);
+  --emt:#34D399;--gd:#D6B672;--gt:#E8CC8C;--gdt:rgba(214,182,114,.17);
+  --ok:#6EE7B7;--okb:rgba(16,185,129,.17);--er:#FDA4AF;--erb:rgba(244,63,94,.17);
+  --term:#020806;--termt:#7CF0BE;--termm:#4F7F6C;
+  --sh:0 1px 0 rgba(255,255,255,.04) inset,0 14px 34px -18px rgba(0,0,0,.8);
+  --hd:rgba(5,12,10,.86);color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#050E0B;
-  --bg-mesh:
-    radial-gradient(1100px 520px at 50% -80px,rgba(16,185,129,.20),transparent 70%),
-    radial-gradient(700px 420px at 88% 35%,rgba(16,185,129,.10),transparent 65%),
-    radial-gradient(600px 400px at 12% 65%,rgba(214,182,114,.08),transparent 65%);
-  --glass:rgba(12,29,23,.68);
-  --glass-strong:rgba(14,34,27,.86);
-  --glass-dark:rgba(4,20,15,.72);
-  --dlg:#0D211A;
-  --in:rgba(7,19,15,.78);
-  --ink:#EDF4F1;
-  --mut:#8CA69A;
-  --ln:rgba(52,211,153,.14);
-  --ln-strong:rgba(52,211,153,.26);
-  --spec:inset 0 1px 0 rgba(255,255,255,.09);
-  --nv:#08221A;
-  --nvt:#EDF4F1;
-  --em:#10B981;
-  --em-deep:#34D399;
-  --gd:#D6B672;
-  --gdg:linear-gradient(135deg,#F2E2B8 0%,#D6B672 52%,#A38036 100%);
-  --gt:#E8CC8C;
-  --gdt:rgba(214,182,114,.18);
-  --ok:#6EE7B7;
-  --okb:rgba(16,185,129,.18);
-  --er:#FDA4AF;
-  --erb:rgba(244,63,94,.18);
-  --bar:#10B981;
-  --sh:0 6px 24px -4px rgba(0,0,0,.45),0 24px 48px -18px rgba(0,0,0,.72);
-  --sh-hover:0 10px 30px -4px rgba(0,0,0,.55),0 30px 56px -16px rgba(0,0,0,.82);
-  --dock-bg:rgba(8,26,20,.82);
-  --dock-ln:rgba(214,182,114,.30);
-  color-scheme:dark;
+  --bg:#050C0A;--panel:#0A1612;--panel2:#0D1C17;--in:#071210;
+  --ink:#E9F4EF;--mut:#86A196;--ln:#183027;--ln2:#25483B;--grid:rgba(52,211,153,.045);
+  --emt:#34D399;--gd:#D6B672;--gt:#E8CC8C;--gdt:rgba(214,182,114,.17);
+  --ok:#6EE7B7;--okb:rgba(16,185,129,.17);--er:#FDA4AF;--erb:rgba(244,63,94,.17);
+  --term:#020806;--termt:#7CF0BE;--termm:#4F7F6C;
+  --sh:0 1px 0 rgba(255,255,255,.04) inset,0 14px 34px -18px rgba(0,0,0,.8);
+  --hd:rgba(5,12,10,.86);color-scheme:dark;
 }
-
-html{background-color:var(--bg);background-image:var(--bg-mesh);background-attachment:fixed;min-height:100%}
 *{box-sizing:border-box}
+html{background:var(--bg)}
 body{
-  margin:0;background:transparent;color:var(--ink);
-  font:14px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;
-  min-height:100vh;-webkit-font-smoothing:antialiased;
-  padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));
+  margin:0;color:var(--ink);font:14px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed;
 }
-h1,h2,h3,.lg,.hn{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.025em}
-h3{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-.mono,.v,#live-clk{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3,.hn{font-weight:800;letter-spacing:-.025em}
+h3{font-size:14.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.mono,.v,#live-clk,kbd{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
 
-/* ===== PANORAMIC SPATIAL STAGE (FULL-BLEED TOP CAMPUS CANVAS) ===== */
-.pano-stage{
-  position:relative;width:100%;
-  background:linear-gradient(155deg,#094D38 0%,#052E22 52%,#041F17 100%);
-  color:var(--nvt);overflow:hidden;
-  padding:calc(18px + env(safe-area-inset-top,0px)) 24px 66px;
-  border-bottom:1px solid rgba(197,160,89,.26);
+/* ===== TOP COMMAND HEADER ===== */
+.cmd{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;
+  padding:10px 20px;padding-top:calc(10px + env(safe-area-inset-top,0px));
+  background:var(--hd);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--ln);
 }
-.pano-stage::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:var(--fallback-pano) center/cover no-repeat;
-  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.6) 72%,transparent 100%);
-  mask-image:linear-gradient(180deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.6) 72%,transparent 100%);
-}
-.pano-stage.has-photo::before{opacity:0}
-#pano-img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 32%;
-  opacity:0;transition:opacity .8s ease;pointer-events:none;z-index:0;filter:saturate(1.1);
-  -webkit-mask-image:radial-gradient(ellipse 110% 95% at 68% 35%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.48) 52%,rgba(0,0,0,.15) 85%,transparent 100%);
-  mask-image:radial-gradient(ellipse 110% 95% at 68% 35%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.48) 52%,rgba(0,0,0,.15) 85%,transparent 100%);
-}
-.pano-stage.has-photo #pano-img{opacity:.46}
-.pano-vignette{
-  position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:
-    linear-gradient(90deg,rgba(4,28,21,.86) 0%,rgba(4,28,21,.52) 48%,rgba(4,28,21,.28) 100%),
-    radial-gradient(560px 260px at 85% 10%,rgba(197,160,89,.22),transparent 70%);
-}
-.pano-in{position:relative;z-index:1;max-width:1180px;margin:0 auto}
-
-/* TOP FLOATING GLASS BAR */
-.top-glass-bar{
-  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:10px 16px;border-radius:999px;
-  background:rgba(255,255,255,.08);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
-  border:1px solid rgba(255,255,255,.16);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 12px 30px -12px rgba(0,0,0,.45);
-  margin-bottom:28px;
-}
-.brand-pill{display:flex;align-items:center;gap:12px;min-width:0}
-.brand-txt{display:flex;flex-direction:column;line-height:1.15}
-.brand-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.02em}
-.brand-title em{background:var(--gdg);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
-.brand-sub{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:rgba(236,245,240,.72);font-weight:600}
-
-/* 3D INTERACTIVE POLNES MEDALLION */
-.logo{position:relative;width:44px;height:44px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-.lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:14px;overflow:hidden;background:radial-gradient(circle at 30% 25%,#FFFFFF,#E9F2EE);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .22s ease-out,box-shadow .25s;box-shadow:0 0 0 1.5px var(--gd),0 6px 16px -4px rgba(0,0,0,.5)}
-.logo:hover .lg3{box-shadow:0 0 0 1.5px #F2E2B8,0 0 18px rgba(16,185,129,.55)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;flex-shrink:0}
+.bt{display:flex;flex-direction:column;line-height:1.15}
+.bt b{font-size:14.5px;font-weight:800;letter-spacing:-.02em}
+.bt span{font-size:11px;color:var(--mut);font-weight:600}
+.logo{position:relative;width:42px;height:42px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:13px;overflow:hidden;background:radial-gradient(circle at 30% 25%,#fff,#E4EFEA);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .22s ease-out,box-shadow .25s;box-shadow:0 0 0 1.5px var(--gd),0 6px 14px -6px rgba(6,59,43,.55)}
+.logo:hover .lg3{box-shadow:0 0 0 1.5px #F2E2B8,0 0 16px rgba(16,185,129,.55)}
 .lg3 img,.lg3 .fb{width:76%;height:76%;object-fit:contain}
 .lg3 .fb{display:none}
 .lg3 .gl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,235,175,.9),transparent 60%)}
 .logo:hover .gl{opacity:1}
 .logo.pulse .lg3{animation:pulse .45s ease-out}
-@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(.9)}75%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(.88)}75%{transform:scale(1.12)}100%{transform:scale(1)}}
 
-.bar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.glass-chip{
-  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
-  font-size:12px;font-weight:600;background:rgba(255,255,255,.10);color:#ECF5F0;
-  border:1px solid rgba(255,255,255,.14);
-}
-.glass-chip.ok{background:rgba(16,185,129,.22);color:#A7F3D0;border-color:rgba(52,211,153,.35)}
-.glass-chip.lt{background:rgba(197,160,89,.25);color:#F3E3B8;border-color:rgba(232,212,162,.4)}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#8CA69A}
-.dot.on{background:#34D399;animation:ping 2s infinite}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(52,211,153,.75)}70%{box-shadow:0 0 0 7px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+nav#nv{flex:1;display:flex;justify-content:center;min-width:0}
+.caps{display:inline-flex;gap:2px;padding:4px;border:1px solid var(--ln2);border-radius:999px;background:var(--panel);overflow-x:auto;scrollbar-width:none;max-width:100%}
+.caps::-webkit-scrollbar{display:none}
+.caps button{background:transparent;border:0;color:var(--mut);padding:7px 13px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:background .18s,color .18s}
+.caps button:hover{color:var(--ink);background:var(--panel2)}
+.caps button.on{background:var(--emd);color:#fff;box-shadow:0 0 0 1px var(--gd) inset}
+.caps kbd{font-size:10.5px;font-weight:700;padding:0 5px;border-radius:5px;border:1px solid var(--ln2);color:var(--mut);line-height:1.5}
+.caps button.on kbd{border-color:rgba(232,212,162,.55);color:#F0DFB4}
 
-.g-btn{
-  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);
-  border-radius:999px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
-  transition:background .2s,border-color .2s,transform .18s;
-}
-.g-btn:hover{background:rgba(255,255,255,.20);border-color:var(--gd);transform:translateY(-1px)}
-.g-btn.gold{background:var(--gdg);color:#1E1504;border-color:transparent;font-weight:700}
+.hact{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--ln2);background:var(--panel);color:var(--mut);white-space:nowrap}
+.chip.ok{background:var(--okb);color:var(--ok);border-color:transparent}
+.chip.lt{background:var(--gdt);color:var(--gt);border-color:transparent}
+.chip.er{background:var(--erb);color:var(--er);border-color:transparent}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#8CA69A;flex-shrink:0}
+.dot.on{background:#10B981;animation:ping 2s infinite}
+.dot.off{background:#B42336}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+.gb{background:var(--panel);color:var(--ink);border:1px solid var(--ln2);border-radius:999px;padding:6px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;transition:border-color .18s,background .18s}
+.gb:hover{border-color:var(--em)}
+.gb.gold{background:var(--gd);color:#1E1504;border-color:transparent}
+.gb.gold:hover{filter:brightness(1.07)}
 
-/* PANORAMIC HERO CONTENT (SPLIT: COURSE DISPLAY LEFT + FLOATING GLASS READER RIGHT) */
-.pano-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center}
-.pano-eyebrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.hs{
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);color:#fff;
-  font:inherit;font-size:13px;font-weight:600;width:auto;max-width:100%;margin:0;
-  padding:6px 13px;border-radius:999px;cursor:pointer;backdrop-filter:blur(10px);
-}
-.hs:hover{border-color:var(--gd);background:rgba(255,255,255,.18)}
-.hs option{color:#0A211A}
-.hn{font-size:clamp(28px,4vw,42px);line-height:1.1;margin:0 0 8px;font-weight:800;letter-spacing:-.035em;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.25)}
-.hm{color:rgba(236,245,240,.86);font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.bar{height:8px;background:rgba(255,255,255,.16);border-radius:99px;overflow:hidden;margin:18px 0 8px;max-width:520px}
+main{max-width:1320px;margin:0 auto;padding:20px 20px 60px}
+.pg-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:4px 0 16px}
+.pg-head h1{font-size:22px;margin:0}
+
+/* ===== BENTO ===== */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;align-items:start}
+.c8{grid-column:span 8;display:grid;gap:16px;min-width:0}
+.c4{grid-column:span 4;display:grid;gap:16px;min-width:0;position:sticky;top:78px}
+
+.card{background:var(--panel);border:1px solid var(--ln);border-radius:16px;padding:20px 22px;box-shadow:var(--sh);margin-bottom:16px;min-width:0}
+.c8 .card,.c4 .card,.two .card,.two-wide .card{margin-bottom:0}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px}
+
+/* Course Command Banner */
+.ban{position:relative;overflow:hidden;border-radius:18px;border:1px solid var(--ln2);color:#F0F7F4;padding:22px 24px;
+  background:
+   linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/28px 28px,
+   linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/28px 28px,
+   radial-gradient(520px 240px at 90% 0%,rgba(197,160,89,.30),transparent 70%),
+   linear-gradient(140deg,#0B5D44 0%,#063B2B 55%,#04271C 100%)}
+.ban .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;pointer-events:none}
+.ban .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(4,32,23,.92) 0%,rgba(4,32,23,.62) 55%,rgba(4,32,23,.35) 100%)}
+.ban .pcb{position:absolute;right:-20px;top:-10px;width:300px;height:200px;opacity:.5;pointer-events:none}
+.ban>.in{position:relative}
+.brow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.hs{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff;font:inherit;font-size:13px;font-weight:600;width:auto;max-width:100%;margin:0;padding:6px 12px;border-radius:10px;cursor:pointer}
+.hs:hover{border-color:var(--gd)}
+.hs option{color:#08241B}
+.ban .chip{background:rgba(255,255,255,.12);color:#EAF5EF;border-color:rgba(255,255,255,.2)}
+.ban .chip.ok{background:rgba(16,185,129,.28);color:#B7F5DA}
+.ban .chip.lt{background:rgba(197,160,89,.32);color:#F6E7BE}
+.hn{font-size:clamp(24px,3.4vw,36px);line-height:1.12;margin:0 0 8px;color:#fff}
+.hm{color:rgba(236,245,240,.86);font-size:13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.clk{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:14px 0 4px}
+#live-clk{font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff}
+#cd{font-size:12.5px;font-weight:700;color:#F0DFB4}
+.bar{height:8px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden;margin:12px 0 6px}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#34D399,#F0DFB4);border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bl{font-size:12px;color:rgba(236,245,240,.8);display:flex;justify-content:space-between}
 
-/* FLOATING GLASS RFID READER POD INSIDE PANORAMA */
-.glass-pod{
-  background:rgba(255,255,255,.09);
-  -webkit-backdrop-filter:blur(22px) saturate(165%);backdrop-filter:blur(22px) saturate(165%);
-  border:1px solid rgba(255,255,255,.20);border-radius:24px;padding:20px 22px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 20px 44px -16px rgba(0,0,0,.55);
-  transition:border-color .3s,transform .3s,box-shadow .3s;
-}
-.glass-pod.tap-active{
-  border-color:#F0DFB4;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 2px rgba(240,223,180,.35),0 24px 48px -12px rgba(16,185,129,.45);
-  transform:translateY(-2px);
-}
-.pod-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
-.pod-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(236,245,240,.75);display:flex;align-items:center;gap:7px}
-.pod-card{
-  background:linear-gradient(135deg,rgba(16,185,129,.22),rgba(197,160,89,.16));
-  border:1px solid rgba(232,212,162,.32);border-radius:16px;padding:14px 16px;
-}
-.pod-name{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pod-sub{font-size:12px;color:rgba(236,245,240,.82);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-
-/* ===== MAIN CONTENT CONTAINER & Z-AXIS OVERLAPPING METRIC STRIP ===== */
-main{max-width:1180px;margin:0 auto;padding:0 24px}
-
-.overlap-strip{
-  position:relative;z-index:5;margin-top:-36px;margin-bottom:22px;
-  display:grid;grid-template-columns:repeat(4,1fr);
-  background:var(--glass-strong);
-  -webkit-backdrop-filter:blur(24px) saturate(175%);backdrop-filter:blur(24px) saturate(175%);
-  border:1px solid var(--ln-strong);border-radius:22px;
-  box-shadow:var(--spec),var(--sh);overflow:hidden;
-}
-.metric-seg{padding:18px 22px;position:relative;transition:background .25s}
-.metric-seg:hover{background:rgba(16,185,129,.05)}
-.metric-seg+.metric-seg::before{content:"";position:absolute;left:0;top:18%;bottom:18%;width:1px;background:var(--ln)}
-.k{font-size:12px;font-weight:600;color:var(--mut);display:flex;align-items:center;justify-content:space-between}
-.v{font-size:30px;font-weight:700;line-height:1.15;display:block;margin:6px 0 3px;letter-spacing:-.03em}
+/* Telemetry strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--panel);border:1px solid var(--ln2);border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
+.seg{padding:16px 18px;position:relative;border-left:1px solid var(--ln)}
+.seg:first-child{border-left:0}
+.seg::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--ac,var(--ln2))}
+.seg.a1{--ac:#8CA69A}.seg.a2{--ac:var(--em)}.seg.a3{--ac:var(--gd)}.seg.a4{--ac:var(--er)}
+.k{font-size:11.5px;font-weight:700;color:var(--mut);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.v{font-size:34px;font-weight:800;line-height:1.1;display:block;margin:8px 0 2px;letter-spacing:-.04em}
 .k-sub{font-size:11.5px;color:var(--mut)}
 
-/* SUBPAGE HEADER STRIP (WHEN NOT ON DASHBOARD) */
-.sub-head{
-  position:relative;z-index:5;margin-top:-28px;margin-bottom:18px;
-  padding:16px 22px;border-radius:20px;
-  background:var(--glass-strong);
-  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
-  border:1px solid var(--ln-strong);box-shadow:var(--spec),var(--sh);
-  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-}
-.sub-head h1{font-size:22px;margin:0}
+/* Terminal / hardware console */
+.term{background:var(--term);color:var(--termt);border:1px solid var(--ln2);border-radius:16px;overflow:hidden;box-shadow:var(--sh);font-family:"JetBrains Mono",monospace;font-size:12px}
+.th{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(124,240,190,.14);color:var(--termm);font-size:11px;font-weight:600}
+.th .led{display:inline-flex;align-items:center;gap:7px;color:var(--termt)}
+.tb{padding:12px 14px;display:grid;gap:3px;line-height:1.7}
+.tb .r{display:flex;justify-content:space-between;gap:10px}
+.tb .r span:first-child{color:var(--termm)}
+.tb .r span:last-child{text-align:right;word-break:break-word}
+.tb .up{color:#34D399;font-weight:700}.tb .dn{color:#FB7185;font-weight:700}
+.cur::after{content:"▍";margin-left:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
 
-/* ===== SPATIAL FROSTED GLASS CARDS & TABLES ===== */
-#v{view-transition-name:pgv}
-#v.pe{animation:pageEnter .38s cubic-bezier(.2,.7,.2,1) backwards}
-@keyframes pageEnter{from{opacity:0;transform:translateY(10px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
-::view-transition-group(pgv){animation-duration:.35s}
-::view-transition-old(pgv){animation:vtOut .15s ease-in both}
-::view-transition-new(pgv){animation:vtIn .35s cubic-bezier(.2,.7,.2,1) both}
-@keyframes vtOut{to{opacity:0;transform:translateY(-6px);filter:blur(3px)}}
-@keyframes vtIn{from{opacity:0;transform:translateY(10px);filter:blur(4px)}}
+/* Live tap monitor */
+.tapc{position:relative;border:1px solid var(--ln2);border-radius:16px;background:var(--panel);padding:18px 20px;box-shadow:var(--sh);transition:border-color .3s,box-shadow .3s,background .3s}
+.tapc.hot{border-color:var(--gd);background:linear-gradient(135deg,var(--okb),var(--gdt));box-shadow:0 0 0 3px var(--gdt),0 18px 36px -18px rgba(16,185,129,.55)}
+.tapc .tt{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--mut)}
+.tn{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.ts{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.idle{color:var(--mut);font-size:13px;padding:6px 0}
 
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px}
-.two-wide{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-bottom:16px}
-.card{
-  background:var(--glass);
-  -webkit-backdrop-filter:blur(20px) saturate(165%);backdrop-filter:blur(20px) saturate(165%);
-  border:1px solid var(--ln);border-radius:22px;padding:22px 24px;margin-bottom:16px;
-  box-shadow:var(--spec),var(--sh);
-  transition:border-color .25s,box-shadow .25s,transform .25s;
-}
-.two .card,.two-wide .card{margin-bottom:0}
-.card:hover{border-color:var(--ln-strong);box-shadow:var(--spec),var(--sh-hover)}
 .hr,.rw{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.rw{margin:10px 0}
 .mut{color:var(--mut);font-size:12.5px}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-weight:700;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--ln-strong)}
-th,td{padding:11px 12px;white-space:nowrap}
+th{text-align:left;font-weight:700;color:var(--mut);font-size:11.5px;border-bottom:1px solid var(--ln2)}
+th,td{padding:10px 12px;white-space:nowrap}
 tr+tr td{border-top:1px solid var(--ln)}
-tr:hover td{background:rgba(16,185,129,.06)}
-
-.b{padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+tr:hover td{background:var(--panel2)}
+.b{padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
 .ok{background:var(--okb);color:var(--ok)}
 .lt{background:var(--gdt);color:var(--gt)}
 .no{background:var(--ln);color:var(--mut)}
 .er{background:var(--erb);color:var(--er)}
-
-.btn{background:var(--glass-strong);color:var(--ink);border:1px solid var(--ln-strong);border-radius:12px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s}
-.btn:hover{border-color:var(--em);transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(6,44,32,.25)}
-.btn:active{transform:translateY(0) scale(.98)}
-.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
-.btn.p{background:linear-gradient(135deg,#0E6B4F 0%,#063B2B 100%);border-color:transparent;color:#fff}
-.btn.p:hover{filter:brightness(1.08)}
+.btn{background:var(--panel);color:var(--ink);border:1px solid var(--ln2);border-radius:12px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .18s,transform .18s}
+.btn:hover{border-color:var(--em);transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
+.btn.p{background:var(--emd);border-color:var(--gd);color:#fff}
+.btn.p:hover{filter:brightness(1.15)}
 .btn.er{color:var(--er);border-color:var(--er)}
-.lk{background:none;border:0;color:var(--em-deep);cursor:pointer;font:inherit;font-weight:600;padding:0 6px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .2s}
+.lk{background:none;border:0;color:var(--emt);cursor:pointer;font:inherit;font-weight:700;padding:0 6px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .2s}
 .lk:hover{text-decoration-color:currentColor}
-
 :focus-visible{outline:2px solid var(--em);outline-offset:2px}
 label{display:block;margin-top:10px;font-size:12px;font-weight:600;color:var(--mut)}
 .ck{display:flex;gap:8px;align-items:center}
-input,select,textarea{display:block;width:100%;margin-top:4px;padding:9px 12px;border:1px solid var(--ln-strong);border-radius:12px;background:var(--in);color:var(--ink);font:inherit;font-size:13.5px;transition:border-color .2s,box-shadow .2s}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:9px 12px;border:1px solid var(--ln2);border-radius:12px;background:var(--in);color:var(--ink);font:inherit;font-size:13.5px;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(16,185,129,.16);outline:none}
 input[type=checkbox]{accent-color:var(--em)}
 .rw input,.rw select{width:auto;margin:0}.ck input{width:auto;margin:0}
-.cb{max-height:150px;overflow:auto;border:1px solid var(--ln-strong);border-radius:12px;padding:6px 12px;margin-top:4px;background:var(--in)}
+.cb{max-height:150px;overflow:auto;border:1px solid var(--ln2);border-radius:12px;padding:6px 12px;margin-top:4px;background:var(--in)}
 .cb label{display:flex;gap:8px;align-items:center;margin:4px 0;color:var(--ink);font-size:13px;font-weight:500}.cb input{width:auto;margin:0}
 .ac{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 .ls{list-style:none;margin:0;padding:0}
-.ls li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--ln);transition:padding-left .2s}
+.ls li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--ln)}
 .ls li:first-child{border:0;padding-top:2px}
-.ls li:hover{padding-left:5px}
+.sub{font-size:11.5px;font-weight:700;color:var(--mut);margin:0 0 6px}
 
-/* ===== macOS-STYLE FLOATING GLASS DOCK (BOTTOM CENTER) ===== */
-.dock-wrap{
-  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  transform:translateX(-50%);z-index:60;max-width:calc(100vw - 20px);
-}
-nav#nv{
-  display:flex;align-items:center;gap:6px;padding:7px;
-  border-radius:999px;
-  background:var(--dock-bg);
-  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
-  border:1px solid var(--dock-ln);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 20px 44px -10px rgba(0,0,0,.55);
-  overflow-x:auto;scrollbar-width:none;
-}
-nav#nv::-webkit-scrollbar{display:none}
-nav#nv button{
-  background:transparent;border:0;color:rgba(240,247,244,.78);
-  padding:9px 15px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;
-  cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
-  transition:background .22s,color .22s,transform .22s cubic-bezier(.2,.8,.2,1);
-}
-nav#nv button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-nav#nv button:hover{color:#fff;background:rgba(255,255,255,.12);transform:translateY(-2px)}
-nav#nv button.on{
-  background:linear-gradient(135deg,#14966F 0%,#0B5D44 100%);
-  color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -4px rgba(16,185,129,.55);
-  border:1px solid rgba(232,212,162,.42);
-}
-
-dialog{border:1px solid var(--ln-strong);border-radius:22px;background:var(--dlg);color:var(--ink);width:min(460px,92vw);padding:24px;box-shadow:0 30px 70px -20px rgba(2,20,14,.55)}
-dialog::backdrop{background:rgba(3,15,11,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
-dialog[open]{animation:pop .28s cubic-bezier(.2,.8,.2,1)}
-dialog[open]::backdrop{animation:fade .22s ease-out}
-
-#ts{margin:0;border:0;background:none;padding:0;inset:auto 16px calc(86px + env(safe-area-inset-bottom,0px)) auto;overflow:visible}
+dialog{border:1px solid var(--ln2);border-radius:18px;background:var(--panel);color:var(--ink);width:min(460px,92vw);padding:24px;box-shadow:0 30px 70px -20px rgba(2,20,14,.6)}
+dialog::backdrop{background:rgba(3,15,11,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+dialog[open]{animation:pop .26s cubic-bezier(.2,.8,.2,1)}
+#ts{margin:0;border:0;background:none;padding:0;inset:auto 16px calc(16px + env(safe-area-inset-bottom,0px)) auto;overflow:visible}
 #ts:popover-open{display:grid;gap:8px}
-.t{padding:11px 15px;border-radius:14px;background:var(--nv);color:var(--nvt);border-left:3px solid var(--gd);max-width:360px;font-size:13px;font-weight:500;box-shadow:0 14px 30px -12px rgba(0,0,0,.5);animation:toast .32s cubic-bezier(.2,.8,.2,1)}
+.t{padding:11px 15px;border-radius:12px;background:var(--emd);color:#F0F7F4;border-left:3px solid var(--gd);max-width:360px;font-size:13px;font-weight:500;box-shadow:0 14px 30px -12px rgba(0,0,0,.5);animation:toast .3s cubic-bezier(.2,.8,.2,1)}
 .t.ok{border-color:var(--em)}.t.er{border-color:#F43F5E}
-
-@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97);filter:blur(3px)}}
-@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}}
 @keyframes toast{from{opacity:0;transform:translateX(18px)}}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}}
-@keyframes fill{from{width:0}}
 @keyframes grow{from{transform:scaleY(0)}}
-.an{animation:rise .55s ease-out}.an .bar i{animation:fill 1s .15s ease-out backwards}
-.an svg rect{transform-box:fill-box;transform-origin:bottom;animation:grow .75s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes fill{from{width:0}}
+.an .bar i{animation:fill 1s .15s ease-out backwards}
+.an svg rect{transform-box:fill-box;transform-origin:bottom;animation:grow .7s cubic-bezier(.2,.8,.2,1) backwards}
 svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
-
+#v{view-transition-name:pgv}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media(max-width:940px){
-  .pano-grid,.two-wide{grid-template-columns:1fr}
-  .overlap-strip{grid-template-columns:repeat(2,1fr)}
-  .metric-seg:nth-child(3)::before{display:none}
-  .metric-seg:nth-child(n+3){border-top:1px solid var(--ln)}
+@media(max-width:1100px){
+  .cmd{flex-wrap:wrap;gap:10px}
+  nav#nv{order:3;flex-basis:100%}
+  .caps{width:100%}
+  .hact{margin-left:auto}
 }
-@media(max-width:640px){
-  .pano-stage{padding:14px 16px 56px}
-  main{padding:0 16px}
-  .top-glass-bar{border-radius:20px;padding:10px 12px}
-  .brand-sub{display:none}
-  nav#nv button span{display:none}
-  nav#nv button{padding:11px 14px}
-  nav#nv button.on span{display:inline}
+@media(max-width:980px){
+  .c8,.c4{grid-column:1/-1}.c4{position:static}
 }
-@media(max-width:460px){
-  .overlap-strip{grid-template-columns:1fr}
-  .metric-seg+.metric-seg::before{display:none}
-  .metric-seg+.metric-seg{border-top:1px solid var(--ln)}
+@media(max-width:720px){
+  main{padding:16px 14px 50px}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .seg:nth-child(3){border-left:0}
+  .seg:nth-child(n+3){border-top:1px solid var(--ln)}
+  .bt span,.caps kbd{display:none}
+  #live-clk{font-size:30px}
+  .hact .chip.hide-s{display:none}
 }
 </style>
 </head>
 <body>
 
-<section class="pano-stage" id="pano-stage">
-  <img id="pano-img" alt="">
-  <div class="pano-vignette" aria-hidden="true"></div>
-  <div class="pano-in">
-    <div class="top-glass-bar">
-      <div class="brand-pill">
-        <div class="logo" id="logo" title="Politeknik Negeri Samarinda"><div class="lg3">
-          <img src="./logo-polnes.png" alt="Logo Polnes" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <svg class="fb" viewBox="0 0 100 116" role="img" aria-label="Emblem Polnes"><defs><linearGradient id="pgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14805F"/><stop offset="1" stop-color="#063024"/></linearGradient><linearGradient id="pgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EBD7A5"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#94722D"/></linearGradient></defs><path d="M50 4 92 18v38c0 28-18 46-42 56C26 102 8 84 8 56V18z" fill="url(#pgE)" stroke="url(#pgG)" stroke-width="4"/><g fill="url(#pgG)"><path d="M50 30 70 38 50 46 30 38z"/><path d="M38 44v9c0 4 6 7 12 7s12-3 12-7v-9l-12 5z"/></g><text x="50" y="86" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="14" font-weight="800" fill="url(#pgG)" letter-spacing="1.5">POLNES</text></svg>
-          <i class="gl"></i>
-        </div></div>
-        <div class="brand-txt">
-          <span class="brand-title">Presensi <em>RFID</em></span>
-          <span class="brand-sub">Politeknik Negeri Samarinda</span>
-        </div>
-      </div>
-
-      <div class="bar-actions">
-        <span class="glass-chip ok" id="sync-st"><span class="dot on"></span>Live Sync</span>
-        <span class="glass-chip" id="md"></span>
-        <button class="g-btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema terang / gelap">◐</button>
-        <button class="g-btn gold" id="ab" onclick="adm?out():lgn()"></button>
-      </div>
-    </div>
-
-    <div id="pano-hero"></div>
+<header class="cmd">
+  <div class="brand">
+    <div class="logo" id="logo" title="Politeknik Negeri Samarinda"><div class="lg3">
+      <img src="./logo-polnes.png" alt="Logo Polnes" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <svg class="fb" viewBox="0 0 100 116" role="img" aria-label="Emblem Polnes"><defs><linearGradient id="pgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14805F"/><stop offset="1" stop-color="#063024"/></linearGradient><linearGradient id="pgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EBD7A5"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#94722D"/></linearGradient></defs><path d="M50 4 92 18v38c0 28-18 46-42 56C26 102 8 84 8 56V18z" fill="url(#pgE)" stroke="url(#pgG)" stroke-width="4"/><g fill="url(#pgG)"><path d="M50 30 70 38 50 46 30 38z"/><path d="M38 44v9c0 4 6 7 12 7s12-3 12-7v-9l-12 5z"/></g><text x="50" y="86" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="14" font-weight="800" fill="url(#pgG)" letter-spacing="1.5">POLNES</text></svg>
+      <i class="gl"></i>
+    </div></div>
+    <div class="bt"><b>Presensi RFID</b><span>Politeknik Negeri Samarinda</span></div>
   </div>
-</section>
+  <nav id="nv" aria-label="Navigasi utama"></nav>
+  <div class="hact">
+    <span class="chip ok hide-s" id="sync-st"><span class="dot"></span>Menghubungkan</span>
+    <span class="chip" id="md"></span>
+    <button class="gb" id="tm" onclick="tema()" aria-label="Ganti tema terang atau gelap" title="Ganti tema"></button>
+    <button class="gb gold" id="ab" onclick="adm?out():lgn()"></button>
+  </div>
+</header>
 
 <main>
-  <div id="v"><div class="card" style="margin-top:20px"><p class="mut">Menghubungkan ke database Supabase...</p></div></div>
+  <div id="v"><div class="card"><p class="mut">Menghubungkan ke database Supabase...</p></div></div>
 </main>
-
-<div class="dock-wrap">
-  <nav id="nv" aria-label="Navigasi utama"></nav>
-</div>
 
 <dialog id="dg"></dialog><div id="ts" popover="manual"></div>
 
@@ -452,7 +268,7 @@ const SUPABASE_KEY = 'sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0};
-let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTap=null,tapTmr=null;
+let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTap=null,tapTmr=null,photoSrc='',rtOk=false;
 let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,ak:'',auto:1}};
 
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
@@ -472,24 +288,19 @@ const cl="$('#dg').close()";
 function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
 
-/* ===== Deteksi Otomatis Foto Kampus untuk Panorama Stage ===== */
+/* ===== Deteksi foto kampus untuk Course Command Banner ===== */
 (()=>{
-  const kandidats=['./kampus.jpg','./kampus.jpeg','./kampus.png','./kampus.webp','./Kampus.jpg','./Kampus.jpeg','./Kampus.png'];
-  let idx=0;
-  function cobaMuat(){
-    if(idx>=kandidats.length)return;
-    const src=kandidats[idx++],probe=new Image();
-    probe.onload=()=>{
-      const img=$('#pano-img'),stage=$('#pano-stage');
-      if(img&&stage){img.src=src;stage.classList.add('has-photo')}
-    };
-    probe.onerror=cobaMuat;
-    probe.src=src;
+  const kand=['./kampus.jpg','./kampus.jpeg','./kampus.png','./kampus.webp'];let i=0;
+  function coba(){
+    if(i>=kand.length)return;
+    const src=kand[i++],p=new Image();
+    p.onload=()=>{photoSrc=src;if(!loading)render()};
+    p.onerror=coba;p.src=src;
   }
-  cobaMuat();
+  coba();
 })();
 
-function enter(){const v=$('#v');v.classList.remove('pe');void v.offsetWidth;v.classList.add('pe')}
+function enter(){const v=$('#v');v.style.animation='none';void v.offsetWidth;v.style.animation='pop .3s cubic-bezier(.2,.8,.2,1)'}
 function go(p){
   page=p;scrollTo(0,0);
   if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
@@ -498,24 +309,27 @@ function go(p){
 }
 
 try{const t=localStorage.getItem('tm');if(t)document.documentElement.dataset.theme=t}catch(e){}
-function tema(){const r=document.documentElement,dk=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches,n=dk?'light':'dark';r.dataset.theme=n;try{localStorage.setItem('tm',n)}catch(e){}}
+function isDark(){const r=document.documentElement;return r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches}
+function tmLabel(){$('#tm').textContent=isDark()?'Dark':'Light'}
+function tema(){const r=document.documentElement,n=isDark()?'light':'dark';r.dataset.theme=n;try{localStorage.setItem('tm',n)}catch(e){}tmLabel()}
 
+const KEYS=['dash','att','mk','mem','reg','rep','set'];
 document.addEventListener('keydown',e=>{
-  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||$('#dg').open)return;
   if(e.key==='/'){const inp=$('#v input[placeholder^="Cari"]');if(inp){e.preventDefault();inp.focus()}}
   if(/^[1-7]$/.test(e.key)){
-    const btns=[...document.querySelectorAll('#nv button')];
-    if(btns[+e.key-1])btns[+e.key-1].click();
+    const b=document.querySelector(`#nv button[data-k="${KEYS[+e.key-1]}"]`);if(b)b.click();
   }
 });
 
 function devInfo(){
   const d=(S.dev||[]).find(x=>x.aktif)||S.dev[0];
-  if(!d||!d.terakhir_terlihat)return{on:false,txt:'Belum pernah terhubung',nama:d?d.nama:'Reader utama'};
-  const diffSec=Math.floor((Date.now()-new Date(d.terakhir_terlihat).getTime())/1000);
-  if(diffSec<=90)return{on:true,txt:'Online ('+(diffSec<5?'baru saja':diffSec+' dtk lalu')+')',nama:d.nama};
-  const m=Math.floor(diffSec/60);
-  return{on:false,txt:'Offline ('+(m<60?m+' mnt lalu':new Date(d.terakhir_terlihat).toLocaleString('id-ID'))+')',nama:d.nama};
+  if(!d||!d.terakhir_terlihat)return{on:false,txt:'Belum pernah terhubung',nama:d?d.nama:'Reader utama',sec:null};
+  const diff=Math.floor((Date.now()-new Date(d.terakhir_terlihat).getTime())/1000);
+  if(diff<=90)return{on:true,txt:diff<5?'baru saja':diff+' dtk lalu',nama:d.nama,sec:diff};
+  const m=Math.floor(diff/60);
+  return{on:false,txt:m<60?m+' mnt lalu':new Date(d.terakhir_terlihat).toLocaleString('id-ID'),nama:d.nama,sec:diff};
 }
 
 async function checkAuth(){
@@ -596,6 +410,12 @@ async function loadAll(notify){
   }
 }
 
+function syncChip(){
+  const e=$('#sync-st');if(!e)return;
+  e.className='chip hide-s '+(rtOk?'ok':'er');
+  e.innerHTML=`<span class="dot ${rtOk?'on':'off'}"></span>${rtOk?'Realtime Terhubung':'Realtime Terputus'}`;
+}
+
 function setupRealtime(){
   sb.channel('rfid-live-channel')
     .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},async payload=>{
@@ -615,7 +435,7 @@ function setupRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'riwayat_kartu'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'perangkat'},()=>loadAll(0))
-    .subscribe();
+    .subscribe(s=>{rtOk=(s==='SUBSCRIBED');syncChip()});
 
   setInterval(()=>{
     const tag=document.activeElement?.tagName;
@@ -627,81 +447,21 @@ function setupRealtime(){
 function updateClock(){
   const el=$('#live-clk');if(!el)return;
   const d=new Date(),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');
-  const c=MK(kk());let extra='';
+  el.textContent=`${hh}:${mm}:${ss}`;
+  const c=MK(kk()),cd=$('#cd');let extra='';
   if(c&&c.mulai&&d.getDay()==c.hari){
     const n=d.getHours()*60+d.getMinutes(),s=mn(c.mulai),e=mn(c.selesai);
-    if(n>=s&&n<=e)extra=` · Sisa ${e-n} mnt`;
+    if(n>=s&&n<=e)extra=`Sisa ${e-n} menit kuliah`;
+    else if(n<s)extra=`Mulai dalam ${s-n} menit`;
+    else extra='Kuliah hari ini selesai';
   }
-  el.textContent=`${hh}:${mm}:${ss}${extra}`;
+  if(cd)cd.textContent=extra;
 }
 setInterval(updateClock,1000);
 
 const ICONS={
-  dash:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>',
-  att:'<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
-  mk:'<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-  mem:'<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  reg:'<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
-  rep:'<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-  set:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+  dash:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'
 };
-
-function renderPanoHero(title){
- const di=devInfo(),tap=liveTap;
- if(!S.mk.length){
-   return `<div class="pano-grid"><div><div class="hn">${esc(title)}</div><div class="hm">Sistem Presensi Cerdas Berbasis RFID · Politeknik Negeri Samarinda</div></div></div>`;
- }
- const k=kk(),c=MK(k),td=TD(),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==td&&x.mk==k),h=t.length,pc=a.length?Math.round(h/a.length*100):0,st=sesi(c),ak=aktif();
- return `<div class="pano-grid${first?' an':''}">
-   <div>
-     <div class="pano-eyebrow">
-       <select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select>
-       <span class="glass-chip ${st[0]}">${st[1]}</span>
-       ${ak&&ak.id==k?'<span class="glass-chip lt">Sesi aktif</span>':''}
-       <span class="glass-chip mono" id="live-clk"></span>
-     </div>
-     <div class="hn">${esc(c.nama)}</div>
-     <div class="hm">
-       <span class="mono" style="background:rgba(255,255,255,.12);padding:2px 9px;border-radius:999px">${esc(c.kode)}</span>
-       <span>${jd(c)}</span>
-       <span>·</span>
-       <span><strong>${h}/${a.length}</strong> hadir (${pc}%)</span>
-     </div>
-     <div class="bar"><i style="width:${pc}%"></i></div>
-   </div>
-
-   <div class="glass-pod ${tap?'tap-active':''}">
-     <div class="pod-top">
-       <span class="pod-tag"><span class="dot ${di.on?'on':''}"></span>${esc(di.nama)}</span>
-       <span class="glass-chip ${di.on?'ok':''}">${di.on?'Online':'Offline'}</span>
-     </div>
-     <div class="pod-card">
-       ${tap
-         ?`<div class="pod-name">${esc(tap.nama)}</div>
-           <div class="pod-sub"><span class="mono">${esc(tap.nim||'POLNES')} · ${esc(tap.tipe)} ${esc(tap.waktu)}</span>${bd(tap.status)}</div>`
-         :`<div class="pod-name">Siap Memindai Kartu</div>
-           <div class="pod-sub"><span>${esc(di.txt)}</span><span class="mono">13.56 MHz</span></div>`
-       }
-     </div>
-   </div>
- </div>`;
-}
-
-function render(){
- $('#md').className='glass-chip '+(adm?'lt':'');$('#md').textContent=adm?'Mode admin':'Mode lihat';
- $('#ab').textContent=adm?'Keluar':'Masuk admin';
- const P=[['dash','Dashboard'],['att','Presensi'],['mk','Mata kuliah'],['mem','Anggota'],['reg','Registrasi RFID',1],['rep','Laporan'],['set','Pengaturan',1]].filter(x=>!x[2]||adm);
- if(!P.some(x=>x[0]==page))page='dash';
- const curTitle=P.find(x=>x[0]==page)[1];
- $('#nv').innerHTML=P.map(x=>`<button class="${x[0]==page?'on':''}" onclick="go('${x[0]}')">${ICONS[x[0]]}<span>${x[1]}</span></button>`).join('');
- $('#pano-hero').innerHTML=renderPanoHero(curTitle);
- if(loading)return;
- const subHeader=page==='dash'?'':`<div class="sub-head"><h1>${esc(curTitle)}</h1><span class="mut">Gunakan dock melayang di bawah untuk berpindah halaman</span></div>`;
- $('#v').innerHTML=subHeader+({dash:vDash,att:vAtt,mk:vMk,mem:vMem,reg:vReg,rep:vRep,set:vSet})[page]();
- first=0;
- updateClock();
- if(lp!==page){if(lp!==null&&!vtOn)enter();lp=page}
-}
 
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 const jd=k=>k.mulai?DN[k.hari]+', '+k.mulai+'–'+k.selesai:'Jadwal belum diatur';
@@ -710,35 +470,104 @@ const nowm=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 function sesi(k){if(!k.mulai)return['','Tanpa jadwal'];if(new Date().getDay()!=k.hari)return['',DN[k.hari]];const n=nowm();return n<mn(k.mulai)?['lt','Akan dimulai']:n<=mn(k.selesai)?['ok','Berlangsung']:['','Selesai']}
 function aktif(){if(S.set.auto){const n=nowm(),d=new Date().getDay(),k=S.mk.find(x=>x.mulai&&x.hari==d&&mn(x.mulai)<=n&&n<=mn(x.selesai));if(k)return k}return MK(S.set.ak)}
 
+function render(){
+ $('#md').className='chip '+(adm?'lt':'');$('#md').textContent=adm?'Mode Admin':'Mode Lihat';
+ $('#ab').textContent=adm?'Keluar':'Masuk Admin';
+ tmLabel();syncChip();
+ const P=[['dash','Dashboard',1],['att','Presensi',2],['mk','Mata Kuliah',3],['mem','Anggota',4],['reg','Registrasi RFID',5,1],['rep','Laporan',6],['set','Pengaturan',7,1]].filter(x=>!x[3]||adm);
+ if(!P.some(x=>x[0]==page))page='dash';
+ const cur=P.find(x=>x[0]==page)[1];
+ $('#nv').innerHTML='<div class="caps">'+P.map(x=>`<button data-k="${x[0]}" class="${x[0]==page?'on':''}" onclick="go('${x[0]}')">${x[1]}<kbd>${x[2]}</kbd></button>`).join('')+'</div>';
+ if(loading)return;
+ const head=page==='dash'?'':`<div class="pg-head"><h1>${esc(cur)}</h1><span class="mut">Tekan <span class="mono">1</span>–<span class="mono">7</span> untuk berpindah tab, <span class="mono">/</span> untuk mencari</span></div>`;
+ $('#v').innerHTML=head+({dash:vDash,att:vAtt,mk:vMk,mem:vMem,reg:vReg,rep:vRep,set:vSet})[page]();
+ first=0;
+ updateClock();
+ if(lp!==page){if(lp!==null&&!vtOn)enter();lp=page}
+}
+
 function chart(a,k){
  const R=S.rec.filter(x=>x.mk==k),d=[...new Set(R.map(x=>x.tgl))].sort().slice(-7);
  if(!d.length)return '<p class="mut">Belum ada data presensi.</p>';
  const W=440,bw=36,g=(W-d.length*bw)/(d.length+1),sc=100/Math.max(a,...d.map(t=>R.filter(x=>x.tgl==t).length),1);
- return `<svg viewBox="0 0 ${W} 142" width="100%" role="img" aria-label="Grafik kehadiran 7 pertemuan terakhir"><line x1="0" y1="110" x2="${W}" y2="110" stroke="var(--ln)" stroke-width="1"/>`+d.map((t,i)=>{
+ return `<svg viewBox="0 0 ${W} 142" width="100%" role="img" aria-label="Grafik kehadiran 7 pertemuan terakhir"><line x1="0" y1="110" x2="${W}" y2="110" stroke="var(--ln2)" stroke-width="1"/>`+d.map((t,i)=>{
   const r=R.filter(x=>x.tgl==t),L=r.filter(x=>x.st=='Terlambat').length,O=r.length-L,x=g+i*(bw+g);
-  return `<rect x="${x}" y="${110-O*sc}" width="${bw}" height="${O*sc}" rx="6" style="fill:var(--bar)"/><rect x="${x}" y="${110-(O+L)*sc}" width="${bw}" height="${L*sc}" rx="6" style="fill:var(--gd)"/><text x="${x+bw/2}" y="130" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" style="fill:var(--mut)">${t.slice(8)}/${t.slice(5,7)}</text>`}).join('')+`</svg><p class="mut" style="margin-bottom:0">Hijau zamrud: tepat waktu · Emas: terlambat</p>`}
+  return `<rect x="${x}" y="${110-O*sc}" width="${bw}" height="${O*sc}" rx="4" style="fill:var(--em)"/><rect x="${x}" y="${110-(O+L)*sc}" width="${bw}" height="${L*sc}" rx="4" style="fill:var(--gd)"/><text x="${x+bw/2}" y="130" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" style="fill:var(--mut)">${t.slice(8)}/${t.slice(5,7)}</text>`}).join('')+`</svg><p class="mut" style="margin-bottom:0">Hijau zamrud: tepat waktu · Emas: terlambat</p>`}
 
-function recent(k){
- const e=[];S.rec.filter(x=>x.mk==k).forEach(x=>{const m=M(x.id);if(m)e.push([x.tgl+(x.pl||x.ms),m.nama,x.pl?'Pulang '+x.pl:'Masuk '+x.ms,x.tgl,x.st])});
- return e.length?'<ul class="ls">'+e.sort().reverse().slice(0,6).map(x=>`<li><span><strong>${esc(x[1])}</strong></span><span class="mut mono">${x[3].slice(8)}/${x[3].slice(5,7)} · ${x[2]}</span></li>`).join('')+'</ul>':'<p class="mut">Belum ada aktivitas.</p>'}
+function logTap(){
+ const e=S.rec.map(x=>({m:M(x.id),c:MK(x.mk),x})).filter(o=>o.m).sort((a,b)=>(b.x.tgl+(b.x.pl||b.x.ms)).localeCompare(a.x.tgl+(a.x.pl||a.x.ms))).slice(0,6);
+ return e.length?'<ul class="ls">'+e.map(o=>`<li><span><strong>${esc(o.m.nama)}</strong><br><span class="mut mono">${esc(o.m.nim)}</span></span><span style="text-align:right"><span class="mut mono">${o.x.tgl.slice(8)}/${o.x.tgl.slice(5,7)} · ${o.x.pl?'Pulang '+o.x.pl:'Masuk '+o.x.ms}</span><br>${bd(o.x.st)}</span></li>`).join('')+'</ul>':'<p class="mut">Belum ada aktivitas pemindaian.</p>';
+}
+
+function hwPanel(){
+ const di=devInfo(),a=aktif();
+ return `<div class="term">
+  <div class="th"><span class="led"><span class="dot ${di.on?'on':'off'}"></span>${esc(di.nama)}</span><span>${di.on?'ONLINE':'OFFLINE'}</span></div>
+  <div class="tb">
+   <div class="r"><span>$ status</span><span class="${di.on?'up':'dn'}">${di.on?'Online':'Offline'}</span></div>
+   <div class="r"><span>terakhir_terlihat</span><span>${esc(di.txt)}</span></div>
+   <div class="r"><span>mcu</span><span>ESP8266</span></div>
+   <div class="r"><span>modul_rfid</span><span>MFRC522 · 13.56 MHz</span></div>
+   <div class="r"><span>sesi_aktif</span><span>${a?esc(a.kode):'—'}</span></div>
+   ${adm?`<div class="r"><span>reg_kartu</span><span>${regWait?'menunggu tap':'idle'}</span></div>`:''}
+   <div class="r"><span>realtime</span><span class="${rtOk?'up':'dn'}">${rtOk?'terhubung':'terputus'}</span></div>
+   <div class="r"><span>&gt;</span><span class="cur">${di.on?'siap memindai kartu':'menunggu perangkat'}</span></div>
+  </div>
+ </div>`;
+}
+
+function tapCard(){
+ const t=liveTap;
+ return `<div class="tapc ${t?'hot':''}">
+  <div class="tt"><span>Live Tap Monitor</span><span class="chip ${t?'lt':''}">${t?'Baru masuk':'Menunggu'}</span></div>
+  ${t?`<div class="tn">${esc(t.nama)}</div>
+    <div class="ts"><span class="mono">${esc(t.nim||'POLNES')} · ${esc(t.tipe)} ${esc(t.waktu)}</span>${bd(t.status)}</div>
+    ${t.mk?`<div class="mut" style="margin-top:6px">${esc(t.mk)}</div>`:''}`
+   :`<div class="idle">Tempelkan kartu pada pembaca. Data presensi baru akan muncul di sini secara langsung.</div>`}
+ </div>`;
+}
 
 function vDash(){
- if(!S.mk.length)return `<div class="card" style="margin-top:20px"><h3>Belum ada mata kuliah</h3><p class="mut">${adm?'Tambahkan mata kuliah beserta jadwalnya melalui menu Mata kuliah di dock bawah.':'Data akan tampil setelah administrator menambahkan mata kuliah.'}</p></div>`;
- const k=kk(),c=MK(k),td=TD(),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==td&&x.mk==k),h=t.length,l=t.filter(x=>x.st=='Terlambat').length,pc=a.length?Math.round(h/a.length*100):0,hd=new Set(t.map(x=>x.id)),bl=a.filter(x=>!hd.has(x.id)),hari=S.mk.filter(x=>x.mulai&&x.hari==new Date().getDay()).sort((x,y)=>x.mulai.localeCompare(y.mulai));
- return `
- <div class="overlap-strip">
-   <div class="metric-seg"><div class="k"><span>Peserta Aktif</span><span class="b no">Kelas</span></div><span class="v">${fmt(a.length)}</span><div class="k-sub">Terdaftar pada mata kuliah</div></div>
-   <div class="metric-seg"><div class="k"><span>Hadir Hari Ini</span><span class="b ok">${pc}%</span></div><span class="v">${h}</span><div class="k-sub">Tercatat hari ini</div></div>
-   <div class="metric-seg"><div class="k"><span>Terlambat</span><span class="b lt">Toleransi</span></div><span class="v">${l}</span><div class="k-sub">Melewati batas waktu</div></div>
-   <div class="metric-seg"><div class="k"><span>Belum Hadir</span><span class="b no">Menunggu</span></div><span class="v">${bl.length}</span><div class="k-sub">Belum memindai kartu</div></div>
- </div>
- <div class="two-wide">
+ if(!S.mk.length)return `<div class="card"><h3>Belum ada mata kuliah</h3><p class="mut">${adm?'Tambahkan mata kuliah beserta jadwalnya melalui tab Mata Kuliah.':'Data akan tampil setelah administrator menambahkan mata kuliah.'}</p></div>`;
+ const k=kk(),c=MK(k),td=TD(),a=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k)),t=S.rec.filter(x=>x.tgl==td&&x.mk==k),h=t.length,l=t.filter(x=>x.st=='Terlambat').length,pc=a.length?Math.round(h/a.length*100):0,hd=new Set(t.map(x=>x.id)),bl=a.filter(x=>!hd.has(x.id)),hari=S.mk.filter(x=>x.mulai&&x.hari==new Date().getDay()).sort((x,y)=>x.mulai.localeCompare(y.mulai)),st=sesi(c),ak=aktif();
+ return `<div class="bento">
+ <div class="c8">
+  <div class="ban${first?' an':''}">
+   ${photoSrc?`<img class="ph" src="${esc(photoSrc)}" alt=""><div class="shade"></div>`:`<svg class="pcb" viewBox="0 0 300 200" fill="none" stroke="#E8D4A2" stroke-opacity=".35" stroke-width="1.5" aria-hidden="true"><path d="M0 40H90L120 70H210L240 40H300"/><path d="M0 100H70L100 130H180L210 100H300"/><path d="M40 200V150L70 120"/><path d="M160 0V50L190 80"/><circle cx="90" cy="40" r="4"/><circle cx="210" cy="70" r="4"/><circle cx="70" cy="100" r="4"/><circle cx="180" cy="130" r="4"/><rect x="215" y="140" width="46" height="34" rx="4"/></svg>`}
+   <div class="in">
+    <div class="brow">
+     <select class="hs" onchange="F.k=this.value;render()" aria-label="Pilih mata kuliah">${kopt(k)}</select>
+     <span class="chip ${st[0]}">${st[1]}</span>
+     ${ak&&ak.id==k?'<span class="chip lt">Sesi aktif</span>':''}
+    </div>
+    <div class="hn">${esc(c.nama)}</div>
+    <div class="hm"><span class="mono" style="background:rgba(255,255,255,.14);padding:1px 9px;border-radius:8px">${esc(c.kode)}</span><span>${jd(c)}</span></div>
+    <div class="clk"><span id="live-clk">--:--:--</span><span id="cd" class="mono"></span></div>
+    <div class="bar"><i style="width:${pc}%"></i></div>
+    <div class="bl"><span><strong class="mono">${h}/${a.length}</strong> mahasiswa hadir</span><span class="mono">${pc}%</span></div>
+   </div>
+  </div>
+  <div class="strip">
+   <div class="seg a1"><div class="k"><span>Peserta Aktif</span></div><span class="v">${fmt(a.length)}</span><div class="k-sub">Terdaftar pada mata kuliah</div></div>
+   <div class="seg a2"><div class="k"><span>Hadir Hari Ini</span><span class="b ok">${pc}%</span></div><span class="v">${h}</span><div class="k-sub">Tercatat hari ini</div></div>
+   <div class="seg a3"><div class="k"><span>Terlambat</span></div><span class="v">${l}</span><div class="k-sub">Melewati toleransi</div></div>
+   <div class="seg a4"><div class="k"><span>Belum Hadir</span></div><span class="v">${bl.length}</span><div class="k-sub">Belum memindai kartu</div></div>
+  </div>
+  <div class="two" style="margin:0">
    <div class="card"><h3>Kehadiran 7 pertemuan terakhir</h3>${chart(a.length,k)}</div>
-   <div class="card"><h3>Aktivitas terbaru</h3>${recent(k)}</div>
+   <div class="card">
+    <p class="sub">Jadwal kuliah hari ini</p>
+    ${hari.length?'<ul class="ls">'+hari.map(x=>{const s=sesi(x);return `<li><button class="lk" style="text-align:left" onclick="F.k='${x.id}';render()">${esc(x.nama)}</button><span class="mut mono">${x.mulai}–${x.selesai} <span class="b ${s[0]||'no'}">${s[1]}</span></span></li>`}).join('')+'</ul>':'<p class="mut">Tidak ada kuliah terjadwal hari ini.</p>'}
+    <p class="sub" style="margin-top:16px">Belum hadir</p>
+    ${bl.length?'<ul class="ls">'+bl.slice(0,6).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut mono">${esc(x.nim)}</span></li>`).join('')+'</ul>'+(bl.length>6?`<p class="mut" style="margin:8px 0 0">dan ${bl.length-6} mahasiswa lainnya</p>`:''):'<p class="mut">Semua peserta sudah hadir.</p>'}
+   </div>
+  </div>
  </div>
- <div class="two">
-   <div class="card"><h3>Jadwal hari ini</h3>${hari.length?'<ul class="ls">'+hari.map(x=>{const s=sesi(x);return `<li><button class="lk" onclick="F.k='${x.id}';render()">${esc(x.nama)}</button><span class="mut mono">${x.mulai}–${x.selesai} <span class="b ${s[0]||'no'}">${s[1]}</span></span></li>`}).join('')+'</ul>':'<p class="mut">Tidak ada mata kuliah terjadwal hari ini.</p>'}</div>
-   <div class="card"><h3>Belum hadir</h3>${bl.length?'<ul class="ls">'+bl.slice(0,7).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut mono">${esc(x.nim)}</span></li>`).join('')+'</ul>'+(bl.length>7?`<p class="mut" style="margin-bottom:0">dan ${bl.length-7} mahasiswa lainnya</p>`:''):'<p class="mut">Semua peserta sudah hadir.</p>'}</div>
+ <aside class="c4" aria-label="Konsol perangkat dan tap langsung">
+  ${hwPanel()}
+  ${tapCard()}
+  <div class="card"><h3>6 pemindaian terakhir</h3>${logTap()}</div>
+ </aside>
  </div>`;
 }
 
@@ -752,7 +581,7 @@ function tbl(){
  `</table></div>`+pgn(r.length,F.p,n,'ap')}
 function ap(d){F.p+=d;$('#tb').innerHTML=tbl()}
 
-function pnl(){const k=aktif();if(!k)return `<div class="card"><h3>Input presensi manual</h3><p class="mut">Tentukan sesi aktif pada menu Mata kuliah.</p></div>`;
+function pnl(){const k=aktif();if(!k)return `<div class="card" style="margin-top:16px"><h3>Input presensi manual</h3><p class="mut">Tentukan sesi aktif pada tab Mata Kuliah.</p></div>`;
  const o=S.mem.filter(x=>x.aktif&&(x.mk||[]).includes(k.id)).map(x=>`<option value="${x.id}">${esc(x.nama)} (${esc(x.nim)})</option>`).join(''),d=new Date();
  return `<div class="card"><h3>Input presensi manual</h3><p class="mut">Sesi aktif: ${esc(k.nama)} (${esc(k.kode)}), ${jd(k)}</p><div class="rw"><select id="sm">${o}</select><input type="time" id="st" value="${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}"><button class="btn p" onclick="manual()">Catat presensi</button></div></div>`}
 
@@ -890,18 +719,18 @@ function vReg(){
  const waitMem=regWait?M(regWait.anggota_id):null;
  return `<div class="two">
    <div class="card">
-     <h3>Cara 1: Tap Langsung di Alat (Otomatis)</h3>
+     <h3>Cara 1: Tap Langsung di Alat</h3>
      <div class="rw"><span class="b ${di.on?'ok':'no'}">${di.on?'Perangkat online':'Perangkat offline'}</span><span class="mut">${esc(di.txt)}</span></div>
      <label>1. Pilih anggota<select id="rm1">${o}</select></label>
-     <div class="ac"><button class="btn p" onclick="mulaiTapReg()">2. Aktifkan Mode Tap (2 Menit)</button></div>
-     ${waitMem?`<div class="card" style="margin-top:12px;border-color:var(--gd)"><strong>Menunggu kartu ditempelkan...</strong><p class="mut">Tempelkan kartu baru ke pembaca RFID untuk didaftarkan ke <strong>${esc(waitMem.nama)}</strong>. Berlaku s/d ${new Date(regWait.kedaluwarsa).toLocaleTimeString('id-ID')}.</p><button class="btn" onclick="batalTapReg()">Batalkan</button></div>`:''}
+     <div class="ac"><button class="btn p" onclick="mulaiTapReg()">2. Aktifkan mode tap (2 menit)</button></div>
+     ${waitMem?`<div class="card" style="margin-top:12px;border-color:var(--gd)"><strong>Menunggu kartu ditempelkan...</strong><p class="mut">Tempelkan kartu baru ke pembaca RFID untuk didaftarkan ke <strong>${esc(waitMem.nama)}</strong>. Berlaku sampai ${new Date(regWait.kedaluwarsa).toLocaleTimeString('id-ID')}.</p><button class="btn" onclick="batalTapReg()">Batalkan</button></div>`:''}
    </div>
    <div class="card">
      <h3>Cara 2: Input UID Manual</h3>
      <p class="mut">Gunakan cara ini jika kamu sudah mengetahui kode UID heksadesimal kartu.</p>
      <label>1. Pilih anggota<select id="rm2">${o}</select></label>
      <label>2. UID kartu (8–14 karakter heksadesimal)<input id="ru" placeholder="Contoh: 4C036B22" maxlength="14"></label>
-     <div class="ac"><button class="btn" onclick="hub()">3. Simpan UID Manual</button></div>
+     <div class="ac"><button class="btn" onclick="hub()">3. Simpan UID manual</button></div>
    </div>
  </div>
  <div class="card tw"><h3>Riwayat registrasi</h3><table><tr><th>Waktu<th>Anggota<th>UID<th>Hasil</tr>${S.reg.map(x=>`<tr><td class="mono">${new Date(x.t).toLocaleString('id-ID')}<td>${esc((M(x.id)||{}).nama||'-')}<td class="mono">${esc(x.u)}<td><span class="b ${x.h=='Berhasil'?'ok':'er'}">${esc(x.h)}</span></tr>`).join('')||'<tr><td colspan="4">Belum ada riwayat</tr>'}</table></div>`}
@@ -911,7 +740,7 @@ async function mulaiTapReg(){
  await sb.from('sesi_registrasi').update({selesai:true}).eq('selesai',false);
  const {error}=await sb.from('sesi_registrasi').insert({anggota_id:id});
  if(error){toast('Gagal memulai mode tap: '+error.message,'er');return}
- toast('Mode registrasi aktif! Tempelkan kartu baru ke alat RFID sekarang.','ok');
+ toast('Mode registrasi aktif. Tempelkan kartu baru ke alat RFID sekarang.','ok');
  await loadAll(0);
 }
 
@@ -984,11 +813,11 @@ function dlCsv(){
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='presensi-polnes-'+TD()+'.csv';a.click();
  URL.revokeObjectURL(a.href);toast('File CSV berhasil diunduh','ok');
 }
-function ex(){dlg(`<h3>Ekspor CSV</h3><p class="mut">Unduh langsung sebagai file Excel (.csv) atau salin teks di bawah.</p><textarea readonly rows="7" onfocus="this.select()">${esc(csv())}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button><button class="btn p" onclick="dlCsv()">Unduh File .CSV</button></div>`)}
+function ex(){dlg(`<h3>Ekspor CSV</h3><p class="mut">Unduh langsung sebagai file Excel (.csv) atau salin teks di bawah.</p><textarea readonly rows="7" onfocus="this.select()">${esc(csv())}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button><button class="btn p" onclick="dlCsv()">Unduh file .csv</button></div>`)}
 function bk(){dlg(`<h3>Cadangan JSON</h3><p class="mut">Salin dan simpan teks ini di tempat yang aman.</p><textarea readonly rows="8" onfocus="this.select()">${esc(JSON.stringify(S))}</textarea><div class="ac"><button class="btn" onclick="${cl}">Tutup</button></div>`)}
 
 function lgn(){
- dlg(`<h3>Masuk admin Supabase</h3><label>Email admin<input type="email" id="em" value="yonariviansyah715@gmail.com" autocomplete="username"></label><label>Kata sandi<input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')masuk()"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="masuk()">Masuk</button></div>`);
+ dlg(`<h3>Masuk admin</h3><label>Email admin<input type="email" id="em" value="yonariviansyah715@gmail.com" autocomplete="username"></label><label>Kata sandi<input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')masuk()"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="masuk()">Masuk</button></div>`);
  $('#pw').focus();
 }
 
@@ -1011,7 +840,7 @@ async function out(){
  adm=0;userEmail='';toast('Keluar dari mode admin','no');await loadAll(0);
 }
 
-/* ===== Logo Polnes Medallion: tilt 3D, kilau emas, pulse saat diklik ===== */
+/* ===== Emblem Polnes: tilt 3D mengikuti kursor, kilau emas, pulse saat diklik ===== */
 (()=>{
  const l=$('#logo');if(!l)return;
  const t=l.firstElementChild,rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1025,6 +854,7 @@ async function out(){
  l.addEventListener('click',()=>{l.classList.remove('pulse');void l.offsetWidth;l.classList.add('pulse');setTimeout(()=>l.classList.remove('pulse'),750)});
 })();
 
+tmLabel();
 (async()=>{
  await checkAuth();
  await loadAll(0);
