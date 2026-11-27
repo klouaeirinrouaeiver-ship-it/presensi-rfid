@@ -211,23 +211,30 @@ async function boot0(){
  const {data:{session}}=await sb.auth.getSession();
  if(!session)return gate();
  let p={};try{p=JSON.parse(localStorage.getItem('pend')||'{}')}catch(e){}
- const {data:res,error:rpcErr}=await sb.rpc('tautkan_akun',{p_no_wa:p.wa||''});
+ const peranKirim=p.peran||localStorage.getItem('pilihPeran')||'mahasiswa';
+ const {data:res,error:rpcErr}=await sb.rpc('tautkan_akun',{
+  p_no_wa:p.wa||'',
+  p_peran:peranKirim,
+  p_nama:session.user.user_metadata?.full_name||session.user.user_metadata?.name||'',
+  p_nim:'',
+  p_kelas:''
+ });
  if(rpcErr||res?.error){
   const msg=rpcErr?.message||res?.error||'Gagal menautkan akun';
-  if(/WhatsApp/i.test(msg)){role=p.peran||'mahasiswa';return activ()}
+  if(res?.butuh_wa||/WhatsApp/i.test(msg)){role=res?.peran||p.peran||'mahasiswa';return activ()}
   await sb.auth.signOut();localStorage.removeItem('pend');
   return gate(msg);
  }
  if(p.peran&&p.peran!==res.peran){
   await sb.auth.signOut();localStorage.removeItem('pend');
   tab='daftar';
-  return gate(`Akun ini didaftarkan Admin sebagai ${res.peran.toUpperCase()}, bukan ${p.peran.toUpperCase()}. Pilih peran yang sesuai.`);
+  return gate(`Akun ini terdaftar sebagai ${res.peran.toUpperCase()}, bukan ${p.peran.toUpperCase()}.`);
  }
  const {data}=await sb.from('anggota').select('*').eq('auth_user_id',session.user.id).maybeSingle();
  me=data;
  if(!me){
   await sb.auth.signOut();localStorage.removeItem('pend');
-  return gate('Akun belum terdaftar di tabel anggota. Hubungi Admin.');
+  return gate('Gagal memuat profil anggota.');
  }
  localStorage.removeItem('pend');
  await load();
