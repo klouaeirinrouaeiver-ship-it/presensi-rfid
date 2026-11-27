@@ -378,6 +378,20 @@ const V={
   return `<select onchange="sel=this.value;draw()"><option value="">Semua kelas saya</option>${myMk().map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)}</option>`).join('')}</select>${r.map(x=>`<div class="card"><div class="row"><b>${esc(nm(x.anggota_id))}</b>${stSel(x.id,x.status)}</div><div class="mut">${esc(mkn(x.mata_kuliah_id))} · ${x.tanggal} · ${hm(x.masuk)}</div></div>`).join('')}`}
 };
 
+ async function hubungkanTg(btn){
+ btn.disabled=true;const lbl=btn.textContent;btn.textContent='Membuka Telegram…';
+ try{
+  const res=await fetch('/api/telegram-webhook?bot=1');
+  const j=await res.json().catch(()=>({}));
+  if(!j.ok||!j.username)throw new Error('Token bot di Vercel belum valid atau belum di-redeploy');
+  window.open(`https://t.me/${encodeURIComponent(j.username)}?start=${encodeURIComponent(me.id)}`,'_blank','noopener');
+ }catch(e){
+  toast(e.message);
+ }finally{
+  btn.disabled=false;btn.textContent=lbl;
+ }
+}
+ 
 /* ===== AKSI TELEGRAM, ADMIN & EXCEL ===== */
 async function tesTelegram(btn){
  btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim pesan tes…';
