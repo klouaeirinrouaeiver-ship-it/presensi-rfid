@@ -160,9 +160,11 @@ h3{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 }
 .cmd-in{max-width:1340px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
-/* Brand Block */
+/* Brand Block with Gentle Vertical Levitation */
 .brand-box{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{position:relative;width:44px;height:44px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.logo{position:relative;width:44px;height:44px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;animation:navBob 4.2s ease-in-out infinite}
+.logo:hover{animation-play-state:paused}
+@keyframes navBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5px)}}
 .lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:13px;overflow:hidden;background:radial-gradient(circle at 30% 25%,#FFFFFF,#E9F3EE);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .22s ease-out,box-shadow .25s;box-shadow:0 0 0 1.5px var(--gd),0 6px 14px -4px rgba(0,0,0,.45)}
 .logo:hover .lg3{box-shadow:0 0 0 1.5px #F2E2B8,0 0 18px rgba(16,185,129,.5)}
 .lg3 img,.lg3 .fb{width:78%;height:78%;object-fit:contain}
@@ -250,12 +252,12 @@ main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-i
 .col-main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .col-side{display:flex;flex-direction:column;gap:16px;min-width:0}
 
-/* COURSE COMMAND BANNER (CLEAN DYNAMIC PER-COURSE IMAGE WITHOUT OVERLAY ARTWORK) */
+/* COURSE COMMAND BANNER WITH FLOATING POLNES EMBLEM & DYNAMIC CAMPUS PHOTO */
 .hero{
   background:linear-gradient(125deg,#0B5A42 0%,#063829 55%,#042118 100%);
   color:var(--nvt);border-radius:18px;padding:24px 26px;position:relative;overflow:hidden;
   border:1px solid rgba(197,160,89,.32);box-shadow:var(--sh);
-  min-height:246px;display:flex;flex-direction:column;justify-content:space-between;
+  min-height:254px;display:flex;flex-direction:column;justify-content:space-between;
 }
 .hero-media{
   position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;
@@ -263,18 +265,61 @@ main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-i
   mask-image:linear-gradient(95deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.72) 42%,rgba(0,0,0,1) 75%);
 }
 .hero-photo{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%;
-  opacity:0;transform:scale(1.03);transition:opacity .65s ease,transform .9s cubic-bezier(.2,.8,.2,1);
+  position:absolute;inset:-4% 0;width:100%;height:108%;object-fit:cover;object-position:center 38%;
+  opacity:0;transform:translateY(0) scale(1.03);transition:opacity .65s ease;
   filter:saturate(1.1);
 }
-.hero-photo.show{opacity:.88;transform:scale(1)}
+.hero-photo.show{opacity:.88;animation:campusDrift 12s ease-in-out infinite alternate}
+@keyframes campusDrift{0%{transform:translateY(-6px) scale(1.02)}100%{transform:translateY(6px) scale(1.04)}}
 .hero::after{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:linear-gradient(90deg,rgba(4,28,21,.90) 0%,rgba(4,28,21,.52) 45%,rgba(4,28,21,.08) 100%);
+  background:linear-gradient(90deg,rgba(4,28,21,.90) 0%,rgba(4,28,21,.54) 46%,rgba(4,28,21,.12) 100%);
 }
 .hero>*:not(.hero-media){position:relative;z-index:1}
 
-.hh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative;z-index:20}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.hero-left{min-width:0;flex:1}
+
+/* Floating Polnes Crest Emblem (gerak naik-turun halus di sisi kanan Hero) */
+.hero-emblem-stage{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex-shrink:0;padding:4px 6px 0;user-select:none;
+}
+.hero-emblem-float{
+  width:94px;height:94px;border-radius:24px;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.96),rgba(232,245,239,.90));
+  border:2px solid rgba(232,212,162,.85);
+  box-shadow:0 12px 28px -6px rgba(0,0,0,.55),0 0 24px rgba(16,185,129,.35),inset 0 1px 0 #fff;
+  display:grid;place-items:center;padding:10px;
+  animation:polnesLevitate 3.8s cubic-bezier(.45,.05,.55,.95) infinite;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.hero-emblem-stage:hover .hero-emblem-float{
+  animation-play-state:paused;
+  transform:translateY(-6px) scale(1.05);
+  box-shadow:0 16px 32px -6px rgba(0,0,0,.6),0 0 30px rgba(232,212,162,.55);
+}
+.hero-emblem-float img,.hero-emblem-float svg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(6,44,32,.22))}
+.hero-emblem-float svg{display:none}
+.hero-emblem-shadow{
+  width:58px;height:8px;margin-top:8px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.55) 0%,transparent 75%);
+  animation:polnesShadow 3.8s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+.hero-emblem-cap{
+  margin-top:5px;font-family:"JetBrains Mono",monospace;font-size:9.5px;font-weight:700;
+  letter-spacing:.12em;color:#E8D4A2;text-shadow:0 1px 6px rgba(0,0,0,.75);
+}
+@keyframes polnesLevitate{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-11px)}
+}
+@keyframes polnesShadow{
+  0%,100%{transform:scale(1);opacity:.72}
+  50%{transform:scale(.72);opacity:.32}
+}
+
+.hh{display:flex;gap:7px;align-items:center;flex-wrap:wrap;position:relative;z-index:20}
 .hs{
   position:relative;z-index:25;
   background-color:#072E22;border:1px solid rgba(52,211,153,.4);color:#ECF5F0;
@@ -286,11 +331,22 @@ main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-i
 .hs:hover,.hs:focus{border-color:var(--gd);background-color:#0B3D2E}
 .hs option{background-color:#072E22;color:#ECF5F0;font-weight:500}
 .hs option:checked{background-color:#10B981;color:#032419}
-.hn{font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:16px 0 8px;font-weight:800;letter-spacing:-.03em;color:#fff}
-.hm{opacity:.92;font-size:13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.code-chip{background:rgba(4,28,21,.65);border:1px solid rgba(255,255,255,.22);padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
-.img-tag{margin-left:auto;font-size:10.5px;opacity:.85;background:rgba(4,28,21,.72);padding:3px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.18)}
-#live-clk{font-size:clamp(26px,3vw,34px);font-weight:700;letter-spacing:.02em;margin:12px 0 4px;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.step-btn{
+  background:#072E22;border:1px solid rgba(52,211,153,.35);color:#ECF5F0;
+  width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  font:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  transition:border-color .2s,background .2s,transform .15s;
+}
+.step-btn:hover{border-color:var(--gd);background:#0C4231;transform:translateY(-1px)}
+.step-btn:active{transform:scale(.95)}
+
+.hn{font-size:clamp(26px,3.3vw,36px);line-height:1.12;margin:14px 0 8px;font-weight:800;letter-spacing:-.03em;color:#fff}
+.hm{opacity:.94;font-size:13px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.code-chip{background:rgba(4,28,21,.7);border:1px solid rgba(255,255,255,.22);padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
+.cutoff-chip{background:rgba(4,28,21,.72);border:1px solid rgba(52,211,153,.32);color:#A7F3D0;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:600}
+.cutoff-chip.late{border-color:rgba(232,212,162,.5);color:#FDE68A}
+
+#live-clk{font-size:clamp(26px,3vw,34px);font-weight:700;letter-spacing:.02em;margin:12px 0 3px;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
 .clk-sub{font-size:11.5px;color:#A7F3D0;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.45)}
 .bar{height:7px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;margin:14px 0 7px}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#34D399,#E8D4A2);border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
@@ -464,10 +520,12 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
   main{padding:16px}
   .cmd-header{padding:10px 14px}
   .ctx-art{display:none}
+  .hero-emblem-float{width:76px;height:76px;border-radius:19px}
 }
 @media(max-width:460px){
   .kpi-strip{grid-template-columns:1fr}
   .kpi-cell+.kpi-cell{border-left:0;border-top:1px solid var(--ln)}
+  .hero-emblem-stage{display:none}
 }
 </style>
 </head>
@@ -500,6 +558,9 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
     <div class="hdr-right">
       <span class="pill-st ok" id="sync-st"><span class="dot on"></span>Realtime Terhubung</span>
       <span class="pill-st" id="md"></span>
+      <button class="icon-btn" onclick="toggleFull()" title="Layar penuh untuk tampilan monitor kelas">
+        <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
       <button class="icon-btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema terang / gelap">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <span id="tm-lbl">Tema</span>
@@ -530,6 +591,7 @@ const slug=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const TD=()=>iso(new Date()),fmt=n=>n.toLocaleString('id-ID');
 const mn=t=>{if(!t)return 0;const a=t.split(':');return a[0]*60+ +a[1]};
+const fmtHm=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
 const ds=d=>d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4):'-';
 const dur=(a,b)=>{const m=mn(b)-mn(a);return m>0?Math.floor(m/60)+'j '+m%60+'m':'0m'};
 const wk=d=>{const x=new Date(d+'T00:00');x.setDate(x.getDate()-(x.getDay()+6)%7);return iso(x)};
@@ -542,6 +604,8 @@ const cl="$('#dg').close()";
 
 function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
+function toggleFull(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{})}
+function cycleMk(dir){if(S.mk.length<2)return;const idx=S.mk.findIndex(x=>x.id==kk()),nxt=(idx+dir+S.mk.length)%S.mk.length;F.k=S.mk[nxt].id;render()}
 
 /* ===== Deteksi Foto Kampus Global (untuk latar & fallback mata kuliah) ===== */
 (()=>{
@@ -562,14 +626,13 @@ function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
   coba();
 })();
 
-/* ===== Dynamic Per-Course Image Loader (ganti gambar otomatis tiap ganti mata kuliah) ===== */
+/* ===== Dynamic Per-Course Image Loader ===== */
 function applyCourseVisual(c){
-  const imgEl=$('#hero-photo'),mediaEl=$('#hero-media'),hintEl=$('#hero-img-hint');
+  const imgEl=$('#hero-photo'),mediaEl=$('#hero-media');
   if(!imgEl||!mediaEl||!c)return;
   const key=String(c.id);
   const kodeClean=String(c.kode||'').trim();
   const namaSlug=slug(c.nama);
-  if(hintEl)hintEl.textContent=`img: ${kodeClean.toLowerCase()||namaSlug}.jpg`;
 
   const setPhoto=(url,isCustom)=>{
     if(!url){
@@ -802,7 +865,6 @@ const NAV_ICONS={
 function render(){
  $('#md').className='pill-st '+(adm?'lt':'');$('#md').textContent=adm?'Mode Admin':'Mode Lihat';
  $('#ab').textContent=adm?'Keluar':'Masuk Admin';
- // Urutan: 1 Dashboard, 2 Presensi, 3 Mata Kuliah, 4 Anggota, 5 Laporan, 6 Registrasi RFID (admin), 7 Pengaturan (admin)
  const P=[
    ['dash','Dashboard',0],
    ['att','Presensi',0],
@@ -828,6 +890,15 @@ const tl=(k,t)=>mn(t)>mn(k.mulai)+((k&&k.tol!=null&&k.tol!=='')?+k.tol:S.set.tol
 const nowm=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 function sesi(k){if(!k.mulai)return['no','Tanpa jadwal'];if(new Date().getDay()!=k.hari)return['no',DN[k.hari]];const n=nowm();return n<mn(k.mulai)?['lt','Akan dimulai']:n<=mn(k.selesai)?['ok','Berlangsung']:['no','Selesai']}
 function aktif(){if(S.set.auto){const n=nowm(),d=new Date().getDay(),k=S.mk.find(x=>x.mulai&&x.hari==d&&mn(x.mulai)<=n&&n<=mn(x.selesai));if(k)return k}return MK(S.set.ak)}
+
+function cutoffBadge(c){
+  if(!c||!c.mulai)return '';
+  const tol=(c.tol!=null&&c.tol!=='')?+c.tol:S.set.tol;
+  const cut=mn(c.mulai)+tol,hhmm=fmtHm(cut);
+  const isToday=new Date().getDay()==c.hari;
+  const passed=isToday&&nowm()>cut&&nowm()<=mn(c.selesai);
+  return `<span class="cutoff-chip mono ${passed?'late':''}">${passed?'Lewat batas: '+hhmm:'Batas tepat waktu: '+hhmm}</span>`;
+}
 
 function chart(a,k){
  const R=S.rec.filter(x=>x.mk==k),d=[...new Set(R.map(x=>x.tgl))].sort().slice(-7);
@@ -895,20 +966,31 @@ function vDash(){
        <div class="hero-media" id="hero-media" aria-hidden="true">
          <img class="hero-photo" id="hero-photo" alt="">
        </div>
-       <div>
-         <div class="hh">
-           <select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select>
-           <span class="b ${st[0]}">${st[1]}</span>
-           ${ak&&ak.id==k?'<span class="b lt">Sesi aktif</span>':''}
-           <span class="img-tag mono" id="hero-img-hint" title="Unggah gambar bernama kode mata kuliah (misal ${esc((c.kode||'').toLowerCase())}.jpg) ke repo GitHub untuk mengganti visual mata kuliah ini">img: ${esc((c.kode||slug(c.nama)).toLowerCase())}.jpg</span>
+       <div class="hero-top">
+         <div class="hero-left">
+           <div class="hh">
+             <select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select>
+             ${S.mk.length>1?`<button class="step-btn" onclick="cycleMk(-1)" title="Mata kuliah sebelumnya" aria-label="Mata kuliah sebelumnya">‹</button><button class="step-btn" onclick="cycleMk(1)" title="Mata kuliah berikutnya" aria-label="Mata kuliah berikutnya">›</button>`:''}
+             <span class="b ${st[0]}">${st[1]}</span>
+             ${ak&&ak.id==k?'<span class="b lt">Sesi aktif</span>':''}
+           </div>
+           <div class="hn">${esc(c.nama)}</div>
+           <div class="hm">
+             <span class="code-chip mono">${esc(c.kode)}</span>
+             <span>${jd(c)}</span>
+             ${cutoffBadge(c)}
+           </div>
+           <div id="live-clk">00:00:00</div>
+           <div class="clk-sub" id="clk-sub">WITA · Sinkronisasi presensi otomatis</div>
          </div>
-         <div class="hn">${esc(c.nama)}</div>
-         <div class="hm">
-           <span class="code-chip mono">${esc(c.kode)}</span>
-           <span>${jd(c)}</span>
+         <div class="hero-emblem-stage" aria-hidden="true">
+           <div class="hero-emblem-float">
+             <img src="./logo-polnes.png" alt="Logo Polnes" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+             <svg viewBox="0 0 100 116"><defs><linearGradient id="hPgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14805F"/><stop offset="1" stop-color="#063024"/></linearGradient><linearGradient id="hPgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EBD7A5"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#94722D"/></linearGradient></defs><path d="M50 4 92 18v38c0 28-18 46-42 56C26 102 8 84 8 56V18z" fill="url(#hPgE)" stroke="url(#hPgG)" stroke-width="4"/><g fill="url(#hPgG)"><path d="M50 30 70 38 50 46 30 38z"/><path d="M38 44v9c0 4 6 7 12 7s12-3 12-7v-9l-12 5z"/></g><text x="50" y="86" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="14" font-weight="800" fill="url(#hPgG)" letter-spacing="1.5">POLNES</text></svg>
+           </div>
+           <div class="hero-emblem-shadow"></div>
+           <span class="hero-emblem-cap">POLNES</span>
          </div>
-         <div id="live-clk">00:00:00</div>
-         <div class="clk-sub" id="clk-sub">WITA · Sinkronisasi presensi otomatis</div>
        </div>
        <div>
          <div class="bar"><i style="width:${pc}%"></i></div>
@@ -1001,7 +1083,7 @@ async function kor(i,del){
 }
 
 function vMk(){const a=aktif();
- return ctxBanner('KURIKULUM & JADWAL SESI','Manajemen Mata Kuliah','Atur jadwal perkuliahan, toleransi keterlambatan, dan sesi aktif perangkat RFID. Unggah gambar dengan nama kode mata kuliah (misal 2601.jpg) di GitHub untuk visual khusus per kelas.',
+ return ctxBanner('KURIKULUM & JADWAL SESI','Manajemen Mata Kuliah','Atur jadwal perkuliahan, toleransi keterlambatan, dan sesi aktif perangkat RFID.',
    `<svg width="110" height="64" viewBox="0 0 110 64" fill="none" stroke="#6EE7B7" stroke-width="1.6"><rect x="14" y="10" width="82" height="44" rx="8" stroke="#E8D4A2"/><line x1="34" y1="10" x2="34" y2="54"/><line x1="46" y1="24" x2="82" y2="24"/><line x1="46" y1="36" x2="74" y2="36"/></svg>`)+
  `<div class="rw">${adm?'<button class="btn p" onclick="kdlg()">Tambah mata kuliah</button>':''}<span class="mut">${S.mk.length} dari ${MAXK} mata kuliah</span></div><div class="card tw"><table><tr><th>Kode<th>Mata kuliah<th>Jadwal<th>Toleransi<th>Peserta<th>Sesi${adm?'<th>':''}</tr>`+(S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><strong>${esc(k.nama)}</strong><td>${jd(k)}<td class="mono">${k.tol==null||k.tol===''?S.set.tol:k.tol} mnt<td class="mono">${S.mem.filter(x=>(x.mk||[]).includes(k.id)).length}<td>${a&&a.id==k.id?'<span class="b lt">Aktif</span>':''}${adm?`<td><button class="lk" onclick="kdlg('${k.id}')">Ubah</button>${a&&a.id==k.id?'':`<button class="lk" onclick="akt('${k.id}')">Jadikan aktif</button>`}<button class="lk" onclick="khps('${k.id}')">Hapus</button>`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada mata kuliah</tr>')+'</table></div>'}
 
