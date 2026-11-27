@@ -150,22 +150,22 @@ h3{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 .bg-orb.two{width:380px;height:380px;bottom:-100px;right:12%;background:rgba(197,160,89,.18);animation-delay:-6s}
 @keyframes orbDrift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(28px,-18px,0) scale(1.08)}}
 
-/* ===== TOP COMMAND HEADER & ENRICHED NAVBAR ===== */
+/* ===== STREAMLINED SINGLE-ROW COMMAND HEADER & NAVBAR ===== */
 .cmd-header{
   position:sticky;top:0;z-index:40;
   background:var(--top-bg);
   -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
   border-bottom:1px solid var(--ln);
-  padding:calc(10px + env(safe-area-inset-top,0px)) 24px 10px;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 18px 8px;
 }
-.cmd-in{max-width:1340px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.cmd-in{max-width:1380px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
 
 /* Brand Block with Gentle Vertical Levitation */
-.brand-box{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{position:relative;width:44px;height:44px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;animation:navBob 4.2s ease-in-out infinite}
+.brand-box{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo{position:relative;width:40px;height:40px;perspective:500px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;animation:navBob 4.2s ease-in-out infinite}
 .logo:hover{animation-play-state:paused}
 @keyframes navBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5px)}}
-.lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:13px;overflow:hidden;background:radial-gradient(circle at 30% 25%,#FFFFFF,#E9F3EE);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .22s ease-out,box-shadow .25s;box-shadow:0 0 0 1.5px var(--gd),0 6px 14px -4px rgba(0,0,0,.45)}
+.lg3{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 30% 25%,#FFFFFF,#E9F3EE);transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .22s ease-out,box-shadow .25s;box-shadow:0 0 0 1.5px var(--gd),0 6px 14px -4px rgba(0,0,0,.45)}
 .logo:hover .lg3{box-shadow:0 0 0 1.5px #F2E2B8,0 0 18px rgba(16,185,129,.5)}
 .lg3 img,.lg3 .fb{width:78%;height:78%;object-fit:contain}
 .lg3 .fb{display:none}
@@ -174,29 +174,29 @@ h3{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 .logo.pulse .lg3{animation:pulse .45s ease-out}
 @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(.9)}75%{transform:scale(1.12)}100%{transform:scale(1)}}
 
-.brand-meta{display:flex;flex-direction:column;line-height:1.18}
-.brand-row{display:flex;align-items:center;gap:7px}
-.brand-title{font-size:15.5px;font-weight:800;letter-spacing:-.025em;color:var(--ink)}
+.brand-meta{display:flex;flex-direction:column;line-height:1.15}
+.brand-row{display:flex;align-items:center;gap:6px}
+.brand-title{font-size:14.5px;font-weight:800;letter-spacing:-.025em;color:var(--ink);white-space:nowrap}
 .brand-title em{background:var(--gdg);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
-.prodi-tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:6px;background:var(--okb);color:var(--ok);border:1px solid rgba(16,185,129,.25)}
-.brand-sub{font-size:11px;color:var(--mut);font-weight:500}
+.prodi-tag{font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:1.5px 6px;border-radius:5px;background:var(--okb);color:var(--ok);border:1px solid rgba(16,185,129,.25);white-space:nowrap}
+.brand-sub{font-size:10.5px;color:var(--mut);font-weight:500;white-space:nowrap}
 
-/* Enriched Center Capsule Navbar with Icons + Keycaps */
+/* Compact Capsule Navbar with Icons + Keycaps */
 nav#nv{
-  display:flex;align-items:center;gap:4px;padding:5px;
-  border-radius:16px;background:var(--pn-sub);
+  display:flex;align-items:center;gap:3px;padding:4px;
+  border-radius:14px;background:var(--pn-sub);
   border:1px solid var(--ln-strong);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 6px 18px -8px rgba(0,0,0,.22);
-  overflow-x:auto;scrollbar-width:none;max-width:100%;
+  overflow-x:auto;scrollbar-width:none;min-width:0;
 }
 nav#nv::-webkit-scrollbar{display:none}
 nav#nv button{
   background:transparent;border:1px solid transparent;color:var(--mut);
-  padding:7px 12px;border-radius:11px;font:inherit;font-size:13px;font-weight:600;
-  cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  padding:6px 9px;border-radius:10px;font:inherit;font-size:12.5px;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
   transition:background .2s,color .2s,border-color .2s,transform .18s;
 }
-nav#nv button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.85;flex-shrink:0}
+nav#nv button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.85;flex-shrink:0}
 nav#nv button:hover{color:var(--ink);background:rgba(16,185,129,.08);transform:translateY(-1px)}
 nav#nv button.on{
   color:var(--ink);background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(197,160,89,.12));
@@ -204,40 +204,49 @@ nav#nv button.on{
 }
 nav#nv button.on svg{color:var(--em);opacity:1}
 .kbd{
-  font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;
-  padding:1px 5px;border-radius:5px;background:rgba(128,150,140,.14);color:var(--mut);
-  border:1px solid var(--ln);line-height:1.35;
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;font-weight:600;
+  padding:1px 4px;border-radius:4px;background:rgba(128,150,140,.14);color:var(--mut);
+  border:1px solid var(--ln);line-height:1.3;
 }
 nav#nv button.on .kbd{background:var(--em);color:#032419;border-color:transparent}
 
 /* Header Right Telemetry & Controls */
-.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .pill-st{
-  display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;
-  font-size:12px;font-weight:600;background:var(--pn-sub);border:1px solid var(--ln);color:var(--mut);
+  display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:9px;
+  font-size:11.5px;font-weight:600;background:var(--pn-sub);border:1px solid var(--ln);color:var(--mut);white-space:nowrap;
 }
 .pill-st.ok{background:var(--okb);color:var(--ok);border-color:rgba(16,185,129,.28)}
 .pill-st.lt{background:var(--gdt);color:var(--gt);border-color:rgba(197,160,89,.32)}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#789085}
+.dot{display:inline-block;width:6.5px;height:6.5px;border-radius:50%;background:#789085}
 .dot.on{background:var(--em);animation:ping 2s infinite}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 6px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 
 .icon-btn{
-  display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:5px;padding:5.5px 9px;border-radius:9px;
   background:var(--pn-sub);border:1px solid var(--ln);color:var(--ink);
-  font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .2s,transform .18s;
+  font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:border-color .2s,transform .18s;
 }
 .icon-btn:hover{border-color:var(--em);transform:translateY(-1px)}
-.icon-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn svg{width:13.5px;height:13.5px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .gold-btn{
-  background:var(--gdg);color:#1E1504;border:0;border-radius:10px;padding:7px 14px;
-  font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+  background:var(--gdg);color:#1E1504;border:0;border-radius:9px;padding:6px 12px;
+  font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;
   box-shadow:0 6px 16px -6px rgba(197,160,89,.55);transition:filter .2s,transform .18s;
 }
 .gold-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
 
+/* ===== PROJECTOR / KIOSK FULLSCREEN VIEW ===== */
+#kiosk-exit{display:none}
+body.kiosk #md,body.kiosk #ab,body.kiosk #tm,body.kiosk #fs-enter{display:none}
+body.kiosk #kiosk-exit{display:inline-flex;border-color:var(--gd);background:var(--gdt);color:var(--gt)}
+body.kiosk .cmd-header{padding:10px 26px}
+body.kiosk main{max-width:1540px;padding:26px 28px 46px}
+body.kiosk .hn{font-size:clamp(32px,3.8vw,44px)}
+body.kiosk #live-clk{font-size:clamp(32px,3.5vw,42px)}
+
 /* ===== MAIN WORKSPACE ===== */
-main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-index:1}
+main{max-width:1380px;margin:0 auto;padding:20px 22px 42px;position:relative;z-index:1}
 #v{view-transition-name:pgv}
 #v.pe{animation:pageEnter .36s cubic-bezier(.2,.7,.2,1) backwards}
 @keyframes pageEnter{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
@@ -400,7 +409,7 @@ main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-i
 .cursor-blk{display:inline-block;width:7px;height:13px;background:#34D399;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 
-/* LIVE TAP MONITOR CARD */
+/* MULTI-TAP FEED LIVE MONITOR */
 .tap-card{
   background:var(--pn);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   border:1px solid var(--ln);border-radius:16px;padding:18px;box-shadow:var(--sh);
@@ -411,10 +420,34 @@ main{max-width:1340px;margin:0 auto;padding:22px 24px 42px;position:relative;z-i
   border:1px dashed var(--ln-strong);border-radius:12px;padding:14px;
   background:var(--in);color:var(--mut);font-size:12.5px;line-height:1.5;
 }
+.tap-stack{display:grid;gap:8px}
 .tap-hit{
-  border-radius:12px;padding:14px 16px;
+  border-radius:12px;padding:13px 15px;
   background:linear-gradient(135deg,#0B563F,#063024);color:#fff;
-  border:1px solid rgba(232,212,162,.45);animation:pop .32s ease-out;
+  border:1px solid rgba(232,212,162,.5);animation:pop .32s ease-out;
+}
+.tap-prev{
+  border-radius:10px;padding:9px 12px;
+  background:var(--in);border:1px solid var(--ln);
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  transition:border-color .2s;
+}
+.tap-prev:hover{border-color:var(--ln-strong)}
+.tap-rel{font-family:"JetBrains Mono",monospace;font-size:10.5px;opacity:.82}
+
+/* MICRO PROGRESS BAR FOR REPORT ATTENDANCE THRESHOLDS */
+.pct-cell{display:flex;align-items:center;gap:8px}
+.mbar{width:54px;height:6px;border-radius:99px;background:var(--ln);overflow:hidden;flex-shrink:0}
+.mbar i{display:block;height:100%;border-radius:99px;transition:width .45s ease}
+.mbar i.ok{background:var(--em)}
+.mbar i.lt{background:var(--gd)}
+.mbar i.er{background:#E11D48}
+
+/* CONFIRMATION DIALOG CALLOUT */
+.cfm-box{
+  margin:10px 0 4px;padding:10px 12px;border-radius:10px;
+  background:var(--in);border:1px solid var(--ln-strong);
+  font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--mut);
 }
 
 /* CONTEXTUAL SUBPAGE BANNER */
@@ -466,9 +499,11 @@ tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--em)}
 .btn.p{background:linear-gradient(135deg,#0E6B4F 0%,#063B2B 100%);border-color:transparent;color:#fff}
 .btn.p:hover{filter:brightness(1.08)}
 .btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
-.btn.er{color:var(--er);border-color:var(--er)}
+.btn.er{background:var(--er);color:#fff;border-color:transparent}
+.btn.er:hover{filter:brightness(1.08)}
 .lk{background:none;border:0;color:var(--em-deep);cursor:pointer;font:inherit;font-weight:600;padding:0 6px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .2s}
 .lk:hover{text-decoration-color:currentColor}
+.lk.er{color:var(--er)}
 
 :focus-visible{outline:2px solid var(--em);outline-offset:2px}
 label{display:block;margin-top:10px;font-size:12px;font-weight:600;color:var(--mut)}
@@ -507,9 +542,12 @@ dialog[open]::backdrop{animation:fade .2s ease-out}
 svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media(max-width:1060px){
+@media(max-width:1180px){
+  .brand-sub,.kbd{display:none}
+}
+@media(max-width:1020px){
   .cmd-grid{grid-template-columns:1fr}
-  .cmd-in{justify-content:center}
+  .cmd-in{flex-wrap:wrap;justify-content:center}
   .brand-box{margin-right:auto}
 }
 @media(max-width:740px){
@@ -556,10 +594,14 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
     <nav id="nv" aria-label="Navigasi utama"></nav>
 
     <div class="hdr-right">
-      <span class="pill-st ok" id="sync-st"><span class="dot on"></span>Realtime Terhubung</span>
+      <span class="pill-st ok" id="sync-st"><span class="dot on"></span>Realtime</span>
       <span class="pill-st" id="md"></span>
-      <button class="icon-btn" onclick="toggleFull()" title="Layar penuh untuk tampilan monitor kelas">
+      <button class="icon-btn" id="fs-enter" onclick="toggleFull()" title="Mode Proyektor / Layar Penuh">
         <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+      <button class="icon-btn" id="kiosk-exit" onclick="toggleFull()" title="Keluar dari Mode Proyektor">
+        <svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+        <span>Keluar Proyektor</span>
       </button>
       <button class="icon-btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema terang / gelap">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -581,8 +623,8 @@ const SUPABASE_URL = 'https://muwlrysxpuygrinrnere.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0};
-let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTap=null,tapTmr=null;
+const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0,rawan:false};
+let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTaps=[],_cfmCb=null;
 let campusFallbackUrl='',courseImgCache={};
 let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,ak:'',auto:1}};
 
@@ -604,8 +646,45 @@ const cl="$('#dg').close()";
 
 function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
-function toggleFull(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{})}
+
+function confirmDlg({title,msg,detail,okLabel='Ya, Lanjutkan',danger=true,onOk}){
+  _cfmCb=onOk;
+  dlg(`
+    <h3>${esc(title)}</h3>
+    <p style="margin:6px 0 8px;color:var(--ink);font-size:13.5px">${esc(msg)}</p>
+    ${detail?`<div class="cfm-box">${esc(detail)}</div>`:''}
+    <div class="ac">
+      <button class="btn" onclick="${cl}">Batal</button>
+      <button class="btn ${danger?'er':'p'}" onclick="$('#dg').close();if(_cfmCb)_cfmCb()">${esc(okLabel)}</button>
+    </div>
+  `);
+}
+
+function syncKioskState(){
+  document.body.classList.toggle('kiosk',!!document.fullscreenElement);
+}
+document.addEventListener('fullscreenchange',syncKioskState);
+function toggleFull(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().then(syncKioskState).catch(()=>{
+      document.body.classList.toggle('kiosk');
+    });
+  }else{
+    document.exitFullscreen().then(syncKioskState).catch(()=>{
+      document.body.classList.remove('kiosk');
+    });
+  }
+}
+
 function cycleMk(dir){if(S.mk.length<2)return;const idx=S.mk.findIndex(x=>x.id==kk()),nxt=(idx+dir+S.mk.length)%S.mk.length;F.k=S.mk[nxt].id;render()}
+
+function relTime(ts){
+  const sec=Math.max(0,Math.floor((Date.now()-ts)/1000));
+  if(sec<5)return 'Baru saja';
+  if(sec<60)return `${sec} dtk lalu`;
+  const min=Math.floor(sec/60);
+  return min<60?`${min} mnt lalu`:`${Math.floor(min/60)} jam lalu`;
+}
 
 /* ===== Deteksi Foto Kampus Global (untuk latar & fallback mata kuliah) ===== */
 (()=>{
@@ -816,11 +895,19 @@ function setupRealtime(){
       if((payload.eventType==='INSERT'||payload.eventType==='UPDATE')&&row){
         const m=M(row.anggota_id),c=MK(row.mata_kuliah_id);
         const tipe=row.pulang?'Pulang':'Masuk',jam=(row.pulang||row.masuk||'').slice(0,5);
-        liveTap={nama:m?m.nama:'Mahasiswa',nim:m?m.nim:'',kelas:m?m.kelas:'',mk:c?c.nama:'',waktu:jam,tipe,status:row.status||'Hadir'};
-        clearTimeout(tapTmr);
-        tapTmr=setTimeout(()=>{liveTap=null;if(page==='dash')render()},12000);
+        const tapItem={
+          nama:m?m.nama:'Mahasiswa',
+          nim:m?m.nim:'',
+          kelas:m?m.kelas:'',
+          mk:c?c.kode:'',
+          waktu:jam,
+          tipe,
+          status:row.status||'Hadir',
+          ts:Date.now()
+        };
+        liveTaps=[tapItem,...liveTaps].slice(0,3);
         if(page==='dash')render();
-        toast(`${liveTap.nama} — ${tipe} ${jam} (${liveTap.status})`,'ok');
+        toast(`${tapItem.nama} — ${tipe} ${jam} (${tapItem.status})`,'ok');
       }
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'anggota'},()=>loadAll(0))
@@ -837,17 +924,26 @@ function setupRealtime(){
 }
 
 function updateClock(){
-  const el=$('#live-clk'),sub=$('#clk-sub');if(!el)return;
-  const d=new Date(),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');
-  el.textContent=`${hh}:${mm}:${ss}`;
-  if(sub){
-    const c=MK(kk());let extra='WITA · Sinkronisasi presensi otomatis';
-    if(c&&c.mulai&&d.getDay()==c.hari){
-      const n=d.getHours()*60+d.getMinutes(),s=mn(c.mulai),e=mn(c.selesai);
-      if(n>=s&&n<=e)extra=`Sesi berlangsung · Sisa waktu ${e-n} menit`;
-      else if(n<s)extra=`Dimulai dalam ${s-n} menit`;
+  const el=$('#live-clk'),sub=$('#clk-sub');
+  if(el){
+    const d=new Date(),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');
+    el.textContent=`${hh}:${mm}:${ss}`;
+    if(sub){
+      const c=MK(kk());let extra='WITA · Sinkronisasi presensi otomatis';
+      if(c&&c.mulai&&d.getDay()==c.hari){
+        const n=d.getHours()*60+d.getMinutes(),s=mn(c.mulai),e=mn(c.selesai);
+        if(n>=s&&n<=e)extra=`Sesi berlangsung · Sisa waktu ${e-n} menit`;
+        else if(n<s)extra=`Dimulai dalam ${s-n} menit`;
+      }
+      sub.textContent=extra;
     }
-    sub.textContent=extra;
+  }
+  document.querySelectorAll('.tap-rel[data-ts]').forEach(t=>{
+    t.textContent=relTime(+t.dataset.ts);
+  });
+  const tapBox=$('#tap-card-box');
+  if(tapBox&&liveTaps.length){
+    tapBox.classList.toggle('active',Date.now()-liveTaps[0].ts<15000);
   }
 }
 setInterval(updateClock,1000);
@@ -863,7 +959,7 @@ const NAV_ICONS={
 };
 
 function render(){
- $('#md').className='pill-st '+(adm?'lt':'');$('#md').textContent=adm?'Mode Admin':'Mode Lihat';
+ $('#md').className='pill-st '+(adm?'lt':'');$('#md').textContent=adm?'Admin':'Lihat';
  $('#ab').textContent=adm?'Keluar':'Masuk Admin';
  const P=[
    ['dash','Dashboard',0],
@@ -914,7 +1010,7 @@ function recent(k){
 
 function rightTelemetryConsole(k,c){
  const di=devInfo(),ak=aktif(),sesiKode=(c&&c.kode)||(ak&&ak.kode)||'—';
- const tap=liveTap;
+ const isFresh=liveTaps.length&&(Date.now()-liveTaps[0].ts<15000);
  return `<div class="col-side">
    <section class="term-card">
      <div class="term-hd">
@@ -932,20 +1028,37 @@ function rightTelemetryConsole(k,c){
      </div>
    </section>
 
-   <section class="tap-card ${tap?'active':''}">
+   <section id="tap-card-box" class="tap-card ${isFresh?'active':''}">
      <div class="hr" style="justify-content:space-between;margin-bottom:10px">
        <h3 style="margin:0">Live Tap Monitor</h3>
-       <span class="b ${tap?'ok':'no'}">${tap?'Kartu Terdeteksi':'Menunggu'}</span>
+       <div class="hr" style="gap:6px">
+         ${liveTaps.length?`<button class="lk" style="font-size:11.5px" onclick="liveTaps=[];render()">Bersihkan</button>`:''}
+         <span class="b ${liveTaps.length?'ok':'no'}">${liveTaps.length?liveTaps.length+' Terbaru':'Menunggu'}</span>
+       </div>
      </div>
-     ${tap
-       ?`<div class="tap-hit">
-           <div style="font-size:16px;font-weight:700;margin-bottom:4px">${esc(tap.nama)}</div>
-           <div class="hr" style="justify-content:space-between;font-size:12px;opacity:.9">
-             <span class="mono">${esc(tap.nim||'POLNES')} · ${esc(tap.tipe)} ${esc(tap.waktu)}</span>
-             ${bd(tap.status)}
-           </div>
+     ${liveTaps.length
+       ?`<div class="tap-stack">
+           ${liveTaps.map((tap,idx)=>idx===0
+             ?`<div class="tap-hit">
+                 <div class="hr" style="justify-content:space-between;margin-bottom:4px">
+                   <strong style="font-size:15.5px">${esc(tap.nama)}</strong>
+                   <span class="tap-rel" data-ts="${tap.ts}">${relTime(tap.ts)}</span>
+                 </div>
+                 <div class="hr" style="justify-content:space-between;font-size:12px;opacity:.92">
+                   <span class="mono">${esc(tap.nim||'POLNES')} · ${esc(tap.tipe)} ${esc(tap.waktu)}</span>
+                   ${bd(tap.status)}
+                 </div>
+               </div>`
+             :`<div class="tap-prev">
+                 <div style="min-width:0">
+                   <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(tap.nama)}</div>
+                   <div class="mut mono" style="font-size:11px">${esc(tap.tipe)} ${esc(tap.waktu)} · <span class="tap-rel" data-ts="${tap.ts}">${relTime(tap.ts)}</span></div>
+                 </div>
+                 ${bd(tap.status)}
+               </div>`
+           ).join('')}
          </div>`
-       :`<div class="tap-idle">Tempelkan kartu pada pembaca. Data presensi baru akan muncul di sini secara langsung.</div>`
+       :`<div class="tap-idle">Tempelkan kartu pada pembaca. Hingga 3 pemindaian terbaru akan muncul berurutan di sini secara langsung.</div>`
      }
    </section>
 
@@ -1026,11 +1139,15 @@ function ctxBanner(kicker,title,desc,svg){
   return `<div class="ctx-banner"><div class="ctx-txt"><div class="ctx-kicker">${esc(kicker)}</div><h2 class="ctx-title">${esc(title)}</h2><p class="ctx-desc">${esc(desc)}</p></div><div class="ctx-art" aria-hidden="true">${svg}</div></div>`;
 }
 
+function hasAttFilter(){return !!(F.q||F.f||F.d||F.s||F.o!=='t')}
+function resetAttFilter(){F.q='';F.f='';F.d='';F.s='';F.o='t';F.p=0;render()}
+
 function tbl(){
  let r=S.rec.map((x,i)=>({...x,i,m:M(x.id)||{},c:MK(x.mk)||{}}));const q=F.q.toLowerCase();
  r=r.filter(x=>(!F.f||x.mk==F.f)&&(!q||(x.m.nama||'').toLowerCase().includes(q)||(x.m.nim||'').includes(q)||(adm&&(x.m.uid||'').toLowerCase().includes(q)))&&(!F.d||x.tgl==F.d)&&(!F.s||x.st==F.s));
  r.sort((a,b)=>F.o=='n'?(a.m.nama||'').localeCompare(b.m.nama||''):(b.tgl+b.ms).localeCompare(a.tgl+a.ms));
  const n=Math.max(1,Math.ceil(r.length/10));F.p=Math.min(F.p,n-1);
+ const rb=$('#att-rst');if(rb)rb.style.display=hasAttFilter()?'inline-flex':'none';
  return `<div class="tw"><table><tr><th>Tanggal<th>Mata kuliah<th>Nama<th>NIM<th>Masuk<th>Pulang<th>Durasi<th>Status${adm?'<th>':''}</tr>`+
  (r.slice(F.p*10,F.p*10+10).map(x=>`<tr><td class="mono">${ds(x.tgl)}<td class="mono">${esc(x.c.kode||'-')}<td><strong>${esc(x.m.nama||'-')}</strong><td class="mono">${esc(x.m.nim||'-')}<td class="mono">${x.ms}<td class="mono">${x.pl||'—'}<td class="mono">${x.pl?dur(x.ms,x.pl):'—'}<td>${bd(x.st)}${adm?`<td><button class="lk" onclick="koreksi(${x.i})">Koreksi</button>`:''}</tr>`).join('')||`<tr><td colspan="9">Belum ada catatan presensi</tr>`)+
  `</table></div>`+pgn(r.length,F.p,n,'ap')}
@@ -1043,7 +1160,7 @@ function pnl(){const k=aktif();if(!k)return `<div class="card"><h3>Input presens
 function vAtt(){const u="F.p=0;$('#tb').innerHTML=tbl()";
  return ctxBanner('LOG KEHADIRAN · REALTIME','Riwayat & Pencatatan Presensi','Filter catatan masuk-pulang mahasiswa berdasarkan mata kuliah, tanggal, status kehadiran, atau unduh laporan CSV.',
    `<svg width="110" height="64" viewBox="0 0 110 64" fill="none" stroke="#6EE7B7" stroke-width="1.6"><rect x="8" y="8" width="94" height="48" rx="10" stroke="#E8D4A2"/><path d="M24 32l10 10 20-20" stroke-width="2.2"/><line x1="64" y1="25" x2="88" y2="25"/><line x1="64" y1="39" x2="82" y2="39"/></svg>`)+
- `<div class="rw"><input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.q)}" oninput="F.q=this.value;${u}"><select onchange="F.f=this.value;${u}">${kopt(F.f,1)}</select><input type="date" value="${F.d}" onchange="F.d=this.value;${u}"><select onchange="F.s=this.value;${u}"><option value="">Semua status<option ${F.s=='Hadir'?'selected':''}>Hadir<option ${F.s=='Terlambat'?'selected':''}>Terlambat</select><select onchange="F.o=this.value;${u}"><option value="t">Terbaru<option value="n" ${F.o=='n'?'selected':''}>Nama A–Z</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div><div class="card" id="tb">${tbl()}</div>`+(adm?pnl():'')}
+ `<div class="rw"><input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.q)}" oninput="F.q=this.value;${u}"><select onchange="F.f=this.value;${u}">${kopt(F.f,1)}</select><input type="date" value="${F.d}" onchange="F.d=this.value;${u}"><select onchange="F.s=this.value;${u}"><option value="">Semua status<option ${F.s=='Hadir'?'selected':''}>Hadir<option ${F.s=='Terlambat'?'selected':''}>Terlambat</select><select onchange="F.o=this.value;${u}"><option value="t">Terbaru<option value="n" ${F.o=='n'?'selected':''}>Nama A–Z</select><button id="att-rst" class="btn" style="display:${hasAttFilter()?'inline-flex':'none'}" onclick="resetAttFilter()">Reset Filter</button>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div><div class="card" id="tb">${tbl()}</div>`+(adm?pnl():'')}
 
 async function manual(){
  const m=M($('#sm').value),t=$('#st').value,c=aktif(),td=TD();
@@ -1085,7 +1202,7 @@ async function kor(i,del){
 function vMk(){const a=aktif();
  return ctxBanner('KURIKULUM & JADWAL SESI','Manajemen Mata Kuliah','Atur jadwal perkuliahan, toleransi keterlambatan, dan sesi aktif perangkat RFID.',
    `<svg width="110" height="64" viewBox="0 0 110 64" fill="none" stroke="#6EE7B7" stroke-width="1.6"><rect x="14" y="10" width="82" height="44" rx="8" stroke="#E8D4A2"/><line x1="34" y1="10" x2="34" y2="54"/><line x1="46" y1="24" x2="82" y2="24"/><line x1="46" y1="36" x2="74" y2="36"/></svg>`)+
- `<div class="rw">${adm?'<button class="btn p" onclick="kdlg()">Tambah mata kuliah</button>':''}<span class="mut">${S.mk.length} dari ${MAXK} mata kuliah</span></div><div class="card tw"><table><tr><th>Kode<th>Mata kuliah<th>Jadwal<th>Toleransi<th>Peserta<th>Sesi${adm?'<th>':''}</tr>`+(S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><strong>${esc(k.nama)}</strong><td>${jd(k)}<td class="mono">${k.tol==null||k.tol===''?S.set.tol:k.tol} mnt<td class="mono">${S.mem.filter(x=>(x.mk||[]).includes(k.id)).length}<td>${a&&a.id==k.id?'<span class="b lt">Aktif</span>':''}${adm?`<td><button class="lk" onclick="kdlg('${k.id}')">Ubah</button>${a&&a.id==k.id?'':`<button class="lk" onclick="akt('${k.id}')">Jadikan aktif</button>`}<button class="lk" onclick="khps('${k.id}')">Hapus</button>`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada mata kuliah</tr>')+'</table></div>'}
+ `<div class="rw">${adm?'<button class="btn p" onclick="kdlg()">Tambah mata kuliah</button>':''}<span class="mut">${S.mk.length} dari ${MAXK} mata kuliah</span></div><div class="card tw"><table><tr><th>Kode<th>Mata kuliah<th>Jadwal<th>Toleransi<th>Peserta<th>Sesi${adm?'<th>':''}</tr>`+(S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><strong>${esc(k.nama)}</strong><td>${jd(k)}<td class="mono">${k.tol==null||k.tol===''?S.set.tol:k.tol} mnt<td class="mono">${S.mem.filter(x=>(x.mk||[]).includes(k.id)).length}<td>${a&&a.id==k.id?'<span class="b lt">Aktif</span>':''}${adm?`<td><button class="lk" onclick="kdlg('${k.id}')">Ubah</button>${a&&a.id==k.id?'':`<button class="lk" onclick="akt('${k.id}')">Jadikan aktif</button>`}<button class="lk er" onclick="khps('${k.id}')">Hapus</button>`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada mata kuliah</tr>')+'</table></div>'}
 
 function kdlg(id){const k=id?MK(id):{kode:'',nama:'',hari:1,mulai:'08:00',selesai:'09:40',tol:''};
  dlg(`<h3>${id?'Ubah':'Tambah'} mata kuliah</h3><label>Kode<input id="k1" maxlength="12" value="${esc(k.kode)}"></label><label>Nama mata kuliah<input id="k2" maxlength="80" value="${esc(k.nama)}"></label><label>Hari<select id="k3">${[1,2,3,4,5,6,0].map(d=>`<option value="${d}" ${d==(k.hari==null?1:k.hari)?'selected':''}>${DN[d]}</option>`).join('')}</select></label><div class="rw"><label>Jam mulai<input type="time" id="k4" value="${k.mulai||'08:00'}"></label><label>Jam selesai<input type="time" id="k5" value="${k.selesai||'09:40'}"></label></div><label>Toleransi terlambat (menit). Kosongkan untuk mengikuti pengaturan umum<input type="number" min="0" id="k6" value="${k.tol==null?'':k.tol}"></label><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="ksim('${id||''}')">Simpan</button></div>`)}
@@ -1107,20 +1224,30 @@ async function akt(id){
  toast('Sesi aktif diperbarui','ok');await loadAll(0);
 }
 
-async function khps(id){
+function khps(id){
+ const k=MK(id);if(!k)return;
  if(S.rec.some(x=>x.mk==id)){toast('Mata kuliah memiliki data presensi dan tidak dapat dihapus','er');return}
- const {error}=await sb.from('mata_kuliah').delete().eq('id',id);
- if(error){toast('Gagal menghapus: '+error.message,'er');return}
- toast('Mata kuliah dihapus','ok');await loadAll(0);
+ confirmDlg({
+   title:'Hapus Mata Kuliah',
+   msg:`Yakin ingin menghapus mata kuliah "${k.nama}" dari daftar?`,
+   detail:`Kode: ${k.kode} · Jadwal: ${jd(k)}`,
+   okLabel:'Ya, Hapus',
+   onOk:async()=>{
+     const {error}=await sb.from('mata_kuliah').delete().eq('id',id);
+     if(error){toast('Gagal menghapus: '+error.message,'er');return}
+     toast('Mata kuliah dihapus','ok');await loadAll(0);
+   }
+ });
 }
 
 function mtbl(){const q=F.mq.toLowerCase(),r=S.mem.filter(m=>!q||m.nama.toLowerCase().includes(q)||m.nim.includes(q)||(adm&&m.uid.toLowerCase().includes(q))),n=Math.max(1,Math.ceil(r.length/20));F.mp=Math.min(F.mp,n-1);
- return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td><strong>${esc(m.nama)}</strong><td class="mono">${esc(m.nim)}<td>${esc(m.kelas)}<td class="mono">${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut mono">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
+ const rb=$('#mem-rst');if(rb)rb.style.display=F.mq?'inline-flex':'none';
+ return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td><strong>${esc(m.nama)}</strong><td class="mono">${esc(m.nim)}<td>${esc(m.kelas)}<td class="mono">${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut mono">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk er" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
 function mpg(d){F.mp+=d;$('#mt').innerHTML=mtbl()}
 function vMem(){
  return ctxBanner('DIREKTORI MAHASISWA · KTM','Data Anggota & Kepemilikan Kartu','Kelola daftar mahasiswa, penetapan kelas mata kuliah, impor massal dari spreadsheet, serta status kartu RFID terhubung.',
    `<svg width="110" height="64" viewBox="0 0 110 64" fill="none" stroke="#6EE7B7" stroke-width="1.6"><circle cx="38" cy="24" r="10" stroke="#E8D4A2"/><path d="M18 52c2-11 10-16 20-16s18 5 20 16"/><circle cx="74" cy="26" r="8"/><path d="M62 50c1.5-8 7-12 14-12s12 4 14 12"/></svg>`)+
- `<div class="rw">${adm?'<button class="btn p" onclick="mdlg()">Tambah anggota</button><button class="btn" onclick="imp()">Impor daftar</button>':''}<input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.mq)}" oninput="F.mq=this.value;F.mp=0;$('#mt').innerHTML=mtbl()"><span class="mut">${fmt(S.mem.length)} dari ${fmt(MAXM)} anggota</span></div><div class="card" id="mt">${mtbl()}</div>`}
+ `<div class="rw">${adm?'<button class="btn p" onclick="mdlg()">Tambah anggota</button><button class="btn" onclick="imp()">Impor daftar</button>':''}<input placeholder="Cari nama, NIM${adm?', UID':''} (tekan /)" value="${esc(F.mq)}" oninput="F.mq=this.value;F.mp=0;$('#mt').innerHTML=mtbl()"><button id="mem-rst" class="btn" style="display:${F.mq?'inline-flex':'none'}" onclick="F.mq='';F.mp=0;render()">Reset Filter</button><span class="mut">${fmt(S.mem.length)} dari ${fmt(MAXM)} anggota</span></div><div class="card" id="mt">${mtbl()}</div>`}
 
 function mdlg(id){const m=id?M(id):{nama:'',nim:'',kelas:'',mk:[]};
  dlg(`<h3>${id?'Ubah':'Tambah'} anggota</h3><label>Nama lengkap<input id="f1" maxlength="80" value="${esc(m.nama)}"></label><label>NIM<input id="f2" maxlength="12" value="${esc(m.nim)}" ${id?'readonly':''}></label><label>Kelas<input id="f3" maxlength="20" value="${esc(m.kelas)}"></label><label>Mata kuliah yang diikuti</label><div class="cb">${S.mk.map(k=>`<label><input type="checkbox" class="mkc" value="${k.id}" ${(m.mk||[]).includes(k.id)?'checked':''}> ${esc(k.nama)} (${esc(k.kode)})</label>`).join('')||'<span class="mut">Belum ada mata kuliah</span>'}</div><div class="ac"><button class="btn" onclick="${cl}">Batal</button><button class="btn p" onclick="simM('${id||''}')">Simpan</button></div>`)}
@@ -1168,12 +1295,21 @@ async function tg(id){
  toast('Status anggota diperbarui','ok');await loadAll(0);
 }
 
-async function cabut(id){
- const m=M(id),oldUid=m.uid;
- const {error}=await sb.from('anggota').update({uid_kartu:null}).eq('id',id);
- if(error){toast('Gagal mencabut kartu: '+error.message,'er');return}
- await sb.from('riwayat_kartu').insert({anggota_id:id,uid:oldUid,hasil:'Kartu dicabut'});
- toast('Kartu dicabut dari '+m.nama,'ok');await loadAll(0);
+function cabut(id){
+ const m=M(id);if(!m||!m.uid)return;
+ const oldUid=m.uid;
+ confirmDlg({
+   title:'Cabut Kartu RFID',
+   msg:`Cabut akses kartu RFID dari mahasiswa ${m.nama}? Mahasiswa tidak dapat memindai presensi sampai kartu baru didaftarkan.`,
+   detail:`NIM: ${m.nim} · UID Kartu: ${oldUid}`,
+   okLabel:'Ya, Cabut Kartu',
+   onOk:async()=>{
+     const {error}=await sb.from('anggota').update({uid_kartu:null}).eq('id',id);
+     if(error){toast('Gagal mencabut kartu: '+error.message,'er');return}
+     await sb.from('riwayat_kartu').insert({anggota_id:id,uid:oldUid,hasil:'Kartu dicabut'});
+     toast('Kartu dicabut dari '+m.nama,'ok');await loadAll(0);
+   }
+ });
 }
 
 function vRep(){
@@ -1181,12 +1317,45 @@ function vRep(){
  const k=kk(),p=F.r,key=d=>p=='h'?d:p=='b'?d.slice(0,7):wk(d),g={},R=S.rec.filter(x=>x.mk==k);
  R.forEach(x=>{const q=key(x.tgl);g[q]=g[q]||[0,0];g[q][x.st=='Terlambat'?1:0]++});
  const days=new Set(R.map(x=>x.tgl)).size||1;
- const pm=S.mem.filter(m=>m.aktif&&(m.mk||[]).includes(k)).map(m=>{const r=R.filter(x=>x.id==m.id);return[m.nama,r.length,r.filter(x=>x.st=='Terlambat').length,Math.round(r.length/days*100)]}).sort((a,b)=>b[3]-a[3]).slice(0,50);
- return ctxBanner('ANALITIK & REKAPITULASI','Laporan Kehadiran Perkuliahan','Evaluasi persentase kehadiran per mahasiswa maupun rekap periode harian, mingguan, dan bulanan siap ekspor.',
+ const allPm=S.mem.filter(m=>m.aktif&&(m.mk||[]).includes(k)).map(m=>{
+   const r=R.filter(x=>x.id==m.id);
+   const pct=Math.round(r.length/days*100);
+   return{nama:m.nama,nim:m.nim,hadir:r.length,telat:r.filter(x=>x.st=='Terlambat').length,pct};
+ });
+ allPm.sort((a,b)=>F.rawan?(a.pct-b.pct||a.nama.localeCompare(b.nama)):(b.pct-a.pct||a.nama.localeCompare(b.nama)));
+ const cntAman=allPm.filter(x=>x.pct>=80).length;
+ const cntWaspada=allPm.filter(x=>x.pct>=70&&x.pct<80).length;
+ const cntKritis=allPm.filter(x=>x.pct<70).length;
+ const cntRawan=cntWaspada+cntKritis;
+ const pm=(F.rawan?allPm.filter(x=>x.pct<80):allPm).slice(0,50);
+
+ return ctxBanner('ANALITIK & REKAPITULASI','Laporan Kehadiran Perkuliahan','Evaluasi persentase kehadiran per mahasiswa, pantau status batas akademik (< 80%), maupun rekap harian, mingguan, dan bulanan.',
    `<svg width="110" height="64" viewBox="0 0 110 64" fill="none" stroke="#6EE7B7" stroke-width="1.6"><line x1="12" y1="54" x2="98" y2="54"/><rect x="22" y="34" width="12" height="20" rx="2" fill="rgba(16,185,129,.25)"/><rect x="44" y="20" width="12" height="34" rx="2" stroke="#E8D4A2" fill="rgba(197,160,89,.25)"/><rect x="66" y="12" width="12" height="42" rx="2" fill="rgba(16,185,129,.35)"/></svg>`)+
- `<div class="rw"><select onchange="F.k=this.value;render()">${kopt(k)}</select><select onchange="F.r=this.value;render()"><option value="h" ${p=='h'?'selected':''}>Rekap harian<option value="m" ${p=='m'?'selected':''}>Rekap mingguan<option value="b" ${p=='b'?'selected':''}>Rekap bulanan</select>${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}</div>
- <div class="two"><div class="card tw"><h3>${p=='m'?'Rekap per minggu (mulai)':'Rekap per periode'}</h3><table><tr><th>Periode<th>Tepat waktu<th>Terlambat</tr>${Object.keys(g).sort().reverse().slice(0,12).map(q=>`<tr><td class="mono">${p=='b'?q:ds(q)}<td class="mono">${g[q][0]}<td class="mono">${g[q][1]}</tr>`).join('')||'<tr><td colspan="3">Belum ada data</tr>'}</table></div>
- <div class="card tw"><h3>Kehadiran per anggota</h3><p class="mut">Dari ${days} pertemuan tercatat, 50 teratas</p><table><tr><th>Nama<th>Hadir<th>Terlambat<th>%</tr>${pm.map(x=>`<tr><td><strong>${esc(x[0])}</strong><td class="mono">${x[1]}<td class="mono">${x[2]}<td class="mono">${x[3]}%</tr>`).join('')||'<tr><td colspan="4">Belum ada peserta</tr>'}</table></div></div>`}
+ `<div class="rw">
+   <select onchange="F.k=this.value;render()">${kopt(k)}</select>
+   <select onchange="F.r=this.value;render()"><option value="h" ${p=='h'?'selected':''}>Rekap harian<option value="m" ${p=='m'?'selected':''}>Rekap mingguan<option value="b" ${p=='b'?'selected':''}>Rekap bulanan</select>
+   <button class="btn ${F.rawan?'p':''}" onclick="F.rawan=!F.rawan;render()">${F.rawan?'✓ Rawan Saja (< 80%)':'Tampilkan Rawan Saja (< 80%)'} (${cntRawan})</button>
+   ${adm||S.set.dl?'<button class="btn" onclick="ex()">Ekspor CSV</button>':''}
+ </div>
+ <div class="two">
+   <div class="card tw"><h3>${p=='m'?'Rekap per minggu (mulai)':'Rekap per periode'}</h3><table><tr><th>Periode<th>Tepat waktu<th>Terlambat</tr>${Object.keys(g).sort().reverse().slice(0,12).map(q=>`<tr><td class="mono">${p=='b'?q:ds(q)}<td class="mono">${g[q][0]}<td class="mono">${g[q][1]}</tr>`).join('')||'<tr><td colspan="3">Belum ada data</tr>'}</table></div>
+   <div class="card tw">
+     <div class="hr" style="justify-content:space-between;margin-bottom:6px">
+       <h3 style="margin:0">Kehadiran per anggota</h3>
+       <div class="hr" style="gap:6px">
+         <span class="b ok">Aman ${cntAman}</span>
+         <span class="b lt">Waspada ${cntWaspada}</span>
+         <span class="b er">Kritis ${cntKritis}</span>
+       </div>
+     </div>
+     <p class="mut" style="margin-top:0">Dari ${days} pertemuan tercatat · Ambang batas aman ≥ 80%</p>
+     <table><tr><th>Nama<th>Hadir<th>Telat<th>Persentase<th>Status</tr>${pm.map(x=>{
+       const stCls=x.pct>=80?'ok':x.pct>=70?'lt':'er';
+       const stLbl=x.pct>=80?'Aman':x.pct>=70?'Waspada':'Kritis';
+       return `<tr><td><strong>${esc(x.nama)}</strong><td class="mono">${x.hadir}/${days}<td class="mono">${x.telat}<td><div class="pct-cell"><div class="mbar"><i class="${stCls}" style="width:${Math.min(100,x.pct)}%"></i></div><span class="mono">${x.pct}%</span></div><td><span class="b ${stCls}">${stLbl}</span></tr>`;
+     }).join('')||`<tr><td colspan="5">${F.rawan?'Tidak ada mahasiswa di bawah batas 80%':'Belum ada peserta'}</tr>`}</table>
+   </div>
+ </div>`}
 
 function vReg(){
  const di=devInfo();
