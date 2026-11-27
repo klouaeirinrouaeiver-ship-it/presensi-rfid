@@ -655,6 +655,7 @@ let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,
 
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const slug=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const underSlug=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const TD=()=>iso(new Date()),fmt=n=>n.toLocaleString('id-ID');
 const mn=t=>{if(!t)return 0;const a=t.split(':');return a[0]*60+ +a[1]};
@@ -730,12 +731,33 @@ function relTime(ts){
   coba();
 })();
 
+/* ===== Pemetaan Gambar Mata Kuliah (Case-Sensitive GitHub Pages Ready) ===== */
+const COURSE_IMAGE_RULES=[
+  {keys:['rangkaian digital'],file:'./rangkaian_digital.jpg'},
+  {keys:['administrator jaringan','administrasi jaringan'],file:'./administrator_jaringan.jpg'},
+  {keys:['organisasi dan arsitektur komputer','arsitektur komputer'],file:'./Organisasi_dan_arsitektur_komputer.jpg'},
+  {keys:['telekomunikasi'],file:'./telekomunikasi.jpg'},
+  {keys:['mikroprosessor','mikroprosesor'],file:'./mikroprosessor.jpg'},
+  {keys:['pemrograman web'],file:'./pemrograman_web.jpg'},
+  {keys:['pemrograman berorientasi obyek','pemrograman berorientasi objek','pbo'],file:'./pemrograman_berorientasi_obyek.jpg'}
+];
+
+function matchCourseFile(nama){
+  const norm=String(nama||'').toLowerCase().replace(/&/g,' dan ').replace(/[^a-z0-9]+/g,' ').trim();
+  if(!norm)return null;
+  for(const rule of COURSE_IMAGE_RULES){
+    if(rule.keys.some(k=>norm===k||norm.includes(k)))return rule.file;
+  }
+  return null;
+}
+
 /* ===== Dynamic Per-Course Image Loader (dengan sinkronisasi fase animasi) ===== */
 function applyCourseVisual(c){
   const imgEl=$('#hero-photo'),mediaEl=$('#hero-media');
   if(!imgEl||!mediaEl||!c)return;
   const key=String(c.id);
   const kodeClean=String(c.kode||'').trim();
+  const namaUnder=underSlug(c.nama);
   const namaSlug=slug(c.nama);
 
   const setPhoto=(url,isCustom)=>{
@@ -769,15 +791,22 @@ function applyCourseVisual(c){
   }
 
   const exts=['jpg','jpeg','png','webp'];
-  const candidates=[];
-  if(kodeClean){
-    exts.forEach(e=>candidates.push(`./${kodeClean}.${e}`));
-    exts.forEach(e=>candidates.push(`./${kodeClean.toLowerCase()}.${e}`));
-    exts.forEach(e=>candidates.push(`./mk-${kodeClean.toLowerCase()}.${e}`));
+  const rawCandidates=[];
+  const mappedFile=matchCourseFile(c.nama);
+  if(mappedFile)rawCandidates.push(mappedFile);
+  if(namaUnder){
+    exts.forEach(e=>rawCandidates.push(`./${namaUnder}.${e}`));
+    exts.forEach(e=>rawCandidates.push(`./${namaUnder.charAt(0).toUpperCase()+namaUnder.slice(1)}.${e}`));
   }
   if(namaSlug){
-    exts.forEach(e=>candidates.push(`./${namaSlug}.${e}`));
+    exts.forEach(e=>rawCandidates.push(`./${namaSlug}.${e}`));
   }
+  if(kodeClean){
+    exts.forEach(e=>rawCandidates.push(`./${kodeClean}.${e}`));
+    exts.forEach(e=>rawCandidates.push(`./${kodeClean.toLowerCase()}.${e}`));
+    exts.forEach(e=>rawCandidates.push(`./mk-${kodeClean.toLowerCase()}.${e}`));
+  }
+  const candidates=[...new Set(rawCandidates)];
 
   let idx=0;
   function probeNext(){
