@@ -345,7 +345,6 @@ const V={
  mahasiswa_riw(){return S.pre.filter(x=>x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
  mahasiswa_tg(){
   const tertaut=!!me.telegram_chat_id;
-  const link=`https://t.me/${encodeURIComponent(TG_BOT)}?start=${encodeURIComponent(me.id)}`;
   return `<div class="card">
    <div class="row" style="margin-bottom:8px"><b>✈️ Notifikasi Telegram Otomatis</b>${tertaut?'<span class="b ok">🟢 Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
    <p class="mut" style="margin-top:0">${tertaut
@@ -354,11 +353,11 @@ const V={
    ${tertaut?`
     <button type="button" class="btn p" onclick="tesTelegram(this)">📨 Kirim Pesan Tes ke Telegram Saya</button>
     <div class="row" style="margin-top:8px">
-     <a class="btn sm" href="${link}" target="_blank" rel="noopener">🔄 Tautkan Ulang</a>
+     <button type="button" class="btn sm" onclick="hubungkanTg(this)">🔄 Tautkan Ulang</button>
      <button type="button" class="btn sm" style="color:var(--er)" onclick="putusTelegram()">Putuskan Tautan</button>
     </div>
    `:`
-    <a class="btn tg" href="${link}" target="_blank" rel="noopener">🔗 Hubungkan Telegram (1 Klik)</a>
+    <button type="button" class="btn tg" onclick="hubungkanTg(this)">🔗 Hubungkan Telegram (1 Klik)</button>
     <p class="mut" style="margin:10px 0 6px">Setelah menekan tombol <b>START</b> di aplikasi Telegram, kembali ke halaman ini atau tekan tombol di bawah:</p>
     <button type="button" class="btn sm" onclick="refreshMe()">🔄 Cek Status Koneksi</button>
    `}
