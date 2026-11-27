@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Presensi RFID | Politeknik Negeri Samarinda</title>
+<meta name="description" content="Sistem Presensi Mahasiswa Berbasis RFID & IoT Real-Time — Program Studi Teknologi Rekayasa Komputer (TRK), Politeknik Negeri Samarinda.">
+<meta name="theme-color" content="#0B5D44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Presensi RFID Polnes">
+
+<!-- Open Graph / Pratinjau Tautan (WhatsApp, Telegram, dll.) -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="id_ID">
+<meta property="og:site_name" content="Politeknik Negeri Samarinda">
+<meta property="og:title" content="Presensi RFID | Politeknik Negeri Samarinda (TRK · IoT)">
+<meta property="og:description" content="Command Center & Telemetri Presensi Mahasiswa Berbasis RFID 13.56 MHz dan ESP8266 secara real-time.">
+<meta property="og:image" content="./kampus.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Favicon & Inline PWA Web Manifest -->
+<link rel="icon" type="image/png" href="./logo-polnes.png">
+<link rel="apple-touch-icon" href="./logo-polnes.png">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Presensi RFID Polnes","short_name":"RFID Polnes","start_url":"./","display":"standalone","background_color":"#050C0A","theme_color":"#0B5D44","icons":[{"src":"./logo-polnes.png","sizes":"192x192","type":"image/png"},{"src":"./logo-polnes.png","sizes":"512x512","type":"image/png"}]}'>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -231,8 +251,12 @@ nav#nv button.on .kbd{background:var(--em);color:#032419;border-color:transparen
 }
 .pill-st.ok{background:var(--okb);color:var(--ok);border-color:rgba(16,185,129,.28)}
 .pill-st.lt{background:var(--gdt);color:var(--gt);border-color:rgba(197,160,89,.32)}
+.pill-st.er{background:var(--erb);color:var(--er);border-color:rgba(180,35,54,.32)}
+.sync-time{font-family:"JetBrains Mono",monospace;font-size:10px;opacity:.78;margin-left:2px}
 .dot{display:inline-block;width:6.5px;height:6.5px;border-radius:50%;background:#789085}
 .dot.on{background:var(--em);animation:ping 2s infinite}
+.dot.lt{background:var(--gd);animation:ping 2s infinite}
+.dot.er{background:#F43F5E}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 6px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 
 .icon-btn{
@@ -268,6 +292,21 @@ main{max-width:1380px;margin:0 auto;padding:20px 22px 42px;position:relative;z-i
 ::view-transition-new(pgv){animation:vtIn .32s cubic-bezier(.2,.7,.2,1) both}
 @keyframes vtOut{to{opacity:0;transform:translateY(-5px);filter:blur(3px)}}
 @keyframes vtIn{from{opacity:0;transform:translateY(8px);filter:blur(3px)}}
+
+/* ===== SKELETON LOADING & ERROR STATE ===== */
+.sk{
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--ln) 25%,rgba(16,185,129,.16) 50%,var(--ln) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.err-box{border-color:rgba(180,35,54,.35);background:var(--pn)}
+.noscript-banner{
+  max-width:680px;margin:24px auto;padding:18px 22px;border-radius:16px;
+  background:#071913;color:#ECF5F0;border:1px solid #C5A059;
+  font:14px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;
+}
 
 /* ===== 12-COLUMN ASYMMETRIC TELEMETRY GRID ===== */
 .cmd-grid{display:grid;grid-template-columns:minmax(0,1.95fr) minmax(320px,1fr);gap:16px;align-items:start}
@@ -568,7 +607,7 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media(max-width:1180px){
-  .brand-sub,.kbd{display:none}
+  .brand-sub,.kbd,.sync-time{display:none}
 }
 @media(max-width:1020px){
   .cmd-grid{grid-template-columns:1fr}
@@ -619,16 +658,16 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
     <nav id="nv" aria-label="Navigasi utama"></nav>
 
     <div class="hdr-right">
-      <span class="pill-st ok" id="sync-st"><span class="dot on"></span>Realtime</span>
+      <span class="pill-st lt" id="sync-st" role="status" aria-live="polite" title="Status koneksi database Supabase"><span class="dot lt"></span><span id="sync-lbl">Menghubungkan</span><span class="sync-time" id="sync-tm"></span></span>
       <span class="pill-st" id="md"></span>
-      <button class="icon-btn" id="fs-enter" onclick="toggleFull()" title="Mode Proyektor / Layar Penuh">
+      <button class="icon-btn" id="fs-enter" onclick="toggleFull()" aria-label="Mode Proyektor / Layar Penuh" title="Mode Proyektor / Layar Penuh">
         <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
       </button>
-      <button class="icon-btn" id="kiosk-exit" onclick="toggleFull()" title="Keluar dari Mode Proyektor">
+      <button class="icon-btn" id="kiosk-exit" onclick="toggleFull()" aria-label="Keluar dari Mode Proyektor" title="Keluar dari Mode Proyektor">
         <svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
         <span>Keluar Proyektor</span>
       </button>
-      <button class="icon-btn" id="tm" onclick="tema()" aria-label="Ganti tema terang/gelap" title="Ganti tema terang / gelap">
+      <button class="icon-btn" id="tm" onclick="tema()" aria-label="Ganti tema terang atau gelap" title="Ganti tema terang / gelap">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <span id="tm-lbl">Tema</span>
       </button>
@@ -637,8 +676,46 @@ svg rect{transition:opacity .2s}svg rect:hover{opacity:.82}
   </div>
 </header>
 
+<noscript>
+  <div class="noscript-banner">
+    <strong>JavaScript Diperlukan</strong><br>
+    Aplikasi Web Sistem Presensi RFID Politeknik Negeri Samarinda (Prodi Teknologi Rekayasa Komputer) memerlukan JavaScript untuk memuat data kehadiran real-time dari server. Silakan aktifkan JavaScript pada peramban Anda lalu muat ulang halaman ini.
+  </div>
+</noscript>
+
 <main>
-  <div id="v"><div class="card"><p class="mut">Menghubungkan ke database Supabase...</p></div></div>
+  <div id="v" aria-busy="true">
+    <div class="cmd-grid">
+      <div class="col-main">
+        <div class="card" style="min-height:240px;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div class="sk" style="width:220px;height:32px;margin-bottom:16px"></div>
+            <div class="sk" style="width:68%;height:34px;margin-bottom:10px"></div>
+            <div class="sk" style="width:45%;height:18px;margin-bottom:18px"></div>
+            <div class="sk" style="width:150px;height:30px"></div>
+          </div>
+          <div>
+            <div class="sk" style="width:100%;height:8px;margin-bottom:8px"></div>
+            <div class="sk" style="width:35%;height:14px"></div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-cell"><div class="sk" style="width:65%;height:13px"></div><div class="sk" style="width:45%;height:28px;margin:10px 0 6px"></div><div class="sk" style="width:80%;height:12px"></div></div>
+          <div class="kpi-cell"><div class="sk" style="width:65%;height:13px"></div><div class="sk" style="width:45%;height:28px;margin:10px 0 6px"></div><div class="sk" style="width:80%;height:12px"></div></div>
+          <div class="kpi-cell"><div class="sk" style="width:65%;height:13px"></div><div class="sk" style="width:45%;height:28px;margin:10px 0 6px"></div><div class="sk" style="width:80%;height:12px"></div></div>
+          <div class="kpi-cell"><div class="sk" style="width:65%;height:13px"></div><div class="sk" style="width:45%;height:28px;margin:10px 0 6px"></div><div class="sk" style="width:80%;height:12px"></div></div>
+        </div>
+        <div class="sub-split">
+          <div class="card"><div class="sk" style="width:55%;height:16px;margin-bottom:14px"></div><div class="sk" style="width:100%;height:128px"></div></div>
+          <div class="card"><div class="sk" style="width:55%;height:16px;margin-bottom:14px"></div><div class="sk" style="width:100%;height:128px"></div></div>
+        </div>
+      </div>
+      <div class="col-side">
+        <div class="card"><div class="sk" style="width:50%;height:16px;margin-bottom:12px"></div><div class="sk" style="width:100%;height:150px"></div></div>
+        <div class="card"><div class="sk" style="width:55%;height:16px;margin-bottom:12px"></div><div class="sk" style="width:100%;height:96px"></div></div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <dialog id="dg"></dialog><div id="ts" popover="manual"></div>
@@ -649,7 +726,7 @@ const SUPABASE_KEY = 'sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $=s=>document.querySelector(s),MAXK=50,MAXM=1000,F={q:'',d:'',s:'',o:'t',p:0,r:'h',k:'',f:'',mq:'',mp:0,rawan:false};
-let adm=0,userEmail='',page='dash',first=1,loading=1,regWait=null,lp=null,vtOn=0,liveTaps=[],_cfmCb=null;
+let adm=0,userEmail='',page='dash',first=1,loading=1,loadErr='',lastSync=null,rtState='connecting',regWait=null,lp=null,vtOn=0,liveTaps=[],_cfmCb=null;
 let campusFallbackUrl='',courseImgCache={};
 let S={mem:[],mk:[],rec:[],reg:[],aud:[],dev:[],set:{tol:15,jeda:60,deb:10,dl:1,ak:'',auto:1}};
 
@@ -670,6 +747,36 @@ const kopt=(sel,all)=>(all?'<option value="">Semua mata kuliah</option>':'')+S.m
 const pgn=(len,p,n,fn)=>`<div class="rw"><span class="mut">${fmt(len)} data</span><button class="btn" ${p?'':'disabled'} onclick="${fn}(-1)">Sebelumnya</button><span class="mono">${p+1}/${n}</span><button class="btn" ${p<n-1?'':'disabled'} onclick="${fn}(1)">Berikutnya</button></div>`;
 const cl="$('#dg').close()";
 
+/* ===== Penyamaran NIM Otomatis di Mode Proyektor ===== */
+function isKiosk(){
+  return !!document.fullscreenElement||document.body.classList.contains('kiosk');
+}
+function maskNim(nim){
+  const s=String(nim||'');
+  if(!s)return '-';
+  if(!isKiosk()||s.length<=4)return s;
+  return s.slice(0,Math.max(4,s.length-3))+'***';
+}
+
+/* ===== Indikator Status Koneksi & Sinkronisasi Menetap ===== */
+function updateSyncBadge(){
+  const box=$('#sync-st'),lbl=$('#sync-lbl'),tm=$('#sync-tm');
+  if(!box||!lbl)return;
+  const dot=box.querySelector('.dot');
+  let cls='ok',txt='Realtime';
+  if(loadErr||rtState==='error'){cls='er';txt='Terputus'}
+  else if(loading||rtState==='connecting'){cls='lt';txt='Menyambung'}
+  box.className='pill-st '+cls;
+  if(dot)dot.className='dot '+cls;
+  lbl.textContent=txt;
+  if(tm){
+    tm.textContent=lastSync?lastSync.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):'';
+  }
+  box.title=lastSync
+    ?`Status: ${txt} · Sinkronisasi terakhir pukul ${lastSync.toLocaleTimeString('id-ID')}`
+    :`Status: ${txt}`;
+}
+
 function toast(m,c){const p=$('#ts'),e=document.createElement('div');e.className='t '+(c||'');e.textContent=m;p.append(e);try{p.showPopover()}catch(x){}setTimeout(()=>{e.remove();if(!p.children.length)try{p.hidePopover()}catch(x){}},3800)}
 function dlg(h){$('#dg').innerHTML=h;$('#dg').showModal()}
 
@@ -688,16 +795,19 @@ function confirmDlg({title,msg,detail,okLabel='Ya, Lanjutkan',danger=true,onOk})
 
 function syncKioskState(){
   document.body.classList.toggle('kiosk',!!document.fullscreenElement);
+  if(!loading)render();
 }
 document.addEventListener('fullscreenchange',syncKioskState);
 function toggleFull(){
   if(!document.fullscreenElement){
     document.documentElement.requestFullscreen().then(syncKioskState).catch(()=>{
       document.body.classList.toggle('kiosk');
+      if(!loading)render();
     });
   }else{
     document.exitFullscreen().then(syncKioskState).catch(()=>{
       document.body.classList.remove('kiosk');
+      if(!loading)render();
     });
   }
 }
@@ -723,7 +833,7 @@ function relTime(ts){
       campusFallbackUrl=src;
       const bgImg=$('#bg-campus'),bgl=$('#bgl');
       if(bgImg&&bgl){bgImg.src=src;bgl.classList.add('has-campus')}
-      if(page==='dash'&&!loading)applyCourseVisual(MK(kk()));
+      if(page==='dash'&&!loading&&!loadErr)applyCourseVisual(MK(kk()));
     };
     probe.onerror=coba;
     probe.src=src;
@@ -867,13 +977,19 @@ function devInfo(){
 }
 
 async function checkAuth(){
-  const {data:{session}}=await sb.auth.getSession();
-  const u=session?.user;
-  adm=(u && u.app_metadata && u.app_metadata.role==='admin')?1:0;
-  userEmail=u?.email||'';
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    const u=session?.user;
+    adm=(u && u.app_metadata && u.app_metadata.role==='admin')?1:0;
+    userEmail=u?.email||'';
+  }catch(e){
+    adm=0;userEmail='';
+  }
 }
 
 async function loadAll(notify){
+  loading=1;
+  updateSyncBadge();
   try{
     const [qMk,qAng,qPes,qPres,qSet,qDev]=await Promise.all([
       sb.from('mata_kuliah').select('*').order('kode'),
@@ -936,11 +1052,19 @@ async function loadAll(notify){
       S.reg=[];S.aud=[];regWait=null;
     }
     loading=0;
+    loadErr='';
+    lastSync=new Date();
+    $('#v')?.setAttribute('aria-busy','false');
+    updateSyncBadge();
     render();
     if(notify)toast('Data berhasil disegarkan','ok');
   }catch(e){
     loading=0;
-    toast('Gagal memuat data: '+(e.message||e),'er');
+    loadErr=e.message||String(e);
+    $('#v')?.setAttribute('aria-busy','false');
+    updateSyncBadge();
+    render();
+    toast('Gagal memuat data: '+loadErr,'er');
   }
 }
 
@@ -971,7 +1095,12 @@ function setupRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'riwayat_kartu'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},()=>loadAll(0))
     .on('postgres_changes',{event:'*',schema:'public',table:'perangkat'},()=>loadAll(0))
-    .subscribe();
+    .subscribe(status=>{
+      if(status==='SUBSCRIBED')rtState='ok';
+      else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED')rtState='error';
+      else rtState='connecting';
+      updateSyncBadge();
+    });
 
   setInterval(()=>{
     const tag=document.activeElement?.tagName;
@@ -979,6 +1108,9 @@ function setupRealtime(){
     loadAll(0);
   },15000);
 }
+
+window.addEventListener('online',()=>{rtState='connecting';updateSyncBadge();loadAll(1)});
+window.addEventListener('offline',()=>{rtState='error';updateSyncBadge();toast('Koneksi internet terputus','er')});
 
 function updateClock(){
   const el=$('#live-clk'),sub=$('#clk-sub');
@@ -1030,6 +1162,10 @@ function render(){
  if(!P.some(x=>x[0]==page))page='dash';
  $('#nv').innerHTML=P.map((x,idx)=>`<button class="${x[0]==page?'on':''}" onclick="go('${x[0]}')">${NAV_ICONS[x[0]]}<span>${x[1]}</span><span class="kbd">${idx+1}</span></button>`).join('');
  if(loading)return;
+ if(loadErr && !S.mk.length && !S.mem.length){
+   $('#v').innerHTML=`<div class="card err-box"><h3>Gagal Menghubungkan ke Database</h3><p class="mut" style="margin-bottom:14px">Terjadi kendala saat mengambil data dari Supabase: <span class="mono">${esc(loadErr)}</span></p><div class="rw"><button class="btn p" onclick="loadAll(1)">Coba Lagi</button></div></div>`;
+   return;
+ }
  $('#v').innerHTML=({dash:vDash,att:vAtt,mk:vMk,mem:vMem,rep:vRep,reg:vReg,set:vSet})[page]();
  first=0;
  updateClock();
@@ -1068,6 +1204,7 @@ function recent(k){
 function rightTelemetryConsole(k,c){
  const di=devInfo(),ak=aktif(),sesiKode=(c&&c.kode)||(ak&&ak.kode)||'—';
  const isFresh=liveTaps.length&&(Date.now()-liveTaps[0].ts<15000);
+ const rtOk=!loadErr&&rtState!=='error';
  return `<div class="col-side">
    <section class="term-card">
      <div class="term-hd">
@@ -1080,7 +1217,7 @@ function rightTelemetryConsole(k,c){
        <div class="t-row"><span class="t-k">mcu</span><span class="t-v">ESP8266</span></div>
        <div class="t-row"><span class="t-k">modul_rfid</span><span class="t-v">MFRC522 · 13.56 MHz</span></div>
        <div class="t-row"><span class="t-k">sesi_aktif</span><span class="t-v">${esc(sesiKode)}</span></div>
-       <div class="t-row"><span class="t-k">realtime</span><span class="t-v on">terhubung</span></div>
+       <div class="t-row"><span class="t-k">realtime</span><span class="t-v ${rtOk?'on':'off'}">${rtOk?'terhubung':'terputus'}</span></div>
        <div class="t-prompt"><span>&gt; ${di.on?'siap memindai kartu':'menunggu perangkat'}</span><span class="cursor-blk" aria-hidden="true"></span></div>
      </div>
    </section>
@@ -1102,7 +1239,7 @@ function rightTelemetryConsole(k,c){
                    <span class="tap-rel" data-ts="${tap.ts}">${relTime(tap.ts)}</span>
                  </div>
                  <div class="hr" style="justify-content:space-between;font-size:12px;opacity:.92">
-                   <span class="mono">${esc(tap.nim||'POLNES')} · ${esc(tap.tipe)} ${esc(tap.waktu)}</span>
+                   <span class="mono">${esc(maskNim(tap.nim)||'POLNES')} · ${esc(tap.tipe)} ${esc(tap.waktu)}</span>
                    ${bd(tap.status)}
                  </div>
                </div>`
@@ -1139,10 +1276,11 @@ function vDash(){
        <div class="hero-top">
          <div class="hero-left">
            <div class="hh">
-             <select class="hs" onchange="F.k=this.value;render()">${kopt(k)}</select>
+             <select class="hs" aria-label="Pilih mata kuliah" onchange="F.k=this.value;render()">${kopt(k)}</select>
              ${S.mk.length>1?`<button class="step-btn" onclick="cycleMk(-1)" title="Mata kuliah sebelumnya" aria-label="Mata kuliah sebelumnya">‹</button><button class="step-btn" onclick="cycleMk(1)" title="Mata kuliah berikutnya" aria-label="Mata kuliah berikutnya">›</button>`:''}
              <span class="b ${st[0]}">${st[1]}</span>
              ${ak&&ak.id==k?'<span class="b lt">Sesi aktif</span>':''}
+             ${isKiosk()?'<span class="b no" title="NIM disamarkan otomatis selama mode proyektor">Privasi Proyektor</span>':''}
            </div>
            <div class="hn">${esc(c.nama)}</div>
            <div class="hm">
@@ -1182,7 +1320,7 @@ function vDash(){
          ${hari.length?'<ul class="ls" style="margin-bottom:16px">'+hari.map(x=>{const s=sesi(x);return `<li><button class="lk" onclick="F.k='${x.id}';render()">${esc(x.nama)}</button><span class="mut mono">${x.mulai}–${x.selesai} <span class="b ${s[0]}">${s[1]}</span></span></li>`}).join('')+'</ul>':'<p class="mut" style="margin-bottom:16px">Tidak ada kuliah terjadwal hari ini.</p>'}
          <div style="border-top:1px solid var(--ln);padding-top:12px">
            <h3>Belum hadir</h3>
-           ${bl.length?'<ul class="ls">'+bl.slice(0,6).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut mono">${esc(x.nim)}</span></li>`).join('')+'</ul>'+(bl.length>6?`<p class="mut" style="margin-bottom:0">dan ${bl.length-6} mahasiswa lainnya</p>`:''):'<p class="mut" style="margin-bottom:0">Semua peserta sudah hadir.</p>'}
+           ${bl.length?'<ul class="ls">'+bl.slice(0,6).map(x=>`<li><span>${esc(x.nama)}</span><span class="mut mono">${esc(maskNim(x.nim))}</span></li>`).join('')+'</ul>'+(bl.length>6?`<p class="mut" style="margin-bottom:0">dan ${bl.length-6} mahasiswa lainnya</p>`:''):'<p class="mut" style="margin-bottom:0">Semua peserta sudah hadir.</p>'}
          </div>
        </div>
      </div>
@@ -1206,7 +1344,7 @@ function tbl(){
  const n=Math.max(1,Math.ceil(r.length/10));F.p=Math.min(F.p,n-1);
  const rb=$('#att-rst');if(rb)rb.style.display=hasAttFilter()?'inline-flex':'none';
  return `<div class="tw"><table><tr><th>Tanggal<th>Mata kuliah<th>Nama<th>NIM<th>Masuk<th>Pulang<th>Durasi<th>Status${adm?'<th>':''}</tr>`+
- (r.slice(F.p*10,F.p*10+10).map(x=>`<tr><td class="mono">${ds(x.tgl)}<td class="mono">${esc(x.c.kode||'-')}<td><strong>${esc(x.m.nama||'-')}</strong><td class="mono">${esc(x.m.nim||'-')}<td class="mono">${x.ms}<td class="mono">${x.pl||'—'}<td class="mono">${x.pl?dur(x.ms,x.pl):'—'}<td>${bd(x.st)}${adm?`<td><button class="lk" onclick="koreksi(${x.i})">Koreksi</button>`:''}</tr>`).join('')||`<tr><td colspan="9">Belum ada catatan presensi</tr>`)+
+ (r.slice(F.p*10,F.p*10+10).map(x=>`<tr><td class="mono">${ds(x.tgl)}<td class="mono">${esc(x.c.kode||'-')}<td><strong>${esc(x.m.nama||'-')}</strong><td class="mono">${esc(maskNim(x.m.nim))}<td class="mono">${x.ms}<td class="mono">${x.pl||'—'}<td class="mono">${x.pl?dur(x.ms,x.pl):'—'}<td>${bd(x.st)}${adm?`<td><button class="lk" onclick="koreksi(${x.i})">Koreksi</button>`:''}</tr>`).join('')||`<tr><td colspan="9">Belum ada catatan presensi</tr>`)+
  `</table></div>`+pgn(r.length,F.p,n,'ap')}
 function ap(d){F.p+=d;$('#tb').innerHTML=tbl()}
 
@@ -1299,7 +1437,7 @@ function khps(id){
 
 function mtbl(){const q=F.mq.toLowerCase(),r=S.mem.filter(m=>!q||m.nama.toLowerCase().includes(q)||m.nim.includes(q)||(adm&&m.uid.toLowerCase().includes(q))),n=Math.max(1,Math.ceil(r.length/20));F.mp=Math.min(F.mp,n-1);
  const rb=$('#mem-rst');if(rb)rb.style.display=F.mq?'inline-flex':'none';
- return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td><strong>${esc(m.nama)}</strong><td class="mono">${esc(m.nim)}<td>${esc(m.kelas)}<td class="mono">${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut mono">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk er" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
+ return `<div class="tw"><table><tr><th>Nama<th>NIM<th>Kelas<th>Mata kuliah<th>Keanggotaan<th>RFID${adm?'<th>':''}</tr>`+(r.slice(F.mp*20,F.mp*20+20).map(m=>`<tr><td><strong>${esc(m.nama)}</strong><td class="mono">${esc(maskNim(m.nim))}<td>${esc(m.kelas)}<td class="mono">${(m.mk||[]).length}<td>${m.aktif?'<span class="b ok">Aktif</span>':'<span class="b no">Nonaktif</span>'}<td>${m.punya||m.uid?`<span class="b ok">Terdaftar</span> <span class="mut mono">${adm&&m.uid?esc(m.uid):''}</span>`:'<span class="b no">Belum ada kartu</span>'}${adm?`<td><button class="lk" onclick="mdlg('${m.id}')">Ubah</button><button class="lk" onclick="tg('${m.id}')">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>${m.uid?`<button class="lk er" onclick="cabut('${m.id}')">Cabut kartu</button>`:''}`:''}</tr>`).join('')||'<tr><td colspan="7">Belum ada anggota</tr>')+'</table></div>'+pgn(r.length,F.mp,n,'mpg')}
 function mpg(d){F.mp+=d;$('#mt').innerHTML=mtbl()}
 function vMem(){
  return ctxBanner('DIREKTORI MAHASISWA · KTM','Data Anggota & Kepemilikan Kartu','Kelola daftar mahasiswa, penetapan kelas mata kuliah, impor massal dari spreadsheet, serta status kartu RFID terhubung.',
@@ -1552,6 +1690,7 @@ async function out(){
 
 (async()=>{
  await checkAuth();
+ render();
  await loadAll(0);
  setupRealtime();
 })();
