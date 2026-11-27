@@ -15,10 +15,12 @@ button,input,select{font:inherit}
 input,select{width:100%;padding:10px 12px;margin:4px 0 10px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--ink)}
 input.bad{border:2px solid var(--er)!important;background:#FFF5F6}
 label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin-top:4px}
-.btn{border:1px solid var(--ln);background:#fff;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;color:var(--ink);transition:.15s}
+.btn{border:1px solid var(--ln);background:#fff;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;color:var(--ink);transition:.15s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:hover{filter:brightness(.97)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
 .btn.p{background:var(--em);color:#fff;border:0;width:100%}
 .btn.g{background:linear-gradient(135deg,#EEDBAE,#C5A059);border:0;width:100%;color:#2a1d04}
+.btn.tg{background:#229ED9;color:#fff;border:0;width:100%}
 .btn.sm{padding:6px 10px;font-size:12px;width:auto}
 .b{padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;background:var(--ln);color:var(--mut);display:inline-block}
 .b.ok{background:rgba(16,185,129,.16);color:var(--ok)}.b.lt{background:rgba(197,160,89,.22);color:#825E18}.b.er{background:rgba(180,35,54,.14);color:var(--er)}
@@ -48,7 +50,7 @@ label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin-top:4
 .rbtn .chk{display:none;position:absolute;top:5px;right:6px;background:var(--em);color:#fff;width:16px;height:16px;border-radius:99px;font-size:10px;line-height:16px}
 .rbtn.on{border-color:var(--em);background:rgba(16,185,129,.14);color:var(--em);box-shadow:0 4px 12px rgba(11,93,68,.18);transform:translateY(-1px)}
 .rbtn.on .chk{display:block}
-.role-status{font-size:11.5px;color:var(--ok);font-weight:600;margin:-6px 0 8px}
+.role-status{font-size:11.5px;color:var(--ok);font-weight:600;margin:-6px 0 10px}
 
 .pw{position:relative}.pw input{padding-right:40px}.pw button{position:absolute;right:8px;top:11px;border:0;background:none;cursor:pointer;font-size:16px;padding:2px}
 .info{display:none;background:rgba(180,35,54,.08);border:1px solid var(--er);border-left:4px solid var(--er);border-radius:10px;padding:10px 12px;font-size:12px;margin:-4px 0 10px;color:var(--ink)}
@@ -93,6 +95,9 @@ body.kiosk .side{display:none}body.kiosk .adm{grid-template-columns:1fr}
 <body>
 <div id="app"></div><div id="bd" onclick="drawer(0)"></div><div id="ts"></div><dialog id="dg"></dialog>
 <script>
+// Ganti dengan username bot Telegram dari @BotFather (tanpa tanda @)
+const TG_BOT='PresensiTRKPolnesBot';
+
 const sb=supabase.createClient('https://muwlrysxpuygrinrnere.supabase.co','sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0');
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -103,14 +108,12 @@ const mn=t=>{if(!t)return 0;const a=t.split(':');return +a[0]*60+ +a[1]};
 const hm=t=>(t||'').slice(0,5);
 const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3800)};
 const dlg=h=>{$('#dg').innerHTML=h;$('#dg').showModal()},cls=()=>$('#dg').close();
-const normWA=v=>{let d=String(v||'').replace(/\D/g,'');if(d.startsWith('0'))d='62'+d.slice(1);else if(d.startsWith('8'))d='62'+d;return d};
-const waOk=v=>/^628\d{6,12}$/.test(v);
 
 let me=null,S={mk:[],ang:[],pes:[],pre:[],dev:[],taps:[],sesi:null,ntf:[],set:{notif_aktif:true}},pg='',sel='',tab='masuk',role=localStorage.getItem('pilihPeran')||'mahasiswa',pv=[];
 const MENU={
- admin:[['dash','📊 Dashboard'],['mk','📚 Mata Kuliah'],['user','👥 Pengguna'],['log','📋 Log Presensi'],['auto','⚡ Mode Auto'],['ntf','💬 Notifikasi'],['xls','📥 Import / Export']],
- mahasiswa:[['kartu','🪪 Kartu Saya'],['stat','📈 Statistik'],['riw','🕒 Riwayat'],['wa','📱 WhatsApp']],
- dosen:[['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi Presensi'],['xls','📥 Import / Export'],['wa','📱 WhatsApp']]
+ admin:[['dash','📊 Dashboard'],['mk','📚 Mata Kuliah'],['user','👥 Pengguna'],['log','📋 Log Presensi'],['auto','⚡ Mode Auto'],['ntf','✈️ Notifikasi'],['xls','📥 Import / Export']],
+ mahasiswa:[['kartu','🪪 Kartu Saya'],['stat','📈 Statistik'],['riw','🕒 Riwayat'],['tg','✈️ Telegram']],
+ dosen:[['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi Presensi'],['xls','📥 Import / Export'],['tg','✈️ Telegram']]
 };
 
 /* ===== GERBANG MASUK & DAFTAR AWAL ===== */
@@ -144,9 +147,7 @@ function gate(msg){
    <label>1. Pilih peran Anda</label>
    <div class="roles">${R.map(r=>`<button type="button" class="rbtn ${role==r[0]?'on':''}" data-r="${r[0]}" onclick="pilihPeran('${r[0]}')"><span class="chk">✓</span><span class="ico">${r[1]}</span>${r[2]}</button>`).join('')}</div>
    <div class="role-status" id="role-st">${role?'✓ Peran dipilih: '+role.toUpperCase():'Klik salah satu kotak peran di atas'}</div>
-   <label>2. 📱 Nomor WhatsApp Aktif</label><input id="wa" inputmode="tel" placeholder="08xxxxxxxxxx" oninput="this.classList.remove('bad')">
-   <div class="info" id="wai"><b>⚠️ Nomor WhatsApp wajib diisi saat daftar awal:</b><br>• Pengingat otomatis tepat saat jam mulai matkul jika belum tap kartu.<br>• Ringkasan kehadiran kelas (khusus Dosen).<br>• Anti-spam: maksimal 1x per matkul.</div>
-   <label>3. Hubungkan akun terdaftar</label>
+   <label>2. Hubungkan akun Google / Email</label>
    <button class="btn g" onclick="google(1)">🌐 Daftar dengan Google (Gmail)</button>
    <p class="mut" style="text-align:center;margin:10px 0">atau daftar dengan email</p>
    <label>📧 Email</label><input id="em" type="email" placeholder="nama@gmail.com">
@@ -155,16 +156,13 @@ function gate(msg){
  `}
  </div></div>`;
 }
-function cekDaftar(){
- if(!role){toast('Pilih peran terlebih dahulu');return null}
- const w=normWA($('#wa').value);
- if(!waOk(w)){$('#wa').classList.add('bad');$('#wai').classList.add('show');$('#wa').focus();return null}
- localStorage.setItem('pend',JSON.stringify({wa:w,peran:role}));
- return w;
-}
 async function google(daftar){
- if(daftar&&!cekDaftar())return;
- if(!daftar)localStorage.removeItem('pend');
+ if(daftar){
+  if(!role)return toast('Pilih peran terlebih dahulu');
+  localStorage.setItem('pend',JSON.stringify({peran:role}));
+ }else{
+  localStorage.removeItem('pend');
+ }
  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
  if(error)toast(error.message);
 }
@@ -172,52 +170,28 @@ async function emailAuth(daftar){
  const email=$('#em').value.trim().toLowerCase(),password=$('#pw').value;
  if(!email||!password){toast('Isi email dan kata sandi');return}
  if(daftar){
-  if(!cekDaftar())return;
+  if(!role)return toast('Pilih peran terlebih dahulu');
+  localStorage.setItem('pend',JSON.stringify({peran:role}));
   const {data,error}=await sb.auth.signUp({email,password});
   if(error){
-   const msg=/already registered/i.test(error.message)
-    ?'Email sudah terdaftar. Pindah ke tab Masuk untuk login.'
-    :error.message;
+   const msg=/already registered/i.test(error.message)?'Email sudah terdaftar. Pindah ke tab Masuk.':error.message;
    return toast(msg);
   }
-  if(!data.session){
-   return toast('Akun dibuat, namun verifikasi email di Supabase masih aktif. Matikan Confirm Email di dashboard Supabase.');
-  }
+  if(!data.session)return toast('Akun dibuat, namun Confirm Email di Supabase masih aktif.');
   toast('Pendaftaran berhasil!');
  }else{
   localStorage.removeItem('pend');
   const {error}=await sb.auth.signInWithPassword({email,password});
   if(error){
-   let msg=error.message;
-   if(/Email not confirmed/i.test(msg))msg='Email belum dikonfirmasi. Jalankan UPDATE auth.users di SQL Editor Supabase.';
-   else if(/Invalid login/i.test(msg))msg='Email belum terdaftar di Daftar Awal, kata sandi salah, atau akun memakai login Google.';
+   const msg=/Invalid login/i.test(error.message)?'Email belum terdaftar, kata sandi salah, atau akun memakai Google.':error.message;
    return toast(msg);
   }
  }
  boot();
 }
-function activ(msg){
- const R=[['mahasiswa','🎓','Mahasiswa'],['dosen','👨‍🏫','Dosen'],['admin','🛡️','Admin']];
- $('#app').innerHTML=`<div id="gate"><img class="bg" src="./kampus.jpg" alt=""><div class="glass">
- <h1>Lengkapi Aktivasi Akun</h1>
- <p class="sub">Masukkan nomor WhatsApp untuk mengaktifkan notifikasi kelas</p>
- ${msg?`<div class="info show">${esc(msg)}</div>`:''}
- <label>Peran</label><div class="roles">${R.map(r=>`<button type="button" class="rbtn ${role==r[0]?'on':''}" data-r="${r[0]}" onclick="pilihPeran('${r[0]}')"><span class="chk">✓</span><span class="ico">${r[1]}</span>${r[2]}</button>`).join('')}</div>
- <label>📱 Nomor WhatsApp Aktif</label><input id="wa" inputmode="tel" placeholder="08xxxxxxxxxx">
- <div class="info" id="wai"><b>⚠️ Nomor WhatsApp wajib diisi:</b><br>• Pengingat otomatis tepat saat jam mulai matkul jika belum tap kartu.<br>• Anti-spam maksimal 1x per matkul.</div>
- <button class="btn p" onclick="simpanAkt()">Simpan & Masuk</button>
- <button class="btn" style="width:100%;margin-top:8px" onclick="keluar()">Keluar</button>
- </div></div>`;
-}
-async function simpanAkt(){
- const w=normWA($('#wa').value);
- if(!waOk(w)){$('#wa').classList.add('bad');$('#wai').classList.add('show');return}
- localStorage.setItem('pend',JSON.stringify({wa:w,peran:role}));
- boot();
-}
 async function keluar(){if(CH){sb.removeChannel(CH);CH=null}await sb.auth.signOut();localStorage.removeItem('pend');me=null;tab='masuk';gate()}
 
-/* ===== BOOT & REALTIME (DENGAN MUTEX PENCEGAH DOUBLE-RUN) ===== */
+/* ===== BOOT & REALTIME ===== */
 let CH=null,bt=0;
 async function boot(){if(bt)return;bt=1;try{await boot0()}finally{bt=0}}
 async function boot0(){
@@ -226,7 +200,7 @@ async function boot0(){
  let p={};try{p=JSON.parse(localStorage.getItem('pend')||'{}')}catch(e){}
  const peranKirim=p.peran||localStorage.getItem('pilihPeran')||'mahasiswa';
  const {data:res,error:rpcErr}=await sb.rpc('tautkan_akun',{
-  p_no_wa:p.wa||'',
+  p_no_wa:'',
   p_peran:peranKirim,
   p_nama:session.user.user_metadata?.full_name||session.user.user_metadata?.name||'',
   p_nim:'',
@@ -234,7 +208,6 @@ async function boot0(){
  });
  if(rpcErr||res?.error){
   const msg=rpcErr?.message||res?.error||'Gagal menautkan akun';
-  if(res?.butuh_wa||/WhatsApp/i.test(msg)){role=res?.peran||p.peran||'mahasiswa';return activ()}
   await sb.auth.signOut();localStorage.removeItem('pend');
   return gate(msg);
  }
@@ -267,6 +240,13 @@ async function boot0(){
    .subscribe();
  }
 }
+async function refreshMe(){
+ if(!me)return;
+ const {data}=await sb.from('anggota').select('*').eq('id',me.id).maybeSingle();
+ if(data){me=data;draw();}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refreshMe()});
+
 async function load(){
  const adm=me.peran==='admin';
  const reqs=[
@@ -329,7 +309,7 @@ const V={
   <div class="card"><h3>Live Tap Monitor</h3>${S.taps.map(x=>`<div class="row" style="padding:6px 0"><b>${esc(x.n)}</b><span class="mut">${x.j}</span>${bd(x.s)}</div>`).join('')||'<p class="mut">Tempelkan kartu pada pembaca…</p>'}</div>
   <h3>Mata Kuliah</h3><div class="grid">${S.mk.map(mkCard).join('')}</div>`},
  admin_mk(){return `<div style="margin-bottom:10px"><button class="btn p sm" onclick="mkForm()">+ Tambah Mata Kuliah</button></div><div class="card tw"><table><tr><th>Kode<th>Nama<th>Jadwal<th>Toleransi<th>Dosen<th>Ruangan<th>Aksi</tr>${S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><b>${esc(k.nama)}</b><td>${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)}<td>${k.toleransi_menit??'-'} mnt<td>${esc(nm(k.dosen_id))}<td>${esc(k.ruangan||'-')}<td><button class="btn sm" onclick="mkForm('${k.id}')">Ubah</button> <button class="btn sm" onclick="mkDel('${k.id}')">Hapus</button></tr>`).join('')}</table></div>`},
- admin_user(){return `<div class="card tw"><table><tr><th>Nama<th>NIM/NIDN<th>Peran<th>Gmail<th>Kartu<th>Status<th>Aksi</tr>${S.ang.map(a=>`<tr><td><b>${esc(a.nama)}</b><td class="mono">${esc(a.nim||'')}<td>${esc(a.peran)}<td>${esc(a.email||'-')}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.aktif?'<span class="b ok">Aktif</span>':'<span class="b er">Nonaktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">Atur Gmail</button> <button class="btn sm" onclick="togAktif('${a.id}',${!a.aktif})">${a.aktif?'Nonaktifkan':'Aktifkan'}</button></tr>`).join('')}</table></div>`},
+ admin_user(){return `<div class="card tw"><table><tr><th>Nama<th>NIM/NIDN<th>Peran<th>Gmail<th>Kartu<th>Telegram<th>Status<th>Aksi</tr>${S.ang.map(a=>`<tr><td><b>${esc(a.nama)}</b><td class="mono">${esc(a.nim||'')}<td>${esc(a.peran)}<td>${esc(a.email||'-')}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.telegram_chat_id?'<span class="b ok">Tertaut</span>':'<span class="b">belum</span>'}<td>${a.aktif?'<span class="b ok">Aktif</span>':'<span class="b er">Nonaktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">Atur Gmail</button> <button class="btn sm" onclick="togAktif('${a.id}',${!a.aktif})">${a.aktif?'Nonaktifkan':'Aktifkan'}</button></tr>`).join('')}</table></div>`},
  admin_log(){
   const f=sel,r=S.pre.filter(x=>!f||x.mata_kuliah_id==f).slice(0,100);
   return `<select onchange="sel=this.value;draw()"><option value="">Semua mata kuliah</option>${S.mk.map(k=>`<option value="${k.id}" ${k.id==f?'selected':''}>${esc(k.nama)}</option>`).join('')}</select><div class="card tw"><table><tr><th>Tanggal<th>Nama<th>Matkul<th>Masuk<th>Pulang<th>Status</tr>${r.map(x=>`<tr><td>${x.tanggal}<td>${esc(nm(x.anggota_id))}<td>${esc(mkn(x.mata_kuliah_id))}<td>${hm(x.masuk)}<td>${hm(x.pulang)||'—'}<td>${stSel(x.id,x.status)}</tr>`).join('')}</table></div>`},
@@ -343,29 +323,48 @@ const V={
   <label>Peran<select id="au1" onchange="autoPeran()"><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option><option value="admin">Admin</option></select></label>
   <label>Nama Lengkap<input id="au2" placeholder="Nama lengkap sesuai SIAKAD"></label>
   <div class="r2"><label><span id="au3l">NIM</span><input id="au3" inputmode="numeric" placeholder="256661001"></label><label id="au4w">Kelas<input id="au4" placeholder="TRK-3A"></label></div>
-  <label>Alamat Gmail (untuk login Google)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
-  <label>Nomor WhatsApp (opsional)<input id="au6" inputmode="tel" placeholder="08xxxxxxxxxx"></label>
+  <label>Alamat Gmail (untuk menyatukan akun login)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
   <label>Mata Kuliah (<span id="au7l">diikuti</span>)</label>
   <div style="max-height:140px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:8px;margin:4px 0 12px">${S.mk.map(k=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--ink)"><input type="checkbox" class="auc" style="width:auto;margin:0" value="${k.id}">${esc(k.nama)} (${esc(k.kode)})</label>`).join('')}</div>
   <div class="r2"><button class="btn p" onclick="simpanAuto(false)">Simpan & Selesai</button><button class="btn g" onclick="simpanAuto(true)">Simpan & Scan Berikutnya</button></div></div>`:''}`;
  },
- admin_ntf(){return `<div class="card"><div class="row"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;margin:0"><input type="checkbox" style="width:auto;margin:0" ${S.set.notif_aktif?'checked':''} onchange="togNotif(this.checked)"> Aktifkan pengingat WhatsApp otomatis saat jam mulai mata kuliah (maks. 1x per matkul)</label><button type="button" class="btn p sm" onclick="kirimWaManual(this)">📤 Kirim Antrean WA Sekarang</button></div></div><div class="card tw"><table><tr><th>Tanggal<th>Matkul<th>Penerima<th>Peran<th>Nomor<th>Status<th>Waktu Kirim<th>Respon Gateway</tr>${S.ntf.map(n=>`<tr><td>${n.tanggal}<td>${esc(mkn(n.mata_kuliah_id))}<td>${esc(nm(n.anggota_id))}<td>${esc(n.peran)}<td class="mono">${esc(n.nomor_tujuan)}<td>${bd(n.status_kirim=='terkirim'?'Hadir':n.status_kirim=='antri'||n.status_kirim=='proses'?'Terlambat':'Gagal')}<td>${n.dikirim_pada?new Date(n.dikirim_pada).toLocaleTimeString('id-ID'):'-'}<td class="mut" style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${esc(n.respon_gateway||'')}">${esc(n.respon_gateway||'-')}</tr>`).join('')||'<tr><td colspan=8>Belum ada log notifikasi.</tr>'}</table></div>`},
+ admin_ntf(){return `<div class="card"><div class="row"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;margin:0"><input type="checkbox" style="width:auto;margin:0" ${S.set.notif_aktif?'checked':''} onchange="togNotif(this.checked)"> Aktifkan pengingat Telegram otomatis saat jam mulai mata kuliah (maks. 1x per matkul)</label><button type="button" class="btn p sm" onclick="kirimNotifManual(this)">✈️ Kirim Antrean Telegram Sekarang</button></div></div><div class="card tw"><table><tr><th>Tanggal<th>Matkul<th>Penerima<th>Peran<th>Chat ID<th>Status<th>Waktu Kirim<th>Respon Bot</tr>${S.ntf.map(n=>`<tr><td>${n.tanggal}<td>${esc(mkn(n.mata_kuliah_id))}<td>${esc(nm(n.anggota_id))}<td>${esc(n.peran)}<td class="mono">${esc(n.nomor_tujuan)}<td>${bd(n.status_kirim=='terkirim'?'Hadir':n.status_kirim=='antri'||n.status_kirim=='proses'?'Terlambat':'Gagal')}<td>${n.dikirim_pada?new Date(n.dikirim_pada).toLocaleTimeString('id-ID'):'-'}<td class="mut" style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${esc(n.respon_gateway||'')}">${esc(n.respon_gateway||'-')}</tr>`).join('')||'<tr><td colspan=8>Belum ada log notifikasi.</tr>'}</table></div>`},
  admin_xls(){return xlsView()},
  dosen_xls(){return xlsView()},
  mahasiswa_kartu(){
   const hr=myMk().filter(k=>k.hari==new Date().getDay());
   const adaKartu=!!(me.uid_kartu||me.punya_kartu);
-  const waSiap=!!(me.no_wa&&/^628\d{6,12}$/.test(me.no_wa));
-  const kalibrasi=me.aktif&&adaKartu&&waSiap&&!!me.email;
+  const tgSiap=!!me.telegram_chat_id;
+  const kalibrasi=me.aktif&&adaKartu&&tgSiap&&!!me.email;
   return `<div class="card" style="background:linear-gradient(135deg,#0B5D44,#063024);color:#fff"><img src="./logo-polnes.png" style="height:40px" alt=""><h2 style="margin:8px 0 2px">${esc(me.nama)}</h2><div>${esc(me.nim||'')} · ${esc(me.kelas||'-')}</div>
   <p style="margin:8px 0 4px">Kartu RFID: ${adaKartu?'<span class="b ok">'+esc(me.uid_kartu||'Terdaftar')+'</span>':'<span class="b er">Belum di-scan (Mode Auto)</span>'}</p>
-  <p style="margin:4px 0 0;font-size:12px">Kalibrasi Notif WA: ${kalibrasi?'<span class="b ok">✓ Aktif & Terkalibrasi</span>':'<span class="b lt">Menunggu WA + UID Kartu</span>'}</p></div>
+  <p style="margin:4px 0 0;font-size:12px">Notifikasi Telegram: ${kalibrasi?'<span class="b ok">✓ Aktif & Terkalibrasi</span>':tgSiap?'<span class="b lt">Telegram Aktif · Menunggu Kartu RFID</span>':'<span class="b lt">Belum ditautkan (buka menu Telegram)</span>'}</p></div>
   <h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`
  },
  mahasiswa_stat(){setTimeout(statLoad,0);return '<div id="st"><p class="mut">Memuat…</p></div>'},
  mahasiswa_riw(){return S.pre.filter(x=>x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
- mahasiswa_wa(){return `<div class="card"><label>📱 Nomor WhatsApp notifikasi</label><input id="nw" value="${esc(me.no_wa||'')}"><button class="btn p" onclick="simWA()">Simpan</button></div>`},
- dosen_wa(){return V.mahasiswa_wa()},
+ mahasiswa_tg(){
+  const tertaut=!!me.telegram_chat_id;
+  const link=`https://t.me/${encodeURIComponent(TG_BOT)}?start=${encodeURIComponent(me.id)}`;
+  return `<div class="card">
+   <div class="row" style="margin-bottom:8px"><b>✈️ Notifikasi Telegram Otomatis</b>${tertaut?'<span class="b ok">🟢 Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
+   <p class="mut" style="margin-top:0">${tertaut
+    ?`Akun Telegram Anda sudah tertaut (Chat ID: <span class="mono">${esc(me.telegram_chat_id)}</span>). Anda akan menerima pengingat otomatis saat jam kuliah dimulai jika belum tap kartu RFID.`
+    :'Hubungkan akun Telegram Anda dalam 1 klik untuk menerima pengingat otomatis tepat saat jam mata kuliah dimulai (tanpa memakai nomor HP pribadi).'}</p>
+   ${tertaut?`
+    <button type="button" class="btn p" onclick="tesTelegram(this)">📨 Kirim Pesan Tes ke Telegram Saya</button>
+    <div class="row" style="margin-top:8px">
+     <a class="btn sm" href="${link}" target="_blank" rel="noopener">🔄 Tautkan Ulang</a>
+     <button type="button" class="btn sm" style="color:var(--er)" onclick="putusTelegram()">Putuskan Tautan</button>
+    </div>
+   `:`
+    <a class="btn tg" href="${link}" target="_blank" rel="noopener">🔗 Hubungkan Telegram (1 Klik)</a>
+    <p class="mut" style="margin:10px 0 6px">Setelah menekan tombol <b>START</b> di aplikasi Telegram, kembali ke halaman ini atau tekan tombol di bawah:</p>
+    <button type="button" class="btn sm" onclick="refreshMe()">🔄 Cek Status Koneksi</button>
+   `}
+  </div>`;
+ },
+ dosen_tg(){return V.mahasiswa_tg()},
  dosen_kelas(){
   const ks=myMk();if(!ks.length)return '<div class="card">Belum ada mata kuliah yang diampu.</div>';
   const k=ks.find(x=>x.id==sel)||ks[0],t=today(),ps=S.ang.filter(a=>S.pes.some(p=>p.anggota_id==a.id&&p.mata_kuliah_id==k.id)),
@@ -380,13 +379,50 @@ const V={
   return `<select onchange="sel=this.value;draw()"><option value="">Semua kelas saya</option>${myMk().map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)}</option>`).join('')}</select>${r.map(x=>`<div class="card"><div class="row"><b>${esc(nm(x.anggota_id))}</b>${stSel(x.id,x.status)}</div><div class="mut">${esc(mkn(x.mata_kuliah_id))} · ${x.tanggal} · ${hm(x.masuk)}</div></div>`).join('')}`}
 };
 
-/* ===== AKSI ADMIN & EXCEL ===== */
+/* ===== AKSI TELEGRAM, ADMIN & EXCEL ===== */
+async function tesTelegram(btn){
+ btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim pesan tes…';
+ try{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)throw new Error('Sesi login habis');
+  const res=await fetch('/api/kirim-wa?action=test',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok||!j.ok)throw new Error(j.error||'HTTP '+res.status);
+  toast(j.message||'Pesan tes terkirim ke Telegram!');
+ }catch(e){
+  toast('Gagal tes Telegram: '+e.message);
+ }finally{
+  btn.disabled=false;btn.textContent=lbl;
+ }
+}
+async function putusTelegram(){
+ if(!confirm('Putuskan tautan notifikasi Telegram dari akun ini?'))return;
+ const {error}=await sb.from('anggota').update({telegram_chat_id:null}).eq('id',me.id);
+ if(error)return toast(error.message);
+ me.telegram_chat_id=null;toast('Tautan Telegram diputuskan');draw();
+}
+async function kirimNotifManual(btn){
+ btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim…';
+ try{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)throw new Error('Sesi login tidak ditemukan');
+  const res=await fetch('/api/kirim-wa',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok||j.ok===false)throw new Error(j.error||'HTTP '+res.status);
+  toast(`Antrean baru: ${j.antrean_baru} · Terkirim: ${j.terkirim} · Gagal: ${j.gagal}`);
+  await load();draw();
+ }catch(e){
+  toast('Gagal memicu notifikasi: '+e.message);
+ }finally{
+  btn.disabled=false;btn.textContent=lbl;
+ }
+}
 async function mulaiAuto(){const {error}=await sb.from('sesi_registrasi').insert({});if(error)return toast(error.message);toast('Mode Auto aktif! Tempelkan kartu ke alat.');await load();draw()}
 async function batalAuto(){await sb.from('sesi_registrasi').update({selesai:true}).eq('selesai',false);await load();draw()}
 function autoPeran(){const d=$('#au1').value==='dosen';$('#au3l').textContent=d?'NIDN/NIP':'NIM';$('#au4w').style.display=$('#au1').value==='mahasiswa'?'block':'none';$('#au7l').textContent=d?'diampu':'diikuti'}
 async function simpanAuto(lanjut){
  const mks=[...document.querySelectorAll('.auc:checked')].map(x=>x.value);
- const {data,error}=await sb.rpc('simpan_mode_auto',{p_sesi_id:S.sesi.id,p_peran:$('#au1').value,p_nama:$('#au2').value,p_nim:$('#au3').value,p_kelas:$('#au4')?.value||'',p_email:$('#au5').value,p_no_wa:$('#au6').value,p_mk_ids:mks,p_lanjut:lanjut});
+ const {data,error}=await sb.rpc('simpan_mode_auto',{p_sesi_id:S.sesi.id,p_peran:$('#au1').value,p_nama:$('#au2').value,p_nim:$('#au3').value,p_kelas:$('#au4')?.value||'',p_email:$('#au5').value,p_no_wa:null,p_mk_ids:mks,p_lanjut:lanjut});
  if(error||data?.error)return toast(error?.message||data.error);
  toast(lanjut?'Tersimpan! Tempelkan kartu berikutnya.':'Data & kartu berhasil disimpan!');
  await load();draw();
@@ -405,23 +441,6 @@ function editUsr(id){const a=S.ang.find(x=>x.id==id);if(!a)return;
 async function saveUsr(id){const {error}=await sb.from('anggota').update({email:$('#u2').value.trim().toLowerCase()||null,peran:$('#u1').value}).eq('id',id);if(error)return toast(error.message);cls();toast('Data pengguna diperbarui');await load();draw()}
 async function togAktif(id,v){const {error}=await sb.from('anggota').update({aktif:v}).eq('id',id);if(error)return toast(error.message);await load();draw()}
 async function togNotif(v){const {error}=await sb.from('pengaturan').update({notif_aktif:v}).eq('id',true);if(error)return toast(error.message);toast('Pengaturan notifikasi diperbarui');await load();draw()}
- async function kirimWaManual(btn){
- btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim…';
- try{
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session)throw new Error('Sesi login tidak ditemukan');
-  const res=await fetch('/api/kirim-wa',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
-  const j=await res.json().catch(()=>({}));
-  if(!res.ok||j.ok===false)throw new Error(j.error||'HTTP '+res.status);
-  toast(`Antrean baru: ${j.antrean_baru} · Terkirim: ${j.terkirim} · Gagal: ${j.gagal}`);
-  await load();draw();
- }catch(e){
-  toast('Gagal memicu WA: '+e.message);
- }finally{
-  btn.disabled=false;btn.textContent=lbl;
- }
-}
-async function simWA(){const w=normWA($('#nw').value);if(!waOk(w))return toast('Nomor tidak valid');const {error}=await sb.from('anggota').update({no_wa:w}).eq('id',me.id);if(error)return toast(error.message);me.no_wa=w;toast('Nomor tersimpan')}
 async function statLoad(){
  const el=$('#st');if(!el)return;let h='';
  for(const k of myMk()){
@@ -433,12 +452,12 @@ async function statLoad(){
  el.innerHTML=h||'<p class="mut">Belum ada mata kuliah.</p>';
 }
 function xlsView(){return `<div class="card"><h3>Template & Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" onclick="exportXls()">Export Laporan .xlsx (3 Sheet)</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
-function tpl(){const ws=XLSX.utils.aoa_to_sheet([['Peran','NIM_atau_NIDN','Nama','Kelas','Email_Gmail','No_WhatsApp','Kode_Matkul'],['mahasiswa','256661001','Budi Santoso','TRK-3A','budi@gmail.com','081234567890','2601;2603'],['dosen','198501012010','Dr. Siti Aminah','','siti@gmail.com','081298765432','2603']]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');XLSX.writeFile(wb,'template-presensi-polnes.xlsx')}
+function tpl(){const ws=XLSX.utils.aoa_to_sheet([['Peran','NIM_atau_NIDN','Nama','Kelas','Email_Gmail','Kode_Matkul'],['mahasiswa','256661001','Budi Santoso','TRK-3A','budi@gmail.com','2601;2603'],['dosen','198501012010','Dr. Siti Aminah','','siti@gmail.com','2603']]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');XLSX.writeFile(wb,'template-presensi-polnes.xlsx')}
 async function pickXls(inp){const f=inp.files[0];if(!f)return;const wb=XLSX.read(await f.arrayBuffer());pv=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});draw()}
-async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,wa=normWA(r.No_WhatsApp)||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,email,no_wa:wa,aktif:true},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
+async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,email,aktif:true},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
 function exportXls(){
  const ids=me.peran==='admin'?null:myMk().map(k=>k.id),wb=XLSX.utils.book_new(),A=(n,d)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n);
- A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,NIM_NIDN:a.nim,Nama:a.nama,Kelas:a.kelas,Email:a.email,Aktif:a.aktif})));
+ A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,NIM_NIDN:a.nim,Nama:a.nama,Kelas:a.kelas,Email:a.email,Telegram:a.telegram_chat_id?'Tertaut':'Belum',Aktif:a.aktif})));
  A('Mata_Kuliah',S.mk.filter(k=>!ids||ids.includes(k.id)).map(k=>({Kode:k.kode,Nama:k.nama,Hari:DN[k.hari],Mulai:hm(k.mulai),Selesai:hm(k.selesai),Ruangan:k.ruangan,Dosen:nm(k.dosen_id)})));
  A('Log_Presensi',S.pre.filter(r=>!ids||ids.includes(r.mata_kuliah_id)).map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Matkul:mkn(r.mata_kuliah_id),NIM:a.nim,Nama:a.nama,Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}}));
  XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx');
