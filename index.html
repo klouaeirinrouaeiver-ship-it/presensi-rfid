@@ -110,7 +110,7 @@ let me=null,S={mk:[],ang:[],pes:[],pre:[],dev:[],taps:[],sesi:null,ntf:[],set:{n
 const MENU={
  admin:[['dash','📊 Dashboard'],['mk','📚 Mata Kuliah'],['user','👥 Pengguna'],['log','📋 Log Presensi'],['auto','⚡ Mode Auto'],['ntf','💬 Notifikasi'],['xls','📥 Import / Export']],
  mahasiswa:[['kartu','🪪 Kartu Saya'],['stat','📈 Statistik'],['riw','🕒 Riwayat'],['wa','📱 WhatsApp']],
- dosen:[['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi Presensi'],['xls','📥 Import / Export']]
+ dosen:[['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi Presensi'],['xls','📥 Import / Export'],['wa','📱 WhatsApp']]
 };
 
 /* ===== GERBANG MASUK & DAFTAR AWAL ===== */
@@ -348,9 +348,11 @@ const V={
   <p style="margin:8px 0 4px">Kartu RFID: ${adaKartu?'<span class="b ok">'+esc(me.uid_kartu||'Terdaftar')+'</span>':'<span class="b er">Belum di-scan (Mode Auto)</span>'}</p>
   <p style="margin:4px 0 0;font-size:12px">Kalibrasi Notif WA: ${kalibrasi?'<span class="b ok">✓ Aktif & Terkalibrasi</span>':'<span class="b lt">Menunggu WA + UID Kartu</span>'}</p></div>
   <h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`
+ },
  mahasiswa_stat(){setTimeout(statLoad,0);return '<div id="st"><p class="mut">Memuat…</p></div>'},
  mahasiswa_riw(){return S.pre.filter(x=>x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
  mahasiswa_wa(){return `<div class="card"><label>📱 Nomor WhatsApp notifikasi</label><input id="nw" value="${esc(me.no_wa||'')}"><button class="btn p" onclick="simWA()">Simpan</button></div>`},
+ dosen_wa(){return V.mahasiswa_wa()},
  dosen_kelas(){
   const ks=myMk();if(!ks.length)return '<div class="card">Belum ada mata kuliah yang diampu.</div>';
   const k=ks.find(x=>x.id==sel)||ks[0],t=today(),ps=S.ang.filter(a=>S.pes.some(p=>p.anggota_id==a.id&&p.mata_kuliah_id==k.id)),
