@@ -141,7 +141,7 @@ h3{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 #bg-campus{
   position:absolute;top:-4%;left:-4%;width:108%;height:108%;
   object-fit:cover;object-position:center 30%;
-  opacity:0;transform:translate3d(0,0,0) scale(1.02);
+  opacity:0;transform:translate3d(-2.2%,-1%,0) scale(1.03);
   transition:opacity .9s ease;filter:saturate(1.05) contrast(1.04);
   -webkit-mask-image:radial-gradient(ellipse 90% 75% at 75% 78%,rgba(0,0,0,.9) 0%,rgba(0,0,0,.32) 48%,transparent 85%);
   mask-image:radial-gradient(ellipse 90% 75% at 75% 78%,rgba(0,0,0,.9) 0%,rgba(0,0,0,.32) 48%,transparent 85%);
@@ -149,11 +149,14 @@ h3{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 #bgl.has-campus #bg-campus{
   opacity:var(--campus-bg-op);
   will-change:transform;
-  animation:bgCampusDrift 28s ease-in-out infinite alternate;
+  animation:bgCampusDrift 32s ease-in-out infinite;
 }
 @keyframes bgCampusDrift{
-  0%{transform:translate3d(2.5%,-1.5%,0) scale(1.02)}
-  100%{transform:translate3d(-2.5%,1.5%,0) scale(1.05)}
+  0%{transform:translate3d(-2.2%,-1%,0) scale(1.03)}
+  38%{transform:translate3d(2.2%,1%,0) scale(1.04)}
+  50%{transform:translate3d(2.2%,1%,0) scale(1.04)}
+  88%{transform:translate3d(-2.2%,-1%,0) scale(1.03)}
+  100%{transform:translate3d(-2.2%,-1%,0) scale(1.03)}
 }
 .bg-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.38;animation:orbDrift 16s ease-in-out infinite alternate}
 .bg-orb.one{width:420px;height:420px;top:-120px;left:18%;background:rgba(16,185,129,.22)}
@@ -286,18 +289,21 @@ main{max-width:1380px;margin:0 auto;padding:20px 22px 42px;position:relative;z-i
 .hero-photo{
   position:absolute;top:-5%;left:-6%;width:112%;height:110%;
   object-fit:cover;object-position:center 38%;
-  opacity:0;transform:translate3d(0,0,0) scale(1.03);
+  opacity:0;transform:translate3d(3.5%,-1%,0) scale(1.04);
   transition:opacity .65s ease;
   filter:saturate(1.1);
 }
 .hero-photo.show{
   opacity:.88;
   will-change:transform;
-  animation:campusPan 20s ease-in-out infinite alternate;
+  animation:campusPan 24s ease-in-out infinite;
 }
 @keyframes campusPan{
-  0%{transform:translate3d(-4%,-1.5%,0) scale(1.03)}
-  100%{transform:translate3d(4%,1.5%,0) scale(1.06)}
+  0%{transform:translate3d(3.5%,-1%,0) scale(1.04)}
+  38%{transform:translate3d(-3.5%,1%,0) scale(1.05)}
+  50%{transform:translate3d(-3.5%,1%,0) scale(1.05)}
+  88%{transform:translate3d(3.5%,-1%,0) scale(1.04)}
+  100%{transform:translate3d(3.5%,-1%,0) scale(1.04)}
 }
 .hero::after{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -724,7 +730,7 @@ function relTime(ts){
   coba();
 })();
 
-/* ===== Dynamic Per-Course Image Loader ===== */
+/* ===== Dynamic Per-Course Image Loader (dengan sinkronisasi fase animasi) ===== */
 function applyCourseVisual(c){
   const imgEl=$('#hero-photo'),mediaEl=$('#hero-media');
   if(!imgEl||!mediaEl||!c)return;
@@ -739,7 +745,9 @@ function applyCourseVisual(c){
       mediaEl.classList.remove('has-custom');
       return;
     }
+    const phase=-((performance.now()/1000)%24).toFixed(2)+'s';
     if(imgEl.getAttribute('src')===url){
+      imgEl.style.animationDelay=phase;
       imgEl.classList.add('show');
       mediaEl.classList.toggle('has-custom',!!isCustom);
       return;
@@ -747,6 +755,7 @@ function applyCourseVisual(c){
     imgEl.classList.remove('show');
     requestAnimationFrame(()=>{
       imgEl.src=url;
+      imgEl.style.animationDelay=phase;
       imgEl.classList.add('show');
       mediaEl.classList.toggle('has-custom',!!isCustom);
     });
