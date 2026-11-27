@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/kirim-wa.js": { "maxDuration": 60 }
+  },
+  "crons": [
+    { "path": "/api/kirim-wa", "schedule": "30 0 * * *" }
+  ]
+}
