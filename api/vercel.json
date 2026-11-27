@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "api/kirim-wa.js": { "maxDuration": 60 },
+    "api/telegram-webhook.js": { "maxDuration": 15 }
+  },
+  "crons": [
+    { "path": "/api/kirim-wa", "schedule": "30 0 * * *" }
+  ]
+}
