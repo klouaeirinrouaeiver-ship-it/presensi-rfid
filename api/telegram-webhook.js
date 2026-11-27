@@ -29,6 +29,15 @@ export default async function handler(req, res) {
   const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
   const cronSecret = process.env.CRON_SECRET;
 
+  // Kembalikan username bot ke frontend secara otomatis
+  if (req.method === 'GET' && req.query?.bot === '1') {
+    if (!botToken) return res.status(500).json({ ok: false });
+    const meRes = await fetch(`https://api.telegram.org/bot${botToken}/getMe`, {
+      signal: AbortSignal.timeout(8000),
+    }).then((r) => r.json()).catch(() => null);
+    return res.status(200).json({ ok: Boolean(meRes?.ok), username: meRes?.result?.username || '' });
+  }
+
   // Jalur pendaftaran otomatis dari server Vercel (bebas blokir DNS ISP)
   if (req.method === 'GET' && req.query?.setup === '1') {
     const q = Array.isArray(req.query?.secret) ? req.query.secret[0] : req.query?.secret;
