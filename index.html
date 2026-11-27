@@ -31,13 +31,20 @@ label{display:block;margin-top:10px;font-size:12px;font-weight:600;color:var(--m
 .hero{background:linear-gradient(125deg,#0B5A42,#042118);color:#ECF5F0;border:1px solid var(--gd);border-radius:16px;padding:20px;margin-bottom:14px}.hero b{font-size:26px}
 dialog{border:1px solid var(--ln);border-radius:16px;background:var(--pn);color:var(--ink);width:min(480px,94vw);padding:20px}
 .toast{position:fixed;right:16px;bottom:16px;background:#063B2B;color:#fff;border-left:3px solid var(--gd);padding:10px 14px;border-radius:10px;z-index:99;max-width:340px}
-.gate{max-width:460px;margin:5vh auto;padding:0 16px}.gate .card{border-top:3px solid var(--gd)}
+.gate{max-width:440px;margin:7vh auto;padding:0 16px}.gate .card{border-top:3px solid var(--gd)}
+.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--in);padding:4px;border-radius:11px;border:1px solid var(--ln);margin-bottom:14px}
+.gtabs button{border:0;background:none;padding:8px;border-radius:8px;font-weight:600;color:var(--mut);cursor:pointer}
+.gtabs button.on{background:var(--pn);color:var(--dk);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
 .rbtn{background:var(--in);border:1.5px solid var(--ln);border-radius:11px;padding:10px 6px;text-align:center;cursor:pointer;color:var(--ink);transition:.15s}
 .rbtn b{display:block;font-size:13px}.rbtn small{display:block;font-size:11px;color:var(--mut);margin-top:2px}
 .rbtn.on{border-color:var(--em);background:rgba(16,185,129,.12);box-shadow:inset 0 0 0 1px var(--em)}
-.info-wa{background:var(--in);border-left:3px solid var(--gd);border-radius:9px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--mut)}
-.info-wa b{color:var(--ink);display:block;margin-bottom:4px}.info-wa ul{margin:0;padding-left:16px}.info-wa li{margin:2px 0}
+.info-wa{display:none;background:rgba(197,160,89,.12);border:1px solid rgba(197,160,89,.45);border-left:4px solid var(--gd);border-radius:9px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink);animation:fadeIn .2s ease}
+.info-wa.show{display:block}.info-wa b{display:block;margin-bottom:4px;color:var(--dk)}.info-wa ul{margin:0;padding-left:16px}.info-wa li{margin:3px 0}
+.inp-err{border-color:var(--er)!important;box-shadow:0 0 0 2px rgba(180,35,54,.15)}
+.gfoot{margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);text-align:center;font-size:12.5px;color:var(--mut)}
+.gfoot a{color:var(--dk);font-weight:600;text-decoration:none;cursor:pointer}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 body.proj main{font-size:17px}
 @media(max-width:760px){.app{grid-template-columns:1fr}.sb{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.sp{display:none}}
 </style></head>
@@ -53,7 +60,7 @@ const mn=t=>{const a=(t||'0:0').split(':');return +a[0]*60+ +a[1]},hm=m=>pad(Mat
 const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 const normWa=s=>{let d=String(s||'').replace(/\D/g,'');if(d.startsWith('0'))d='62'+d.slice(1);else if(d.startsWith('8'))d='62'+d;return /^628\d{8,12}$/.test(d)?d:''};
-let me=null,role='',wantRole=localStorage.getItem('wantRole')||'mahasiswa',tab='',sel='',proj=false,pv=[],S={mk:[],mem:[],pes:[],rec:[],set:{toleransi_menit:15},dev:[],ntf:[],wait:null,jp:{}};
+let me=null,role='',gateMode='login',wantRole='mahasiswa',tab='',sel='',proj=false,pv=[],S={mk:[],mem:[],pes:[],rec:[],set:{toleransi_menit:15},dev:[],ntf:[],wait:null,jp:{}};
 const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),4200)};
 const dlg=h=>{$('#dg').innerHTML=h;$('#dg').showModal()},cls=()=>$('#dg').close();
 const mask=s=>{s=String(s||'');return proj&&s.length>4?s.slice(0,-3)+'***':s};
@@ -65,34 +72,142 @@ const kpi=(a,b)=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`;
 const myMk=()=>S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id));
 const ampu=()=>S.mk.filter(k=>k.dosen_id==me.id);
 
-/* ---------- Login gate + pilih peran + penjelasan WhatsApp ---------- */
-function pickRole(r){wantRole=r;localStorage.setItem('wantRole',r);document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r==r))}
-function gate(msg){
- const R=[['mahasiswa','Mahasiswa','Kartu & rekap'],['dosen','Dosen','Kelas & koreksi'],['admin','Admin','Kelola sistem']];
- $('#app').innerHTML=`<div class="gate"><div class="card"><h2 style="color:var(--dk);margin-bottom:2px">Presensi RFID <span style="color:var(--gd)">Polnes</span></h2><p class="mut" style="margin-top:0">Prodi TRK · Politeknik Negeri Samarinda</p>${msg?`<p style="color:var(--er);font-weight:600">${esc(msg)}</p>`:''}
-<label>1. Pilih peran Anda terlebih dahulu</label>
-<div class="roles">${R.map(([k,t,s])=>`<button type="button" class="rbtn ${wantRole==k?'on':''}" data-r="${k}" onclick="pickRole('${k}')"><b>${t}</b><small>${s}</small></button>`).join('')}</div>
-<label>2. Nomor WhatsApp aktif (08… otomatis jadi 628…)<input id="wa" inputmode="tel" placeholder="081234567890" value="${esc(localStorage.getItem('wa')||'')}"></label>
-<div class="info-wa"><b>Kenapa wajib mengisi nomor WhatsApp?</b><ul>
-<li><b>Pengingat Tepat Waktu:</b> Sistem mengirim notifikasi otomatis tepat saat jadwal kuliah dimulai jika Anda belum melakukan <i>tap</i> kartu RFID, agar tidak melewati batas toleransi keterlambatan.</li>
+/* ---------- 2 Tampilan Gerbang: Masuk (Login) vs Daftar Awal ---------- */
+function setGateMode(m,msg){gateMode=m;gate(msg)}
+function pickRole(r){wantRole=r;document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r==r))}
+const waHelpHtml=`<div id="wa-help" class="info-wa"><b>Nomor WhatsApp wajib diisi untuk melanjutkan pendaftaran:</b><ul>
+<li><b>Pengingat Tepat Waktu:</b> Mengirim pesan otomatis tepat saat jam kuliah dimulai jika Anda belum <i>tap</i> kartu RFID agar tidak tercatat terlambat.</li>
 <li><b>Info Kelas (Khusus Dosen):</b> Mengirim ringkasan jumlah mahasiswa yang sudah hadir saat kelas dimulai.</li>
 <li><b>Anti-Spam (Maks. 1x):</b> Hanya dikirim 1 kali per mata kuliah dan tidak akan mengirim pesan jika Anda sudah <i>tap</i> kartu atau sudah melewati jam mulai.</li>
-</ul></div>
-<label>3. Masuk dengan akun terdaftar</label>
-<div class="ac" style="justify-content:stretch;margin-top:6px"><button class="p" style="width:100%;padding:10px" onclick="google()">Lanjutkan dengan Google (Gmail)</button></div>
-<hr style="border:0;border-top:1px solid var(--ln);margin:14px 0"><label style="margin-top:0">Atau masuk dengan email &amp; kata sandi<input id="em" type="email" autocomplete="username" placeholder="nama@gmail.com"></label><label>Kata sandi<input id="pw" type="password" autocomplete="current-password"></label>
-<div class="ac"><button onclick="emailLogin()">Masuk dengan Email</button></div></div></div>`}
-function needPrep(){if(!wantRole){toast('Pilih peran terlebih dahulu');return null}localStorage.setItem('wantRole',wantRole);const w=normWa($('#wa').value);if(!w){toast('Masukkan nomor WhatsApp yang valid (contoh 081234567890)');return null}localStorage.setItem('wa',w);return w}
-async function google(){if(!needPrep())return;const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(error)toast(error.message)}
-async function emailLogin(){if(!needPrep())return;const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)return toast(error.message);boot()}
-async function logout(){await sb.auth.signOut();me=null;gate()}
+</ul></div>`;
+
+function gate(msg){
+ const R=[['mahasiswa','Mahasiswa','Kartu & rekap'],['dosen','Dosen','Kelas & koreksi'],['admin','Admin','Kelola sistem']];
+ const isLogin=gateMode=='login';
+ $('#app').innerHTML=`<div class="gate"><div class="card">
+ <h2 style="color:var(--dk);margin-bottom:2px">Presensi RFID <span style="color:var(--gd)">Polnes</span></h2>
+ <p class="mut" style="margin-top:0;margin-bottom:14px">Prodi TRK · Politeknik Negeri Samarinda</p>
+ <div class="gtabs">
+   <button type="button" class="${isLogin?'on':''}" onclick="setGateMode('login')">Masuk (Login)</button>
+   <button type="button" class="${!isLogin?'on':''}" onclick="setGateMode('daftar')">Daftar Awal</button>
+ </div>
+ ${msg?`<p style="color:var(--er);font-weight:600;margin-top:0">${esc(msg)}</p>`:''}
+ ${isLogin?`
+   <div class="ac" style="justify-content:stretch;margin-top:4px"><button class="p" style="width:100%;padding:10px" onclick="loginGoogle()">Masuk dengan Google</button></div>
+   <hr style="border:0;border-top:1px solid var(--ln);margin:14px 0">
+   <label style="margin-top:0">Email<input id="em" type="email" autocomplete="username" placeholder="nama@gmail.com"></label>
+   <label>Kata sandi<input id="pw" type="password" autocomplete="current-password"></label>
+   <div class="ac"><button style="width:100%" onclick="loginEmail()">Masuk dengan Email</button></div>
+   <div class="gfoot">Belum pernah aktivasi akun? <a onclick="setGateMode('daftar')">Daftar awal di sini</a></div>
+ `:`
+   <label style="margin-top:0">1. Pilih peran Anda</label>
+   <div class="roles">${R.map(([k,t,s])=>`<button type="button" class="rbtn ${wantRole==k?'on':''}" data-r="${k}" onclick="pickRole('${k}')"><b>${t}</b><small>${s}</small></button>`).join('')}</div>
+   <label>2. Nomor WhatsApp aktif (08… otomatis jadi 628…)<input id="wa" inputmode="tel" placeholder="081234567890" oninput="this.classList.remove('inp-err')"></label>
+   ${waHelpHtml}
+   <label>3. Hubungkan akun terdaftar</label>
+   <div class="ac" style="justify-content:stretch;margin-top:6px"><button class="p" style="width:100%;padding:10px" onclick="daftarGoogle()">Daftar dengan Google (Gmail)</button></div>
+   <hr style="border:0;border-top:1px solid var(--ln);margin:14px 0">
+   <label style="margin-top:0">Atau daftar dengan email &amp; kata sandi<input id="em" type="email" autocomplete="username" placeholder="nama@gmail.com"></label>
+   <label>Buat kata sandi<input id="pw" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter"></label>
+   <div class="ac"><button style="width:100%" onclick="daftarEmail()">Daftar dengan Email</button></div>
+   <div class="gfoot">Sudah pernah mendaftar sebelumnya? <a onclick="setGateMode('login')">Masuk di sini</a></div>
+ `}</div></div>`}
+
+/* Layar lanjutan jika user baru langsung klik Masuk tanpa lewat Daftar Awal */
+function completeOnboarding(email,msg){
+ const R=[['mahasiswa','Mahasiswa','Kartu & rekap'],['dosen','Dosen','Kelas & koreksi'],['admin','Admin','Kelola sistem']];
+ $('#app').innerHTML=`<div class="gate"><div class="card">
+ <h2 style="color:var(--dk);margin-bottom:2px">Lengkapi Aktivasi Akun</h2>
+ <p class="mut" style="margin-top:0">Login sebagai <b>${esc(email)}</b>. Pilih peran dan isi nomor WhatsApp untuk mengaktifkan notifikasi kelas.</p>
+ ${msg?`<p style="color:var(--er);font-weight:600">${esc(msg)}</p>`:''}
+ <label>1. Pilih peran Anda</label>
+ <div class="roles">${R.map(([k,t,s])=>`<button type="button" class="rbtn ${wantRole==k?'on':''}" data-r="${k}" onclick="pickRole('${k}')"><b>${t}</b><small>${s}</small></button>`).join('')}</div>
+ <label>2. Nomor WhatsApp aktif<input id="wa" inputmode="tel" placeholder="081234567890" oninput="this.classList.remove('inp-err')"></label>
+ ${waHelpHtml}
+ <div class="ac"><button onclick="logout()">Batal</button><button class="p" onclick="finishOnboarding()">Simpan &amp; Lanjutkan</button></div>
+ </div></div>`}
+
+function checkDaftarWa(){
+ const inp=$('#wa'),w=normWa(inp?.value);
+ if(!w){
+  inp?.classList.add('inp-err');
+  $('#wa-help')?.classList.add('show');
+  inp?.focus();
+  return null;
+ }
+ return w;
+}
+
+async function loginGoogle(){
+ localStorage.setItem('authMode','login');
+ localStorage.removeItem('wantRole');
+ localStorage.removeItem('wa');
+ const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+ if(error)toast(error.message);
+}
+async function loginEmail(){
+ localStorage.setItem('authMode','login');
+ localStorage.removeItem('wantRole');
+ localStorage.removeItem('wa');
+ const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
+ if(error)return toast(error.message);
+ boot();
+}
+async function daftarGoogle(){
+ const w=checkDaftarWa();if(!w)return;
+ localStorage.setItem('authMode','daftar');
+ localStorage.setItem('wantRole',wantRole);
+ localStorage.setItem('wa',w);
+ const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+ if(error)toast(error.message);
+}
+async function daftarEmail(){
+ const w=checkDaftarWa();if(!w)return;
+ const email=$('#em').value.trim(),password=$('#pw').value;
+ if(!email||password.length<6)return toast('Masukkan email valid dan sandi minimal 6 karakter');
+ localStorage.setItem('authMode','daftar');
+ localStorage.setItem('wantRole',wantRole);
+ localStorage.setItem('wa',w);
+ let {data,error}=await sb.auth.signUp({email,password});
+ if(error&&/already registered/i.test(error.message)){
+  const r=await sb.auth.signInWithPassword({email,password});
+  data=r.data;error=r.error;
+ }
+ if(error)return toast(error.message);
+ if(!data?.session)return setGateMode('login','Link konfirmasi telah dikirim ke '+email+'. Cek inbox lalu silakan Masuk.');
+ boot();
+}
+async function finishOnboarding(){
+ const w=checkDaftarWa();if(!w)return;
+ localStorage.setItem('authMode','daftar');
+ localStorage.setItem('wantRole',wantRole);
+ localStorage.setItem('wa',w);
+ boot();
+}
+async function logout(){
+ await sb.auth.signOut();
+ localStorage.removeItem('authMode');localStorage.removeItem('wantRole');localStorage.removeItem('wa');
+ me=null;role='';gateMode='login';gate();
+}
 async function boot(){
  const {data:{session}}=await sb.auth.getSession();if(!session)return gate();
- const {data,error}=await sb.rpc('tautkan_akun',{p_no_wa:localStorage.getItem('wa')||''});
- if(error||data?.error){await sb.auth.signOut();return gate(error?.message||data.error)}
- const chosen=localStorage.getItem('wantRole');
- if(chosen&&chosen!==data.peran){await sb.auth.signOut();return gate(`Akun ini terdaftar sebagai ${data.peran.toUpperCase()}, bukan ${chosen.toUpperCase()}. Silakan pilih peran yang sesuai.`)}
- role=data.peran;await load(data.id);tab=TABS[role][0][0];render();live()}
+ const savedWa=localStorage.getItem('wa')||'';
+ const authMode=localStorage.getItem('authMode')||'login';
+ const chosen=localStorage.getItem('wantRole')||'';
+ const {data,error}=await sb.rpc('tautkan_akun',{p_no_wa:savedWa});
+ if(error||data?.error){
+  const errMsg=error?.message||data.error;
+  if(/WhatsApp/i.test(errMsg))return completeOnboarding(session.user?.email||'');
+  await sb.auth.signOut();
+  return gate(errMsg);
+ }
+ if(authMode=='daftar'&&chosen&&chosen!==data.peran){
+  await sb.auth.signOut();
+  return setGateMode('daftar',`Akun ini didaftarkan Admin sebagai ${data.peran.toUpperCase()}, bukan ${chosen.toUpperCase()}. Pilih peran yang sesuai.`);
+ }
+ localStorage.removeItem('authMode');localStorage.removeItem('wantRole');localStorage.removeItem('wa');
+ role=data.peran;await load(data.id);tab=TABS[role][0][0];render();live();
+}
 
 /* ---------- Data ---------- */
 async function load(id){
@@ -131,7 +246,7 @@ dash(){const t=S.rec.filter(r=>r.tanggal==TD()),d=S.dev.find(x=>x.aktif)||S.dev[
  <div class="grid2"><div class="card"><h3>Perangkat ESP8266</h3><p><span class="b ${on?'ok':'er'}">${on?'ONLINE':'OFFLINE'}</span> ${esc(d?.nama||'Belum ada perangkat')}</p><p class="mut mono">terakhir: ${d?.terakhir_terlihat?new Date(d.terakhir_terlihat).toLocaleString('id-ID'):'-'}</p></div>
  <div class="card"><h3>Live Tap Monitor</h3>${t.slice(0,8).map(r=>`<div class="row"><b>${esc(nm(r.anggota_id))}</b><span class="mono">${r.masuk.slice(0,5)} ${badge(r.status)}</span></div>`).join('')||'<p class="mut">Belum ada tap hari ini</p>'}</div></div>`},
 mk(){return `<div class="rw"><button class="p" onclick="mkForm()">Tambah mata kuliah</button></div><div class="card"><table><tr><th>Kode<th>Mata kuliah<th>Jadwal<th>Toleransi<th>Dosen<th>Ruang<th></tr>${S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><b>${esc(k.nama)}</b><td>${DN[k.hari]} ${k.mulai.slice(0,5)}–${k.selesai.slice(0,5)}<td>${tol(k)} mnt<td>${esc(nm(k.dosen_id))}<td>${esc(k.ruangan||'')}<td><button class="btn" onclick="mkForm('${k.id}')">Ubah</button> <button class="btn" onclick="mkDel('${k.id}')">Hapus</button></tr>`).join('')}</table></div>`},
-usr(){return `<div class="card"><table><tr><th>Nama<th>Peran<th>NIM/NIDN<th>Gmail<th>WA<th>Kartu<th>Akun<th></tr>${S.mem.map(a=>`<tr><td><b>${esc(a.nama)}</b><td>${a.peran}<td class="mono">${esc(a.nim)}<td>${esc(a.email||'-')}<td class="mono">${esc(a.no_wa||'-')}<td>${a.uid_kartu?'<span class="b ok">'+maskUid(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.auth_user_id?'<span class="b ok">tertaut</span>':'<span class="b">menunggu login</span>'}<td><button class="btn" onclick="togAktif('${a.id}',${!a.aktif})">${a.aktif?'Nonaktifkan':'Aktifkan'}</button></tr>`).join('')}</table></div>`},
+usr(){return `<div class="card"><table><tr><th>Nama<th>Peran<th>NIM/NIDN<th>Gmail<th>WA<th>Kartu<th>Akun<th>Aksi</tr>${S.mem.map(a=>`<tr><td><b>${esc(a.nama)}</b><td>${a.peran}<td class="mono">${esc(a.nim)}<td>${esc(a.email||'-')}<td class="mono">${esc(a.no_wa||'-')}<td>${a.uid_kartu?'<span class="b ok">'+maskUid(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.auth_user_id?'<span class="b ok">tertaut</span>':'<span class="b">menunggu login</span>'}<td><button class="btn" onclick="editUsr('${a.id}')">Atur Gmail</button> <button class="btn" onclick="togAktif('${a.id}',${!a.aktif})">${a.aktif?'Nonaktifkan':'Aktifkan'}</button></tr>`).join('')}</table></div>`},
 log(){const f=sel||'';let r=S.rec.filter(x=>!f||x.mata_kuliah_id==f).slice(0,100);const ks=role=='admin'?S.mk:ampu();
  return `<div class="rw"><select onchange="sel=this.value;render()"><option value="">Semua mata kuliah</option>${ks.map(k=>`<option value="${k.id}" ${k.id==f?'selected':''}>${esc(k.nama)}</option>`).join('')}</select><span class="mut">100 catatan terbaru · perubahan tercatat otomatis di log audit</span></div>
  <div class="card"><table><tr><th>Tanggal<th>Matkul<th>Nama<th>NIM<th>Masuk<th>Pulang<th>Status</tr>${r.map(x=>`<tr><td class="mono">${x.tanggal}<td>${esc(MKo(x.mata_kuliah_id).kode)}<td>${esc(nm(x.anggota_id))}<td class="mono">${esc(mask((S.mem.find(a=>a.id==x.anggota_id)||{}).nim))}<td class="mono">${x.masuk.slice(0,5)}<td class="mono">${x.pulang?x.pulang.slice(0,5):'—'}<td><select onchange="setSt('${x.anggota_id}','${x.mata_kuliah_id}',this.value,'${x.tanggal}')">${['Hadir','Terlambat','Izin','Sakit'].map(s=>`<option ${s==x.status?'selected':''}>${s}</option>`).join('')}</select></tr>`).join('')||'<tr><td colspan=7>Belum ada data</tr>'}</table></div>`},
@@ -172,6 +287,12 @@ function countdown(){const k=(me?myMk():[]).filter(k=>k.hari==new Date().getDay(
 async function setSt(aid,mkid,st,tgl){tgl=tgl||TD();const k=MKo(mkid),r=S.rec.find(x=>x.anggota_id==aid&&x.mata_kuliah_id==mkid&&x.tanggal==tgl);
  const {error}=r?await sb.from('presensi').update({status:st}).eq('id',r.id):await sb.from('presensi').insert({anggota_id:aid,mata_kuliah_id:mkid,tanggal:tgl,masuk:['Izin','Sakit'].includes(st)?k.mulai:nowT(),status:st,sumber:'manual'});
  if(error)return toast(error.message);toast('Status diperbarui');refresh()}
+function editUsr(id){const a=S.mem.find(x=>x.id==id);if(!a)return;
+ dlg(`<h3>Atur Gmail &amp; Peran</h3><p class="mut">${esc(a.nama)} (${esc(a.nim)})</p><label>Peran<select id="u1"><option value="mahasiswa" ${a.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${a.peran=='dosen'?'selected':''}>Dosen</option><option value="admin" ${a.peran=='admin'?'selected':''}>Admin</option></select></label><label>Alamat Gmail<input id="u2" type="email" value="${esc(a.email||'')}" placeholder="nama@gmail.com"></label><div class="ac"><button onclick="cls()">Batal</button><button class="p" onclick="saveUsr('${id}')">Simpan</button></div>`)}
+async function saveUsr(id){const em=$('#u2').value.trim().toLowerCase()||null,pr=$('#u1').value;
+ if(em&&!/^\S+@\S+\.\S+$/.test(em))return toast('Format Gmail tidak valid');
+ const {error}=await sb.from('anggota').update({email:em,peran:pr}).eq('id',id);
+ if(error)return toast(error.message);cls();toast('Data pengguna diperbarui');refresh()}
 function mkForm(id){const k=S.mk.find(x=>x.id==id)||{hari:1,mulai:'08:00',selesai:'09:40',ruangan:'Lab TRK'};
  dlg(`<h3>${id?'Ubah':'Tambah'} mata kuliah</h3><label>Kode<input id="k1" value="${esc(k.kode)}"></label><label>Nama<input id="k2" value="${esc(k.nama)}"></label><label>Hari<select id="k3">${[1,2,3,4,5,6,0].map(d=>`<option value="${d}" ${d==k.hari?'selected':''}>${DN[d]}</option>`).join('')}</select></label>
  <div class="r2"><label>Mulai<input type="time" id="k4" value="${esc((k.mulai||'').slice(0,5))}"></label><label>Selesai<input type="time" id="k5" value="${esc((k.selesai||'').slice(0,5))}"></label></div>
@@ -184,7 +305,7 @@ async function mkSave(id){const v=$('#k6').value,p={kode:$('#k1').value.trim(),n
 async function mkDel(id){if(!confirm('Hapus mata kuliah ini?'))return;const {error}=await sb.from('mata_kuliah').delete().eq('id',id);if(error)return toast(error.message);refresh()}
 async function togAktif(id,v){const {error}=await sb.from('anggota').update({aktif:v}).eq('id',id);if(error)return toast(error.message);refresh()}
 async function togNotif(v){const {error}=await sb.from('pengaturan').update({notif_aktif:v}).eq('id',true);if(error)toast(error.message);refresh()}
-async function saveWa(){const w=normWa($('#nw').value);if(!w)return toast('Nomor tidak valid');localStorage.setItem('wa',w);const {data,error}=await sb.rpc('tautkan_akun',{p_no_wa:w});if(error||data?.error)return toast(error?.message||data.error);toast('Nomor WhatsApp diperbarui');refresh()}
+async function saveWa(){const w=normWa($('#nw').value);if(!w)return toast('Nomor tidak valid');const {data,error}=await sb.rpc('tautkan_akun',{p_no_wa:w});if(error||data?.error)return toast(error?.message||data.error);toast('Nomor WhatsApp diperbarui');refresh()}
 function ovpPeran(){const d=$('#o1').value=='dosen';$('#o3l').textContent=d?'NIDN/NIP':'NIM';$('#o4w').style.display=d?'none':'block';$('#o6l').textContent=d?'diampu':'diikuti'}
 async function ovp(){const peran=$('#o1').value,nama=$('#o2').value.trim(),nim=$('#o3').value.trim(),kelas=$('#o4').value.trim(),email=$('#o5').value.trim().toLowerCase(),mks=[...document.querySelectorAll('.oc:checked')].map(x=>x.value);
  if(!nama||!/^\d{6,20}$/.test(nim)||!/^\S+@\S+\.\S+$/.test(email)||(peran=='mahasiswa'&&!kelas))return toast('Lengkapi nama, NIM/NIDN, kelas, dan Gmail dengan benar');
