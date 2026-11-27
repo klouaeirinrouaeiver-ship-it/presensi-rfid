@@ -169,23 +169,28 @@ async function google(daftar){
  if(error)toast(error.message);
 }
 async function emailAuth(daftar){
- const email=$('#em').value.trim(),password=$('#pw').value;
+ const email=$('#em').value.trim().toLowerCase(),password=$('#pw').value;
  if(!email||!password){toast('Isi email dan kata sandi');return}
  if(daftar){
   if(!cekDaftar())return;
   const {data,error}=await sb.auth.signUp({email,password});
-  if(error)return toast(error.message);
+  if(error){
+   const msg=/already registered/i.test(error.message)
+    ?'Email sudah terdaftar. Pindah ke tab Masuk untuk login.'
+    :error.message;
+   return toast(msg);
+  }
   if(!data.session){
-   return toast('Akun dibuat! Buka Gmail dan klik link konfirmasi sebelum login.');
+   return toast('Akun dibuat, namun verifikasi email di Supabase masih aktif. Matikan Confirm Email di dashboard Supabase.');
   }
   toast('Pendaftaran berhasil!');
  }else{
   localStorage.removeItem('pend');
   const {error}=await sb.auth.signInWithPassword({email,password});
   if(error){
-   const msg=/Invalid login/i.test(error.message)
-    ?'Email belum terdaftar di Daftar Awal, kata sandi salah, atau akun ini memakai login Google.'
-    :error.message;
+   let msg=error.message;
+   if(/Email not confirmed/i.test(msg))msg='Email belum dikonfirmasi. Jalankan UPDATE auth.users di SQL Editor Supabase.';
+   else if(/Invalid login/i.test(msg))msg='Email belum terdaftar di Daftar Awal, kata sandi salah, atau akun memakai login Google.';
    return toast(msg);
   }
  }
