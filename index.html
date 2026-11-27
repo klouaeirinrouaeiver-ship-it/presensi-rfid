@@ -202,10 +202,12 @@ async function simpanAkt(){
  localStorage.setItem('pend',JSON.stringify({wa:w,peran:role}));
  boot();
 }
-async function keluar(){await sb.auth.signOut();localStorage.removeItem('pend');me=null;tab='masuk';gate()}
+async function keluar(){if(CH){sb.removeChannel(CH);CH=null}await sb.auth.signOut();localStorage.removeItem('pend');me=null;tab='masuk';gate()}
 
-/* ===== BOOT & REALTIME ===== */
-async function boot(){
+/* ===== BOOT & REALTIME (DENGAN MUTEX PENCEGAH DOUBLE-RUN) ===== */
+let CH=null,bt=0;
+async function boot(){if(bt)return;bt=1;try{await boot0()}finally{bt=0}}
+async function boot0(){
  const {data:{session}}=await sb.auth.getSession();
  if(!session)return gate();
  let p={};try{p=JSON.parse(localStorage.getItem('pend')||'{}')}catch(e){}
@@ -232,7 +234,8 @@ async function boot(){
  pg=MENU[me.peran][0][0];
  shell();
  if(me.peran==='admin'){
-  sb.channel('live-admin')
+  if(CH)sb.removeChannel(CH);
+  CH=sb.channel('live-admin')
    .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},async x=>{
     await load();const r=x.new;
     if(r&&r.anggota_id){const a=S.ang.find(z=>z.id==r.anggota_id)||{};S.taps=[{n:a.nama||'Tap',j:hm(r.pulang||r.masuk),s:r.status},...S.taps].slice(0,8);toast((a.nama||'Tap')+' — '+hm(r.masuk))}
@@ -280,7 +283,7 @@ function go(p){pg=p;shell()}
 function goM(p){pg=p;drawer(0);shell()}
 function toggleFull(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().then(()=>document.body.classList.add('kiosk'))}else document.exitFullscreen().then(()=>document.body.classList.remove('kiosk'))}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)document.body.classList.remove('kiosk')});
-const draw=()=>{const f=V[me.peran+'_'+pg];$('#main').innerHTML=f?f():'<div class="card">Halaman belum tersedia.</div>'};
+const draw=()=>{if(me.peran==='admin'&&pg==='auto'&&S.sesi?.uid_tertangkap&&document.activeElement?.closest('#main')&&/INPUT|SELECT/.test(document.activeElement.tagName))return;const f=V[me.peran+'_'+pg];$('#main').innerHTML=f?f():'<div class="card">Halaman belum tersedia.</div>'};
 
 /* ===== KOMPONEN ===== */
 const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':s=='Izin'||s=='Sakit'?'':'er'}">${esc(s)}</span>`;
@@ -386,11 +389,17 @@ async function statLoad(){
  }
  el.innerHTML=h||'<p class="mut">Belum ada mata kuliah.</p>';
 }
-function xlsView(){return `<div class="card"><h3>Template & Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" onclick="exportXls()">Export Laporan .xlsx</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
+function xlsView(){return `<div class="card"><h3>Template & Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" onclick="exportXls()">Export Laporan .xlsx (3 Sheet)</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
 function tpl(){const ws=XLSX.utils.aoa_to_sheet([['Peran','NIM_atau_NIDN','Nama','Kelas','Email_Gmail','No_WhatsApp','Kode_Matkul'],['mahasiswa','256661001','Budi Santoso','TRK-3A','budi@gmail.com','081234567890','2601;2603'],['dosen','198501012010','Dr. Siti Aminah','','siti@gmail.com','081298765432','2603']]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');XLSX.writeFile(wb,'template-presensi-polnes.xlsx')}
 async function pickXls(inp){const f=inp.files[0];if(!f)return;const wb=XLSX.read(await f.arrayBuffer());pv=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});draw()}
 async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,wa=normWA(r.No_WhatsApp)||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,email,no_wa:wa,aktif:true},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
-function exportXls(){const det=S.pre.map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Matkul:mkn(r.mata_kuliah_id),NIM:a.nim,Nama:a.nama,Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}});const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(det),'Log_Presensi');XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx')}
+function exportXls(){
+ const ids=me.peran==='admin'?null:myMk().map(k=>k.id),wb=XLSX.utils.book_new(),A=(n,d)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n);
+ A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,NIM_NIDN:a.nim,Nama:a.nama,Kelas:a.kelas,Email:a.email,Aktif:a.aktif})));
+ A('Mata_Kuliah',S.mk.filter(k=>!ids||ids.includes(k.id)).map(k=>({Kode:k.kode,Nama:k.nama,Hari:DN[k.hari],Mulai:hm(k.mulai),Selesai:hm(k.selesai),Ruangan:k.ruangan,Dosen:nm(k.dosen_id)})));
+ A('Log_Presensi',S.pre.filter(r=>!ids||ids.includes(r.mata_kuliah_id)).map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Matkul:mkn(r.mata_kuliah_id),NIM:a.nim,Nama:a.nama,Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}}));
+ XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx');
+}
 
 setInterval(()=>document.querySelectorAll('[data-cd]').forEach(e=>{const d=new Date(),n=d.getHours()*60+d.getMinutes(),s=d.getSeconds(),left=+e.dataset.cd*60-(n*60+s);e.textContent=left>0?`⏳ Batas tepat waktu ${String(Math.floor(left/3600)).padStart(2,'0')}:${String(Math.floor(left%3600/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'⛔ Batas tepat waktu sudah lewat'}),1000);
 sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_IN'&&!me)boot()});
