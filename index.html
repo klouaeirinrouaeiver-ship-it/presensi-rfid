@@ -341,8 +341,13 @@ const V={
  dosen_xls(){return xlsView()},
  mahasiswa_kartu(){
   const hr=myMk().filter(k=>k.hari==new Date().getDay());
-  return `<div class="card" style="background:linear-gradient(135deg,#0B5D44,#063024);color:#fff"><img src="./logo-polnes.png" style="height:40px" alt=""><h2 style="margin:8px 0 2px">${esc(me.nama)}</h2><div>${esc(me.nim||'')} · ${esc(me.kelas||'')}</div><p>Kartu RFID: ${me.uid_kartu||me.punya_kartu?'<span class="b ok">Terdaftar</span>':'<span class="b er">Belum ada kartu</span>'}</p></div>
-  <h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`},
+  const adaKartu=!!(me.uid_kartu||me.punya_kartu);
+  const waSiap=!!(me.no_wa&&/^628\d{6,12}$/.test(me.no_wa));
+  const kalibrasi=me.aktif&&adaKartu&&waSiap&&!!me.email;
+  return `<div class="card" style="background:linear-gradient(135deg,#0B5D44,#063024);color:#fff"><img src="./logo-polnes.png" style="height:40px" alt=""><h2 style="margin:8px 0 2px">${esc(me.nama)}</h2><div>${esc(me.nim||'')} · ${esc(me.kelas||'-')}</div>
+  <p style="margin:8px 0 4px">Kartu RFID: ${adaKartu?'<span class="b ok">'+esc(me.uid_kartu||'Terdaftar')+'</span>':'<span class="b er">Belum di-scan (Mode Auto)</span>'}</p>
+  <p style="margin:4px 0 0;font-size:12px">Kalibrasi Notif WA: ${kalibrasi?'<span class="b ok">✓ Aktif & Terkalibrasi</span>':'<span class="b lt">Menunggu WA + UID Kartu</span>'}</p></div>
+  <h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`
  mahasiswa_stat(){setTimeout(statLoad,0);return '<div id="st"><p class="mut">Memuat…</p></div>'},
  mahasiswa_riw(){return S.pre.filter(x=>x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
  mahasiswa_wa(){return `<div class="card"><label>📱 Nomor WhatsApp notifikasi</label><input id="nw" value="${esc(me.no_wa||'')}"><button class="btn p" onclick="simWA()">Simpan</button></div>`},
