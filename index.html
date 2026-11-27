@@ -31,7 +31,13 @@ label{display:block;margin-top:10px;font-size:12px;font-weight:600;color:var(--m
 .hero{background:linear-gradient(125deg,#0B5A42,#042118);color:#ECF5F0;border:1px solid var(--gd);border-radius:16px;padding:20px;margin-bottom:14px}.hero b{font-size:26px}
 dialog{border:1px solid var(--ln);border-radius:16px;background:var(--pn);color:var(--ink);width:min(480px,94vw);padding:20px}
 .toast{position:fixed;right:16px;bottom:16px;background:#063B2B;color:#fff;border-left:3px solid var(--gd);padding:10px 14px;border-radius:10px;z-index:99;max-width:340px}
-.gate{max-width:420px;margin:7vh auto;padding:0 16px}.gate .card{border-top:3px solid var(--gd)}
+.gate{max-width:460px;margin:5vh auto;padding:0 16px}.gate .card{border-top:3px solid var(--gd)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.rbtn{background:var(--in);border:1.5px solid var(--ln);border-radius:11px;padding:10px 6px;text-align:center;cursor:pointer;color:var(--ink);transition:.15s}
+.rbtn b{display:block;font-size:13px}.rbtn small{display:block;font-size:11px;color:var(--mut);margin-top:2px}
+.rbtn.on{border-color:var(--em);background:rgba(16,185,129,.12);box-shadow:inset 0 0 0 1px var(--em)}
+.info-wa{background:var(--in);border-left:3px solid var(--gd);border-radius:9px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--mut)}
+.info-wa b{color:var(--ink);display:block;margin-bottom:4px}.info-wa ul{margin:0;padding-left:16px}.info-wa li{margin:2px 0}
 body.proj main{font-size:17px}
 @media(max-width:760px){.app{grid-template-columns:1fr}.sb{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.sp{display:none}}
 </style></head>
@@ -47,8 +53,8 @@ const mn=t=>{const a=(t||'0:0').split(':');return +a[0]*60+ +a[1]},hm=m=>pad(Mat
 const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 const normWa=s=>{let d=String(s||'').replace(/\D/g,'');if(d.startsWith('0'))d='62'+d.slice(1);else if(d.startsWith('8'))d='62'+d;return /^628\d{8,12}$/.test(d)?d:''};
-let me=null,role='',tab='',sel='',proj=false,pv=[],S={mk:[],mem:[],pes:[],rec:[],set:{toleransi_menit:15},dev:[],ntf:[],wait:null,jp:{}};
-const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),3800)};
+let me=null,role='',wantRole=localStorage.getItem('wantRole')||'mahasiswa',tab='',sel='',proj=false,pv=[],S={mk:[],mem:[],pes:[],rec:[],set:{toleransi_menit:15},dev:[],ntf:[],wait:null,jp:{}};
+const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),4200)};
 const dlg=h=>{$('#dg').innerHTML=h;$('#dg').showModal()},cls=()=>$('#dg').close();
 const mask=s=>{s=String(s||'');return proj&&s.length>4?s.slice(0,-3)+'***':s};
 const maskUid=u=>u?u.slice(0,2)+'••••'+u.slice(-2):'';
@@ -59,20 +65,33 @@ const kpi=(a,b)=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`;
 const myMk=()=>S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id));
 const ampu=()=>S.mk.filter(k=>k.dosen_id==me.id);
 
-/* ---------- Login gate + kalibrasi WhatsApp ---------- */
-function gate(msg){$('#app').innerHTML=`<div class="gate"><div class="card"><h2 style="color:var(--dk)">Presensi RFID <span style="color:var(--gd)">Polnes</span></h2><p class="mut">Prodi TRK · Politeknik Negeri Samarinda</p>${msg?`<p style="color:var(--er)">${esc(msg)}</p>`:''}
-<label>Nomor WhatsApp aktif (08… otomatis jadi 628…)<input id="wa" inputmode="tel" placeholder="081234567890" value="${esc(localStorage.getItem('wa')||'')}"></label>
-<div class="ac" style="justify-content:stretch"><button class="p" style="width:100%;padding:10px" onclick="google()">Masuk dengan Google</button></div>
-<hr style="border:0;border-top:1px solid var(--ln);margin:16px 0"><label>Atau email &amp; kata sandi<input id="em" type="email" autocomplete="username"></label><label>Kata sandi<input id="pw" type="password" autocomplete="current-password"></label>
-<div class="ac"><button onclick="emailLogin()">Masuk</button></div></div></div>`}
-function needWa(){const w=normWa($('#wa').value);if(!w){toast('Nomor WhatsApp tidak valid');return null}localStorage.setItem('wa',w);return w}
-async function google(){if(!needWa())return;const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(error)toast(error.message)}
-async function emailLogin(){if(!needWa())return;const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)return toast(error.message);boot()}
+/* ---------- Login gate + pilih peran + penjelasan WhatsApp ---------- */
+function pickRole(r){wantRole=r;localStorage.setItem('wantRole',r);document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r==r))}
+function gate(msg){
+ const R=[['mahasiswa','Mahasiswa','Kartu & rekap'],['dosen','Dosen','Kelas & koreksi'],['admin','Admin','Kelola sistem']];
+ $('#app').innerHTML=`<div class="gate"><div class="card"><h2 style="color:var(--dk);margin-bottom:2px">Presensi RFID <span style="color:var(--gd)">Polnes</span></h2><p class="mut" style="margin-top:0">Prodi TRK · Politeknik Negeri Samarinda</p>${msg?`<p style="color:var(--er);font-weight:600">${esc(msg)}</p>`:''}
+<label>1. Pilih peran Anda terlebih dahulu</label>
+<div class="roles">${R.map(([k,t,s])=>`<button type="button" class="rbtn ${wantRole==k?'on':''}" data-r="${k}" onclick="pickRole('${k}')"><b>${t}</b><small>${s}</small></button>`).join('')}</div>
+<label>2. Nomor WhatsApp aktif (08… otomatis jadi 628…)<input id="wa" inputmode="tel" placeholder="081234567890" value="${esc(localStorage.getItem('wa')||'')}"></label>
+<div class="info-wa"><b>Kenapa wajib mengisi nomor WhatsApp?</b><ul>
+<li><b>Pengingat Tepat Waktu:</b> Sistem mengirim notifikasi otomatis tepat saat jadwal kuliah dimulai jika Anda belum melakukan <i>tap</i> kartu RFID, agar tidak melewati batas toleransi keterlambatan.</li>
+<li><b>Info Kelas (Khusus Dosen):</b> Mengirim ringkasan jumlah mahasiswa yang sudah hadir saat kelas dimulai.</li>
+<li><b>Anti-Spam (Maks. 1x):</b> Hanya dikirim 1 kali per mata kuliah dan tidak akan mengirim pesan jika Anda sudah <i>tap</i> kartu atau sudah melewati jam mulai.</li>
+</ul></div>
+<label>3. Masuk dengan akun terdaftar</label>
+<div class="ac" style="justify-content:stretch;margin-top:6px"><button class="p" style="width:100%;padding:10px" onclick="google()">Lanjutkan dengan Google (Gmail)</button></div>
+<hr style="border:0;border-top:1px solid var(--ln);margin:14px 0"><label style="margin-top:0">Atau masuk dengan email &amp; kata sandi<input id="em" type="email" autocomplete="username" placeholder="nama@gmail.com"></label><label>Kata sandi<input id="pw" type="password" autocomplete="current-password"></label>
+<div class="ac"><button onclick="emailLogin()">Masuk dengan Email</button></div></div></div>`}
+function needPrep(){if(!wantRole){toast('Pilih peran terlebih dahulu');return null}localStorage.setItem('wantRole',wantRole);const w=normWa($('#wa').value);if(!w){toast('Masukkan nomor WhatsApp yang valid (contoh 081234567890)');return null}localStorage.setItem('wa',w);return w}
+async function google(){if(!needPrep())return;const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(error)toast(error.message)}
+async function emailLogin(){if(!needPrep())return;const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)return toast(error.message);boot()}
 async function logout(){await sb.auth.signOut();me=null;gate()}
 async function boot(){
  const {data:{session}}=await sb.auth.getSession();if(!session)return gate();
  const {data,error}=await sb.rpc('tautkan_akun',{p_no_wa:localStorage.getItem('wa')||''});
  if(error||data?.error){await sb.auth.signOut();return gate(error?.message||data.error)}
+ const chosen=localStorage.getItem('wantRole');
+ if(chosen&&chosen!==data.peran){await sb.auth.signOut();return gate(`Akun ini terdaftar sebagai ${data.peran.toUpperCase()}, bukan ${chosen.toUpperCase()}. Silakan pilih peran yang sesuai.`)}
  role=data.peran;await load(data.id);tab=TABS[role][0][0];render();live()}
 
 /* ---------- Data ---------- */
