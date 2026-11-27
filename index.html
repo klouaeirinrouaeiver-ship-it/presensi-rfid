@@ -405,6 +405,22 @@ function editUsr(id){const a=S.ang.find(x=>x.id==id);if(!a)return;
 async function saveUsr(id){const {error}=await sb.from('anggota').update({email:$('#u2').value.trim().toLowerCase()||null,peran:$('#u1').value}).eq('id',id);if(error)return toast(error.message);cls();toast('Data pengguna diperbarui');await load();draw()}
 async function togAktif(id,v){const {error}=await sb.from('anggota').update({aktif:v}).eq('id',id);if(error)return toast(error.message);await load();draw()}
 async function togNotif(v){const {error}=await sb.from('pengaturan').update({notif_aktif:v}).eq('id',true);if(error)return toast(error.message);toast('Pengaturan notifikasi diperbarui');await load();draw()}
+ async function kirimWaManual(btn){
+ btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim…';
+ try{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)throw new Error('Sesi login tidak ditemukan');
+  const res=await fetch('/api/kirim-wa',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok||j.ok===false)throw new Error(j.error||'HTTP '+res.status);
+  toast(`Antrean baru: ${j.antrean_baru} · Terkirim: ${j.terkirim} · Gagal: ${j.gagal}`);
+  await load();draw();
+ }catch(e){
+  toast('Gagal memicu WA: '+e.message);
+ }finally{
+  btn.disabled=false;btn.textContent=lbl;
+ }
+}
 async function simWA(){const w=normWA($('#nw').value);if(!waOk(w))return toast('Nomor tidak valid');const {error}=await sb.from('anggota').update({no_wa:w}).eq('id',me.id);if(error)return toast(error.message);me.no_wa=w;toast('Nomor tersimpan')}
 async function statLoad(){
  const el=$('#st');if(!el)return;let h='';
