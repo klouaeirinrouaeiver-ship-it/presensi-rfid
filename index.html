@@ -459,14 +459,20 @@ const V={
  mahasiswa_riw(){return S.pre.filter(x=>me&&x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
  tg(){
   if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
-  const ok=!!me.telegram_chat_id,poll=!!tgTimer;
+  const ok=!!me.telegram_chat_id,poll=!!tgTimer,isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   return `<div class="card" style="max-width:560px">
    <div class="row" style="margin-bottom:8px"><b>✈️ Notifikasi Telegram Otomatis</b>${ok?'<span class="b ok">🟢 Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
    <p class="mut" style="margin-top:0">${ok?`Akun Telegram Anda sudah tertaut (Chat ID: <span class="mono">${esc(me.telegram_chat_id)}</span>). Anda menerima pengingat otomatis saat jam kuliah dimulai jika belum tap kartu RFID.`:'Hubungkan Telegram dalam 1 klik untuk menerima pengingat otomatis tepat saat jam mata kuliah dimulai, tanpa memakai nomor HP pribadi.'}</p>
    ${ok?`<button type="button" class="btn p" onclick="tesTelegram(this)">📨 Kirim Pesan Tes ke Telegram Saya</button>
     <div class="row" style="margin-top:8px;justify-content:flex-start"><button type="button" class="btn sm" onclick="tautUlang(this)">🔄 Tautkan Ulang</button><button type="button" class="btn sm er" onclick="putusTelegram()">Putuskan Tautan</button></div>`
-   :`<button type="button" class="btn tg" onclick="hubungkanTg(this)" ${poll?'disabled':''}>🔗 Hubungkan Telegram (1 Klik)</button>
-    ${poll?`<div class="card" style="margin:12px 0 0;background:rgba(34,158,217,.1)"><span class="spin"></span> <b>Menunggu Anda menekan START di Telegram…</b><div class="mut" id="tgleft">Mengecek otomatis setiap 3 detik · sisa ${tgLeft} dtk</div></div>`:`<p class="mut" style="margin:10px 0 6px">Setelah menekan <b>START</b> di Telegram, status berubah otomatis. Jika tidak, tekan tombol di bawah.</p>`}
+   :`<div class="row" style="gap:8px;flex-wrap:wrap;justify-content:flex-start">
+     ${isMobile
+      ?`<button type="button" class="btn tg" onclick="hubungkanTg(this,'app')" ${poll?'disabled':''}>🔗 Hubungkan Telegram (1 Klik)</button>
+        <button type="button" class="btn sm" onclick="hubungkanTg(this,'web')" ${poll?'disabled':''}>🌐 Buka via Telegram Web</button>`
+      :`<button type="button" class="btn tg" onclick="hubungkanTg(this,'web')" ${poll?'disabled':''}>🌐 Hubungkan via Telegram Web (1 Klik)</button>
+        <button type="button" class="btn sm" onclick="hubungkanTg(this,'app')" ${poll?'disabled':''}>💻 Buka di Telegram Desktop</button>`}
+    </div>
+    ${poll?`<div class="card" style="margin:12px 0 0;background:rgba(34,158,217,.1)"><span class="spin"></span> <b>Menunggu Anda menekan START di Telegram…</b><div class="mut" id="tgleft">Mengecek otomatis setiap 3 detik · sisa ${tgLeft} dtk</div></div>`:`<p class="mut" style="margin:10px 0 6px">Setelah menekan <b>START</b> di Telegram (atau mengirim NIM/Email Anda ke bot), status berubah otomatis.</p>`}
     <button type="button" class="btn sm" onclick="cekTg(this)">🔄 Cek Status Koneksi</button>`}
   </div>`;
  },
@@ -502,15 +508,19 @@ function memRows(){
 function memRefresh(){const t=$('#memtb');if(t)t.innerHTML=memRows()}
 
 /* ===== TELEGRAM ===== */
-async function hubungkanTg(btn){
+async function hubungkanTg(btn,mode){
  if(!me)return;
+ mode=mode||(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'app':'web');
  const w=window.open('','_blank');
  if(btn){btn.disabled=true}
  try{
   const res=await fetch('/api/telegram-webhook?bot=1');
   const j=await res.json().catch(()=>({}));
   if(!j.ok||!j.username)throw new Error('Token bot di Vercel belum valid atau belum di-redeploy');
-  const url=`https://t.me/${encodeURIComponent(j.username)}?start=${encodeURIComponent(me.id)}`;
+  try{await navigator.clipboard.writeText('/start '+me.id)}catch(e){}
+  const url=mode==='web'
+   ?`https://web.telegram.org/k/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${j.username}&start=${me.id}`)}`
+   :`https://t.me/${encodeURIComponent(j.username)}?start=${encodeURIComponent(me.id)}`;
   if(w)w.location.href=url;else window.open(url,'_blank');
   startTgPoll();
  }catch(e){
