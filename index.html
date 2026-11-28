@@ -12,8 +12,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
-:root{--em:#10B981;--em-deep:#0B5D44;--gd:#C5A059;--gd-soft:#E8D4A2;--bg:#EEF3F0;--ink:#0A2119;--mut:#526B60;--ln:rgba(11,93,68,.16);--ok:#066B4B;--er:#B42336;--card:rgba(255,255,255,.88);--card2:#fff;--hd:rgba(238,243,240,.86);--ph:0s;--camp:.16;--shadow:0 8px 24px -14px rgba(6,44,32,.28)}
-[data-theme=dark]{--bg:#050C0A;--ink:#E6F2EC;--mut:#8FB0A2;--ln:rgba(16,185,129,.22);--ok:#34D399;--er:#F0707F;--card:rgba(9,27,21,.84);--card2:#0B1F18;--hd:rgba(5,12,10,.86);--camp:.24;--shadow:0 10px 30px -14px rgba(0,0,0,.7)}
+:root{--em:#10B981;--em-deep:#0B5D44;--gd:#C5A059;--gd-soft:#E8D4A2;--bg:#EEF3F0;--ink:#0A2119;--mut:#526B60;--ln:rgba(11,93,68,.16);--ok:#066B4B;--er:#B42336;--card:#FFFFFF;--card2:#fff;--hd:rgba(238,243,240,.86);--camp:.09;--shadow:0 2px 6px rgba(6,44,32,.10)}
+[data-theme=dark]{--bg:#050C0A;--ink:#E6F2EC;--mut:#8FB0A2;--ln:rgba(16,185,129,.22);--ok:#34D399;--er:#F0707F;--card:#0B1F18;--card2:#0B1F18;--hd:rgba(5,12,10,.86);--camp:.14;--shadow:0 2px 8px rgba(0,0,0,.45)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font:14px/1.55 'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);transition:background .3s,color .3s;overflow-x:hidden}
@@ -28,17 +28,10 @@ label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin-top:4
 h1,h2,h3{margin:0 0 8px}h3{font-size:15px}
 .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:15px}
 
-/* ===== BACKGROUND LAYERS ===== */
-.bgx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg-campus{position:absolute;top:-5%;left:-6%;width:112%;height:110%;object-fit:cover;opacity:var(--camp);animation:campusPan 24s ease-in-out infinite;animation-delay:var(--ph)}
-.bg-pcb{position:absolute;inset:0;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg fill='none' stroke='%2310B981' stroke-opacity='.32' stroke-width='1.2'%3E%3Cpath d='M0 40h60l20 20h60M80 60v60l20 20h80M260 120h-50l-20 20M40 260v-60l20-20h40M130 0v30l20 20h50M200 260v-40l-20-20M0 200h40'/%3E%3C/g%3E%3Cg fill='%23C5A059' fill-opacity='.55'%3E%3Ccircle cx='60' cy='40' r='2.6'/%3E%3Ccircle cx='140' cy='60' r='2.6'/%3E%3Ccircle cx='180' cy='140' r='2.6'/%3E%3Ccircle cx='100' cy='160' r='2.6'/%3E%3Ccircle cx='200' cy='50' r='2.6'/%3E%3Ccircle cx='190' cy='200' r='2.6'/%3E%3C/g%3E%3C/svg%3E")}
-.bg-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(16,185,129,.28) 1px,transparent 1.4px);background-size:26px 26px;opacity:.5}
-.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.34;animation:orb 18s ease-in-out infinite}
-.orb.o1{width:420px;height:420px;background:#10B981;top:-120px;left:-100px}
-.orb.o2{width:360px;height:360px;background:#C5A059;bottom:-120px;right:-80px;animation-delay:-6s;opacity:.26}
-.orb.o3{width:300px;height:300px;background:#0B5D44;top:40%;left:55%;animation-delay:-11s}
-@keyframes orb{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(40px,-30px,0) scale(1.12)}}
-@keyframes campusPan{0%{transform:translate3d(3.5%,-1%,0) scale(1.04)}38%,50%{transform:translate3d(-3.5%,1%,0) scale(1.05)}88%,100%{transform:translate3d(3.5%,-1%,0) scale(1.04)}}
+/* ===== BACKGROUND: HANYA 2 LAPISAN DIAM (kampus + jalur PCB) ===== */
+.bgx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transform:translateZ(0)}
+.bg-campus{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:var(--camp);-webkit-mask-image:radial-gradient(ellipse 85% 80% at 50% 45%,#000 35%,transparent 100%);mask-image:radial-gradient(ellipse 85% 80% at 50% 45%,#000 35%,transparent 100%)}
+.bg-pcb{position:absolute;inset:0;opacity:.22;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg fill='none' stroke='%2310B981' stroke-opacity='.32' stroke-width='1.2'%3E%3Cpath d='M0 40h60l20 20h60M80 60v60l20 20h80M260 120h-50l-20 20M40 260v-60l20-20h40M130 0v30l20 20h50M200 260v-40l-20-20M0 200h40'/%3E%3C/g%3E%3Cg fill='%23C5A059' fill-opacity='.55'%3E%3Ccircle cx='60' cy='40' r='2.6'/%3E%3Ccircle cx='140' cy='60' r='2.6'/%3E%3Ccircle cx='180' cy='140' r='2.6'/%3E%3Ccircle cx='100' cy='160' r='2.6'/%3E%3Ccircle cx='200' cy='50' r='2.6'/%3E%3Ccircle cx='190' cy='200' r='2.6'/%3E%3C/g%3E%3C/svg%3E")}
 #app{position:relative;z-index:1;min-height:100vh}
 
 /* ===== BASE COMPONENTS ===== */
@@ -55,7 +48,7 @@ h1,h2,h3{margin:0 0 8px}h3{font-size:15px}
 .b.ok{background:rgba(16,185,129,.18);color:var(--ok)}.b.lt{background:rgba(197,160,89,.24);color:#9A7220}.b.er{background:rgba(180,35,54,.15);color:var(--er)}
 [data-theme=dark] .b.lt{color:#E8D4A2}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:currentColor}
-.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--ln);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .mut{color:var(--mut);font-size:12px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -71,9 +64,12 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 /* ===== HEADER & PRODI BAR ===== */
 .hd{position:sticky;top:0;z-index:40;background:var(--hd);backdrop-filter:blur(16px);border-bottom:1px solid rgba(197,160,89,.45);display:flex;align-items:center;gap:14px;padding:calc(8px + env(safe-area-inset-top)) 18px 8px;flex-wrap:wrap}
 .logo3d{perspective:500px;display:inline-block;position:relative;border-radius:12px;overflow:hidden;flex:none}
-.logo3d img{display:block;height:44px;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out}
+.logo3d img{display:block;height:44px}
 .logo3d::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.55),transparent 55%);opacity:0;transition:opacity .2s;pointer-events:none}
-.logo3d:hover::after{opacity:1}
+@media (pointer:fine){
+ .logo3d img{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out}
+ .logo3d:hover::after{opacity:1}
+}
 .brand h3{margin:0;font-size:15px;color:var(--em-deep);line-height:1.2}[data-theme=dark] .brand h3{color:var(--em)}
 .brand small{color:var(--mut);font-size:11px;font-weight:600}
 .nav{display:flex;gap:4px;flex:1;overflow-x:auto;padding:2px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
@@ -92,7 +88,7 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 18px}
 
 /* ===== PRODI BAR ===== */
-.prodibar{background:var(--card);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln);padding:8px 18px}
+.prodibar{background:var(--card);border-bottom:1px solid var(--ln);padding:8px 18px}
 .prodibar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
 .prodibar-in::-webkit-scrollbar{display:none}
 .prodi-lbl{font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;margin-right:4px}
@@ -121,18 +117,21 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .kpi .card{margin:0;position:relative;overflow:hidden}.kpi .card::after{content:"";position:absolute;right:-20px;top:-20px;width:70px;height:70px;border-radius:50%;background:rgba(197,160,89,.18)}
 .kpi b{font-size:30px;display:block;font-family:'JetBrains Mono',monospace}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:12px}
-.mk{position:relative;border-radius:16px;overflow:hidden;min-height:142px;color:#fff;background:#063B2B;border:1px solid var(--ln)}
-.mk img{position:absolute;top:-5%;left:-6%;width:112%;height:110%;object-fit:cover;opacity:.85;animation:campusPan 24s ease-in-out infinite;animation-delay:var(--ph)}
-.mk .t{position:relative;padding:14px;height:100%;min-height:142px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(0deg,rgba(3,25,18,.94),rgba(3,25,18,.15))}
-.mk small{opacity:.93;line-height:1.4}
-.mk .tol-tag{position:absolute;top:10px;left:10px;z-index:2;background:rgba(4,33,24,.78);backdrop-filter:blur(6px);border:1px solid rgba(197,160,89,.45);color:var(--gd-soft);font:600 10.5px 'JetBrains Mono',monospace;padding:3px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px}
-.mk.now{border:2px solid var(--gd);box-shadow:0 0 0 3px rgba(197,160,89,.25),0 0 30px rgba(197,160,89,.45);animation:glow 2.4s ease-in-out infinite}
+
+/* ===== KARTU MATA KULIAH: CLEAN SPLIT CARD ===== */
+.mk{position:relative;border-radius:16px;overflow:hidden;background:var(--card2);color:var(--ink);border:1px solid var(--ln);box-shadow:var(--shadow)}
+.mk-img{position:relative;height:130px;overflow:hidden;background:#063B2B}
+.mk-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+@media (hover:hover){.mk:hover .mk-img img{transform:scale(1.06)}}
+.mk-info{background:var(--card2);color:var(--ink);padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.mk-code{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--mut)}
+.mk-nm{font-size:15px;line-height:1.3;color:var(--ink)}
+.mk-meta{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.mk-tol{margin-top:6px}
+.mk.now{border:2px solid var(--gd);box-shadow:0 0 0 3px rgba(197,160,89,.22)}
 .mk .live{position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#EEDBAE,#C5A059);color:#2a1d04;font:800 10.5px 'JetBrains Mono',monospace;padding:3px 9px;border-radius:99px;letter-spacing:.06em;display:inline-flex;align-items:center;gap:5px}
 .mk .live::before{content:"";width:7px;height:7px;border-radius:50%;background:#991B1B;animation:blink 1.1s infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(197,160,89,.2),0 0 18px rgba(197,160,89,.35)}50%{box-shadow:0 0 0 4px rgba(197,160,89,.35),0 0 38px rgba(197,160,89,.65)}}
 @keyframes blink{50%{opacity:.2}}
-.nowbox{border:2px solid var(--gd);background:linear-gradient(135deg,rgba(197,160,89,.18),rgba(16,185,129,.08));border-radius:16px;padding:14px;margin-bottom:14px}
-.nowbox h3{color:#8a6a24;margin-bottom:10px;display:flex;align-items:center;gap:8px}[data-theme=dark] .nowbox h3{color:var(--gd-soft)}
 .tap{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--ln)}
 .tap:last-child{border:0}
 .tap .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
@@ -140,6 +139,42 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .tap .tm{font:700 14px 'JetBrains Mono',monospace;color:var(--mut)}
 .tap.fresh{animation:fresh 1.6s ease-out}
 @keyframes fresh{0%{background:rgba(197,160,89,.4)}100%{background:transparent}}
+
+/* ===== DASHBOARD SPLIT-SCREEN ===== */
+.dash-main{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
+.dcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.dcol>.card{margin:0}
+.spot{border:2px solid var(--gd);background-color:var(--card);background-image:linear-gradient(135deg,rgba(197,160,89,.14),rgba(197,160,89,0) 55%)}
+.spot-main{display:flex;gap:14px;align-items:center}
+.spot-av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;display:grid;place-items:center;font-weight:800;font-size:24px;flex:none}
+.spot-id{min-width:0;flex:1}
+.spot-nm{font-size:clamp(18px,2.4vw,26px);font-weight:800;line-height:1.2;overflow-wrap:anywhere}
+.spot-sub{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0;font-size:12.5px}
+.spot-mk{font-weight:600;color:var(--mut)}
+.spot-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px dashed var(--ln)}
+.spot-tm{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:.03em;line-height:1}
+.spot-st{font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:clamp(15px,2vw,22px);padding:8px 20px;border-radius:99px;background:var(--ln);color:var(--mut)}
+.spot-st.ok{background:rgba(16,185,129,.2);color:var(--ok)}
+.spot-st.lt{background:rgba(197,160,89,.28);color:#8a6a24}
+[data-theme=dark] .spot-st.lt{color:var(--gd-soft)}
+.spot-st.er{background:rgba(180,35,54,.15);color:var(--er)}
+.spot.fresh{animation:spot 1.8s ease-out}
+.spot.fresh .spot-st{animation:pop 1.2s ease-out}
+@keyframes spot{0%{background-color:rgba(197,160,89,.35);box-shadow:0 0 0 6px rgba(197,160,89,.35)}100%{background-color:var(--card);box-shadow:var(--shadow)}}
+@keyframes pop{0%{transform:scale(1.12)}100%{transform:scale(1)}}
+.nowc{border:2px solid var(--gd)}
+.lv+.lv{border-top:1px dashed var(--ln);margin-top:12px;padding-top:12px}
+.lv-h{display:flex;flex-direction:column;gap:2px;margin-bottom:2px}
+.lv-nm{font-size:17px;line-height:1.3}
+.tolbar{margin-top:10px}
+.tolbar .bar{height:10px;margin:0 0 6px}
+.tolbar .bar i{width:100%;transform-origin:left center;transition:transform 1s linear}
+.tolt{font-size:12px;color:var(--mut)}
+.tolt.late{color:var(--er);font-weight:700}
+@media(min-width:861px){
+ .dash-main{grid-template-columns:1.4fr 1fr;align-items:start}
+ .kpi{grid-template-columns:repeat(4,1fr)}
+}
 
 /* ===== LOGIN DIALOG ===== */
 .tabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,93,68,.08);padding:4px;border-radius:12px}
@@ -171,6 +206,21 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .pkg-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--ln);font-size:12.5px}
 .pkg-item:last-child{border:0}
 
+/* ===== JEMBATAN SINKRONISASI 3-SIMPUL ===== */
+.bridge{display:flex;align-items:stretch;margin:2px 0 6px}
+.bn{flex:1 1 0;min-width:0;border:1.5px solid var(--ln);border-radius:12px;padding:8px 5px;text-align:center;line-height:1.25;background:var(--card2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.bn b{font-size:11.5px;overflow-wrap:anywhere}
+.bn small{font-size:10.5px;color:var(--mut)}
+.bn.ok{border-color:var(--em);background:rgba(16,185,129,.1);color:var(--ok)}
+.bn.part{border-color:var(--gd);background:rgba(197,160,89,.14)}
+.bn.no{border-color:var(--er);border-style:dashed;background:rgba(180,35,54,.06)}
+.bn.ok b{color:var(--ink)}
+.bl{flex:0 0 22px;align-self:center;height:4px;border-radius:99px;background:var(--ln)}
+.bl.ok{background:linear-gradient(90deg,var(--em-deep),var(--em))}
+.bl.part{background:var(--gd)}
+.bl.no{background:repeating-linear-gradient(90deg,var(--er) 0 4px,transparent 4px 8px)}
+.bridge-note{margin:0 0 12px}
+
 /* ===== REGISTRASI RFID ===== */
 .hero-auto{background:linear-gradient(125deg,var(--em-deep),#042118);color:#fff;border:2px solid var(--gd);border-radius:16px;padding:18px;margin-bottom:14px}
 .uid-box{background:rgba(255,255,255,.12);border:1px dashed var(--gd);border-radius:12px;padding:12px;margin:10px 0;text-align:center}
@@ -198,12 +248,32 @@ body.kiosk .hero{padding:26px 34px}body.kiosk .hero h1{font-size:clamp(26px,3.6v
 body.kiosk .kpi b{font-size:52px}body.kiosk .kpi .mut{font-size:15px}
 body.kiosk .tap{padding:16px 6px;gap:18px}body.kiosk .tap .av{width:60px;height:60px;font-size:24px}
 body.kiosk .tap .nm b{font-size:28px}body.kiosk .tap .nm small{font-size:18px}body.kiosk .tap .tm{font-size:30px}body.kiosk .tap .b{font-size:18px;padding:6px 16px}
-body.kiosk .card h3,body.kiosk .nowbox h3{font-size:24px}
-body.kiosk .mk .t{min-height:175px}body.kiosk .mk b{font-size:20px}body.kiosk .mk small{font-size:15px}
-body.kiosk .nowbox{border-width:3px;padding:20px}
+body.kiosk .card h3{font-size:24px}
+body.kiosk .spot-av{width:96px;height:96px;font-size:36px}
+body.kiosk .spot-nm{font-size:42px}body.kiosk .spot-sub{font-size:18px}body.kiosk .spot-mk{font-size:22px}
+body.kiosk .spot-tm{font-size:64px}body.kiosk .spot-st{font-size:32px;padding:12px 32px}
+body.kiosk .lv-nm{font-size:26px}body.kiosk .tolt{font-size:18px}body.kiosk .tolbar .bar{height:14px}
+body.kiosk .nowc{border-width:3px}
+body.kiosk .mk-img{height:170px}body.kiosk .mk-nm{font-size:20px}body.kiosk .mk-meta{font-size:15px}body.kiosk .mk-code{font-size:13px}
 body.kiosk .card{padding:22px}
 
 @media(max-width:800px){.hd{gap:8px;padding-left:12px;padding-right:12px}.brand small{display:none}.nav{order:3;flex:1 0 100%}.prodibar{padding:8px 12px}.wrap{padding:12px}.hero{padding:16px}.clock{margin-left:0;text-align:left}.r2{grid-template-columns:1fr}.pill b{display:none}}
+
+/* ===== MOBILE (<= 860px): HERO RINGKAS + KPI 2x2 ===== */
+@media(max-width:860px){
+ .hero{padding:12px 14px;gap:12px;border-radius:16px;margin-bottom:12px}
+ .hero .eyebrow,.hero p{display:none}
+ .hero>div:nth-child(2){flex:1;min-width:0}
+ .hero h1{font-size:16px;margin:0}
+ .crest{animation:none}
+ .crest img{height:48px}
+ .clock{margin-left:auto;text-align:right}
+ .clock b{font-size:20px}.clock span{font-size:11px}
+ .kpi{grid-template-columns:1fr 1fr;gap:8px}
+ .kpi .card{padding:12px}
+ .kpi b{font-size:24px}
+ .spot-av{width:52px;height:52px;font-size:20px}
+}
 
 /* ===== PERBAIKAN UX DEMO ===== */
 .boot{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px}
@@ -220,11 +290,10 @@ body.kiosk .card{padding:22px}
 .card.busy::after{content:"";position:absolute;inset:0;border-radius:16px;background:rgba(255,255,255,.45)}
 [data-theme=dark] .card.busy::after{background:rgba(5,12,10,.5)}
 .mk .sim-tag{position:absolute;top:10px;right:10px;z-index:2;background:rgba(197,160,89,.95);color:#2a1d04;font:800 10px 'JetBrains Mono',monospace;padding:3px 8px;border-radius:99px;letter-spacing:.04em}
-.mk.now .sim-tag{top:38px}
 .sim-note{border:1px dashed var(--gd);background:rgba(197,160,89,.14);border-radius:12px;padding:8px 12px;margin:0 0 10px;font-size:12.5px}
 @media(max-width:800px){input,select,textarea{font-size:16px}.btn.sm{min-height:36px;padding:8px 12px}#ts{bottom:calc(16px + env(safe-area-inset-bottom))}}
 @media(max-width:700px){
- .card.tw.rtw{background:none;border:0;box-shadow:none;padding:0;backdrop-filter:none;overflow:visible}
+ .card.tw.rtw{background:none;border:0;box-shadow:none;padding:0;overflow:visible}
  table.rt,table.rt tbody{display:block;width:100%}
  table.rt thead{display:none}
  table.rt tr{display:block;background:var(--card2);border:1px solid var(--ln);border-radius:14px;padding:6px 12px;margin:0 0 10px;box-shadow:var(--shadow)}
@@ -240,7 +309,7 @@ body.kiosk .card{padding:22px}
 </style>
 </head>
 <body>
-<div class="bgx" aria-hidden="true"><img class="bg-campus" src="./kampus.jpg" alt=""><div class="bg-pcb"></div><div class="bg-dots"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="bgx" aria-hidden="true"><img class="bg-campus" src="./kampus.jpg" alt="" decoding="async"><div class="bg-pcb"></div></div>
 <div id="app"><div class="boot" id="bootbox" role="status" aria-live="polite"><img src="./logo-polnes.png" alt=""><span class="spin lg" aria-hidden="true"></span><b>Memuat Presensi RFID Polnes…</b><span class="mut" id="bootslow" hidden>Koneksi terasa lambat. Mohon tunggu sebentar…</span></div></div><div id="ts"></div><dialog id="dg"></dialog>
 <script>
 /* ===== KONFIGURASI SUPABASE ===== */
@@ -347,14 +416,29 @@ function nextImg(el){
 }
 function courseImg(nama){
  const list=imgList(nama);
- return `<img src="${list[0]}" data-fb="${list.join('|')}" data-idx="0" onerror="nextImg(this)" alt="">`;
+ return `<img src="${list[0]}" loading="lazy" decoding="async" data-fb="${list.join('|')}" data-idx="0" onerror="nextImg(this)" alt="">`;
 }
 
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const mn=t=>{if(!t)return 0;const a=t.split(':');return +a[0]*60+ +a[1]};
 const hm=t=>(t||'').slice(0,5);
+const hms=t=>(t||'').slice(0,8);
 const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',5000)};
-const dlg=h=>{$('#dg').innerHTML=h;if(!$('#dg').open)$('#dg').showModal()},cls=()=>$('#dg').close();
+const FINE=!!(window.matchMedia&&matchMedia('(pointer: fine)').matches);
+/* Efek tilt 3D logo: listener dipasang hanya pada elemen .logo3d, hanya untuk kursor desktop */
+function bindTilt(root){
+ if(!FINE||!root)return;
+ root.querySelectorAll('.logo3d').forEach(el=>{
+  if(el._tilt)return;el._tilt=1;
+  el.addEventListener('pointermove',e=>{
+   const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+   el.style.setProperty('--ry',((px-.5)*30).toFixed(1)+'deg');el.style.setProperty('--rx',((.5-py)*30).toFixed(1)+'deg');
+   el.style.setProperty('--gx',(px*100).toFixed(0)+'%');el.style.setProperty('--gy',(py*100).toFixed(0)+'%');
+  });
+  el.addEventListener('pointerleave',()=>{el.style.setProperty('--rx','0deg');el.style.setProperty('--ry','0deg')});
+ });
+}
+const dlg=h=>{$('#dg').innerHTML=h;bindTilt($('#dg'));if(!$('#dg').open)$('#dg').showModal()},cls=()=>$('#dg').close();
 const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 const shortName=n=>String(n||'').trim().split(/\s+/).slice(0,2).join(' ');
 const PL={mahasiswa:'Mahasiswa',dosen:'Dosen',admin:'Admin'};
@@ -366,8 +450,6 @@ const maskNim=n=>{const stf=me&&(me.peran==='admin'||me.peran==='dosen')&&!kiosk
 const isLive=k=>{const d=new Date(),n=d.getHours()*60+d.getMinutes();return k.hari==d.getDay()&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
 /* Sinkronisasi TRUE wajib memiliki kartu RFID DAN tersinkronisasi === true (berlaku untuk Mahasiswa, Dosen, maupun Admin) */
 const isSynced=a=>Boolean(a&&a.uid_kartu&&a.tersinkronisasi===true);
-function syncPhase(){document.documentElement.style.setProperty('--ph',(-((Date.now()/1000)%24)).toFixed(2)+'s')}
-syncPhase();
 
 /* ===== STATE ===== */
 let me=null,S={mk:[],ang:[],pes:[],pre:[],dev:[],sesi:null,ntf:[],set:{notif_aktif:true}},pg='dash',sel='',pv=[];
@@ -559,19 +641,30 @@ function shell(){
  $('#app').innerHTML=`<header class="hd"><div class="logo3d"><img src="./logo-polnes.png" alt="Logo Polnes"></div><div class="brand"><h3>Presensi RFID Polnes</h3><small>${esc(subProdi)}</small></div><nav class="nav">${nav}</nav><div class="hd-r"><button class="ib" title="Mode Proyektor" onclick="toggleFull()">${ico('proj',16)}</button><button class="ib" title="Terang / Gelap" onclick="toggleTema()">${ico('theme',16)}</button>${usr}</div></header>
  <div class="prodibar"><div class="prodibar-in"><span class="prodi-lbl">${ico('building',13)} Program Studi:</span>${pBtns}</div></div>
  <main class="wrap" id="main"></main><button id="kx" class="btn g sm kx-on" onclick="toggleFull()">Keluar Mode Proyektor</button>`;
+ bindTilt($('#app'));
  draw();
 }
 function setProdi(p){activeProdi=p;sel='';shell()}
 function go(p){pg=p;sel='';if(p!=='portal')pfRes=null;stopTgPollIfLeft();shell();window.scrollTo(0,0)}
 function toggleTema(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('tema',t)}catch(e){}}
+/* Mode Proyektor: paksa tema gelap (tidak disimpan ke localStorage), lalu kembalikan tema sebelumnya saat keluar */
+let prevTheme=null;
+function restoreTema(){if(prevTheme!==null){document.documentElement.setAttribute('data-theme',prevTheme);prevTheme=null}}
 function toggleFull(){
- const on=!kioskOn();
+ const on=!kioskOn(),root=document.documentElement;
  document.body.classList.toggle('kiosk',on);
- if(on){pg='dash';if(me)shell();else draw();document.documentElement.requestFullscreen?.().catch(()=>{})}
- else if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ if(on){
+  if(prevTheme===null)prevTheme=root.getAttribute('data-theme')||'light';
+  root.setAttribute('data-theme','dark');
+  pg='dash';if(me)shell();else draw();
+  root.requestFullscreen?.().catch(()=>{});
+ }else{
+  restoreTema();
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ }
  draw();
 }
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&kioskOn()){document.body.classList.remove('kiosk');draw()}});
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&kioskOn()){document.body.classList.remove('kiosk');restoreTema();draw()}});
 function draw(soft){
  const mainEl=$('#main');if(!mainEl)return;
  const ae=document.activeElement;
@@ -586,9 +679,11 @@ function draw(soft){
 const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':s=='Izin'||s=='Sakit'?'':'er'}">${esc(s)}</span>`;
 const syncBadge=a=>isSynced(a)?'<span class="b ok">TRUE</span>':'<span class="b er">FALSE</span>';
 const roleBadge=r=>`<span class="rb ${esc(r||'mahasiswa')}">${esc(PL[r]||r||'Mahasiswa')}</span>`;
+/* Kartu Mata Kuliah: Clean Split Card (gambar diam di atas, panel info solid di bawah) */
 const mkCard=k=>{
- const tol=k.toleransi_menit??15;
- return `<div class="mk ${isLive(k)?'now':''}"><span class="tol-tag">${ico('riw',11)} Toleransi ${tol} mnt</span>${isLive(k)?'<span class="live">BERLANGSUNG</span>':''}${k._seed?'<span class="sim-tag">Data Simulasi</span>':''}${courseImg(k.nama)}<div class="t"><b>${esc(k.nama)}</b><small>${esc(k.kode)} · ${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)} · Toleransi ${tol} mnt · ${esc(k.ruangan||'')}</small></div></div>`;
+ const tol=k.toleransi_menit??15,lv=isLive(k);
+ const badge=lv?'<span class="live">BERLANGSUNG</span>':(k._seed?'<span class="sim-tag">Data Simulasi</span>':'');
+ return `<div class="mk ${lv?'now':''}"><div class="mk-img">${badge}${courseImg(k.nama)}</div><div class="mk-info"><span class="mk-code mono">${esc(k.kode)}</span><b class="mk-nm">${esc(k.nama)}</b><div class="mk-meta">${ico('riw',12)} ${DN[k.hari]} · ${hm(k.mulai)}–${hm(k.selesai)}</div><div class="mk-meta">${ico('building',12)} ${esc(k.ruangan||'-')}</div><span class="b ok mk-tol">Toleransi ${tol} mnt</span></div></div>`;
 };
 const STS=['Hadir','Terlambat','Izin','Sakit'];
 const nm=id=>(S.ang.find(x=>x.id==id)||{}).nama||'-';
@@ -605,19 +700,60 @@ async function setStatusId(id,st){const {error}=await sb.from('presensi').update
 const stSel=(id,cur)=>`<select onchange="setStatusId('${id}',this.value)" style="width:auto;margin:0">${STS.map(s=>`<option ${s==cur?'selected':''}>${s}</option>`).join('')}</select>`;
 const hasCard=a=>!!a.uid_kartu;
 
+/* ===== KOMPONEN DASHBOARD SPLIT-SCREEN ===== */
+const tapRow=x=>{
+ const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id));
+ return `<div class="tap ${f?'fresh':''}"><span class="av">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Pengguna')} ${roleBadge(a.peran)}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hm(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`;
+};
+const spotCard=x=>{
+ const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id)),st=x.status||'';
+ const c=st=='Hadir'?'ok':st=='Terlambat'?'lt':(st=='Izin'||st=='Sakit')?'':'er';
+ return `<div class="card spot ${f?'fresh':''}"><div class="row" style="margin-bottom:12px"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Live Tap Spotlight</h3><span class="mut">${me?'':'Pengunjung · '}NIM disamarkan</span></div>
+ <div class="spot-main"><span class="spot-av">${esc(initials(a.nama))}</span><div class="spot-id"><div class="spot-nm">${esc(a.nama||'Pengguna')}</div><div class="spot-sub">${roleBadge(a.peran)} <span class="mono mut">${esc(maskNim(a.nim))}</span></div><div class="spot-mk">${esc(mkn(x.mata_kuliah_id))}</div></div></div>
+ <div class="spot-foot"><span class="spot-tm mono">${hms(x.pulang||x.masuk)}</span><span class="spot-st ${c}">${esc(st)}</span></div></div>`;
+};
+const durTxt=w=>{
+ if(w<1)return'kurang dari 1 menit';
+ const dd=Math.floor(w/1440),jj=Math.floor(w%1440/60),mm=w%60;
+ return [dd?dd+' hari':'',jj?jj+' jam':'',(!dd&&mm)?mm+' menit':''].filter(Boolean).join(' ')||'kurang dari 1 menit';
+};
+function nextKelas(list){
+ const d=new Date(),dow=d.getDay(),nowM=d.getHours()*60+d.getMinutes();
+ let best=null,bm=1e9;
+ list.forEach(k=>{
+  const m=mn(k.mulai);let off=((+k.hari)-dow+7)%7;
+  if(off===0&&m<=nowM)off=7;
+  const tot=off*1440+m-nowM;
+  if(tot<bm){bm=tot;best={k,off,tot}}
+ });
+ return best;
+}
+const liveCard=list=>`<div class="card nowc"><h3 class="sec-h">${ico('pulse',16)} Kelas Sedang Berlangsung</h3>${list.map(k=>{
+ const tol=+(k.toleransi_menit??15);
+ return `<div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">${hm(k.mulai)}–${hm(k.selesai)} · ${esc(k.ruangan||'-')} · Toleransi ${tol} mnt</div><div class="tolbar" data-tolbar data-s="${mn(k.mulai)}" data-t="${tol}"><div class="bar"><i></i></div><div class="tolt mono"></div></div></div>`;
+}).join('')}</div>`;
+const nextCard=list=>{
+ const nx=nextKelas(list);
+ if(!nx)return `<div class="card"><h3 class="sec-h">${ico('kelas',16)} Jadwal Kelas Terdekat</h3><p class="mut" style="margin:0">Belum ada jadwal mata kuliah pada program studi ini.</p></div>`;
+ const k=nx.k,tol=k.toleransi_menit??15,hr=nx.off===0?'Hari ini':nx.off===1?'Besok':nx.off===7?DN[k.hari]+' depan':DN[k.hari];
+ return `<div class="card"><h3 class="sec-h">${ico('kelas',16)} Jadwal Kelas Terdekat</h3><div class="mut" style="margin-bottom:8px">Tidak ada kelas yang sedang berlangsung.</div><div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">${hr} · ${hm(k.mulai)}–${hm(k.selesai)} · ${esc(k.ruangan||'-')}</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="b lt">Dimulai dalam ${durTxt(nx.tot)}</span><span class="b ok">Toleransi ${tol} mnt</span></div></div></div>`;
+};
+
 /* ===== VIEW ===== */
 const V={
  dash(){
   const t=today(),d=devInfo(),dow=new Date().getDay();
   const prodiMks=mkByProdi();
   const p=S.pre.filter(x=>x.tanggal==t&&(activeProdi==='ALL'||mkProdiById(x.mata_kuliah_id)===activeProdi));
-  const live=prodiMks.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,kioskOn()?6:8);
+  const live=prodiMks.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,6);
   const hari=prodiMks.filter(k=>k.hari==dow).length;
   const prodiTitle=activeProdi==='ALL'?'Jurusan Teknologi Informasi':`Program Studi ${activeProdi}`;
+  const spotHtml=taps.length?spotCard(taps[0]):`<div class="card spot"><h3 class="sec-h">${ico('pulse',16)} Live Tap Spotlight</h3><p class="mut" style="margin:0">Menunggu tap kartu pada pembaca…</p></div>`;
+  const histHtml=taps.length>1?`<div class="card"><h3 class="sec-h">${ico('riw',16)} Riwayat Tap Sebelumnya</h3>${taps.slice(1).map(tapRow).join('')}</div>`:'';
+  const rightHtml=live.length?liveCard(live):nextCard(prodiMks);
   return `${S.err?`<div class="info show" role="alert"><b>Data belum berhasil dimuat.</b> ${esc(S.err)} <button type="button" class="btn sm" onclick="retryLoad(this)">Muat ulang data</button></div>`:''}<section class="hero"><div class="crest"><img src="./logo-polnes.png" alt="Lambang Polnes"></div><div><div class="eyebrow">POLNES ACADEMIC COMMAND CENTER &amp; TELEMETRY</div><h1>Sistem Presensi RFID &amp; IoT Real-Time</h1><p>${esc(prodiTitle)} · Politeknik Negeri Samarinda</p></div><div class="clock"><b data-clock="t">--:--:--</b><span data-clock="d"></span></div></section>
-  ${live.length?`<div class="nowbox"><h3>${ico('pulse',16)} Kelas Sedang Berlangsung</h3><div class="grid">${live.map(mkCard).join('')}</div></div>`:''}
   <div class="kpi"><div class="card"><span class="mut">Hadir hari ini</span><b>${p.length}</b></div><div class="card"><span class="mut">Terlambat</span><b>${p.filter(x=>x.status=='Terlambat').length}</b></div><div class="card"><span class="mut">Kelas hari ini</span><b>${hari}</b></div><div class="card"><span class="mut">${esc(d.n)}</span><b style="font-size:${kioskOn()?'30':'20'}px;display:flex;align-items:center;gap:8px;margin-top:4px">${d.on?'<span class="b ok" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Online</span>':'<span class="b er" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Offline</span>'}</b></div></div>
-  <div class="card"><div class="row"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Live Tap Monitor</h3><span class="mut">${me?'':'Mode Pengunjung · '}NIM disamarkan</span></div>${taps.map(x=>{const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id));return `<div class="tap ${f?'fresh':''}"><span class="av">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Pengguna')} ${roleBadge(a.peran)}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hm(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`}).join('')||'<p class="mut">Menunggu tap kartu pada pembaca…</p>'}</div>
+  <div class="dash-main"><div class="dcol">${spotHtml}${histHtml}</div><div class="dcol">${rightHtml}</div></div>
   <div class="row" style="margin:14px 0 10px"><h3 class="sec-h" style="margin:0">${ico('mk',16)} Paket Mata Kuliah — ${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</h3><span class="mut">${prodiMks.length} mata kuliah</span></div>
   ${S.mk.some(k=>k._seed)?'<div class="sim-note"><b>Data Simulasi.</b> Tabel mata kuliah di database masih kosong, sehingga yang tampil adalah contoh jadwal untuk demonstrasi. Data ini tidak tersimpan dan tidak ikut diekspor.</div>':''}<div class="grid">${prodiMks.map(mkCard).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>
   ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk mengisi identitas asli, membuka KTM Digital, dan menautkan Telegram.</div></div><button class="btn p sm" onclick="lgn()">${ico('lock',14)} Masuk</button></div></div>`}`},
@@ -713,6 +849,13 @@ const V={
    ['Tautkan Notifikasi Telegram',tgSiap?'Pengingat otomatis aktif':'Buka menu Telegram untuk menautkan',tgSiap,tgSiap?'Terhubung':'Belum']];
   const done=steps.filter(s=>s[2]).length;
   const cardTitle=adm?'KARTU IDENTITAS ADMINISTRATOR':(dsn?'KARTU IDENTITAS DOSEN DIGITAL':'KARTU TANDA MAHASISWA DIGITAL');
+  /* Indikator jembatan sinkronisasi 3-simpul: [1. Data Manual] <-> [Status] <-> [2. Kartu Mode Auto] */
+  const emailPre=String(me.email||'').split('@')[0].toLowerCase();
+  const manualOk=syn||Boolean(nomorInduk&&me.prodi&&me.nama&&String(me.nama).trim().toLowerCase()!==emailPre);
+  const kartuOk=syn||adaKartu;
+  const bM=syn?'ok':(manualOk?'part':'no'),bK=syn?'ok':(kartuOk?'part':'no'),bS=syn?'ok':((manualOk&&kartuOk)?'part':'no');
+  const bNote=syn?'Kedua sisi cocok — jalur sinkronisasi aktif (TRUE).':(!manualOk&&!kartuOk?'Kedua sisi belum terisi: lengkapi Data Manual di bawah, lalu minta admin mendaftarkan kartu Anda lewat Mode Auto.':(!manualOk?'Sisi kiri belum terisi: lengkapi Nama Asli, Program Studi, dan NIM/NIDN pada formulir di bawah.':(!kartuOk?'Sisi kanan belum terisi: kartu RFID Anda belum didaftarkan admin lewat Mode Auto.':'Kedua sisi sudah terisi, tetapi datanya belum cocok. Samakan data manual dengan data Mode Auto.')));
+  const bridge=`<div class="bridge" role="group" aria-label="Jembatan sinkronisasi Data Manual, Status, dan Kartu Mode Auto"><div class="bn ${bM}">${ico(bM==='no'?'warn':'check',14)}<b>1. Data Manual User</b><small>${bM==='ok'?'Cocok':bM==='part'?'Terisi':'Belum terisi'}</small></div><div class="bl ${bM}"></div><div class="bn ${bS}"><b>Status: ${syn?'TRUE':'FALSE'}</b></div><div class="bl ${bK}"></div><div class="bn ${bK}">${ico(bK==='no'?'warn':'check',14)}<b>2. Kartu Mode Auto</b><small>${bK==='ok'?'Cocok':bK==='part'?'Terpasang':'Belum terdaftar'}</small></div></div><div class="mut bridge-note">${esc(bNote)}</div>`;
   let h=`<div class="portal-grid">
    <div>
     <div class="ktm"><div class="ktm-in"><div class="ktm-top"><img src="./logo-polnes.png" alt=""><div><small>${cardTitle}</small><b>${esc(me.prodi||'Program Studi Belum Dipilih')}</b><small style="letter-spacing:.06em">Politeknik Negeri Samarinda</small></div></div>
@@ -728,6 +871,7 @@ const V={
      <b>Status Sinkronisasi: ${syn?'TRUE (Kartu Mode Auto & Data Manual Cocok — LCD Aktif)':'FALSE (Belum Sinkron — LCD Perangkat Akan Gagal)'}</b>
      <div class="mut" style="margin-top:2px">${esc(me.catatan_sinkronisasi||(syn?'Data manual Anda sudah cocok dengan kartu yang direkam di Mode Auto.':'Status hanya menjadi TRUE setelah Anda mengisi data manual di sini DAN kartu RFID Anda sudah di-scan melalui Mode Auto dengan data yang sama persis.'))}</div>
     </div>
+    ${bridge}
     <div class="r2">
      <label>Peran<select id="pf_peran" ${(locked||adm)?'disabled':''} onchange="$('#pf_kls_w').style.display=this.value==='mahasiswa'?'block':'none';$('#pf_nim_l').textContent=this.value==='dosen'?'NIDN / NIP':'NIM'">${adm?'<option value="admin" selected>Admin</option>':`<option value="mahasiswa" ${me.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${me.peran=='dosen'?'selected':''}>Dosen</option>`}</select></label>
      <label>Program Studi (Paket)<select id="pf_prodi" onchange="clrErr(this)" ${locked?'disabled':''}><option value="">— Pilih Program Studi —</option>${PRODI_LIST.map(p=>`<option value="${p.name}" ${me.prodi===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label>
@@ -1379,12 +1523,22 @@ async function exportXls(btn){
  finally{exportXls.busy=0;if(btn&&btn.isConnected)done()}
 }
 
-/* ===== TICKER: JAM, COUNTDOWN, BATAS TEPAT WAKTU ===== */
+/* ===== TICKER: JAM, COUNTDOWN, BATAS TEPAT WAKTU & BILAH TOLERANSI ===== */
 const p2=n=>String(n).padStart(2,'0');
 function tick(){
  const d=new Date();
  document.querySelectorAll('[data-clock]').forEach(e=>{e.textContent=e.dataset.clock==='t'?`${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`:`${DN[d.getDay()]}, ${d.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()]} ${d.getFullYear()}`});
  document.querySelectorAll('[data-cd]').forEach(e=>{const n=d.getHours()*60+d.getMinutes(),left=+e.dataset.cd*60-(n*60+d.getSeconds());e.textContent=left>0?`Batas tepat waktu ${p2(Math.floor(left/3600))}:${p2(Math.floor(left%3600/60))}:${p2(left%60)}`:'Batas tepat waktu sudah lewat'});
+ document.querySelectorAll('[data-tolbar]').forEach(e=>{
+  const total=+e.dataset.t*60,left=(+e.dataset.s*60+total)-(d.getHours()*3600+d.getMinutes()*60+d.getSeconds());
+  const pct=total>0?Math.max(0,Math.min(1,left/total)):0;
+  const i=e.querySelector('i'),x=e.querySelector('.tolt');
+  if(i){i.style.transform='scaleX('+pct.toFixed(4)+')';i.classList.toggle('er',left<=0)}
+  if(x){
+   x.textContent=left>0?`Sisa ${p2(Math.floor(left/60))}:${p2(left%60)} sebelum status berubah dari Hadir menjadi Terlambat`:'Batas toleransi lewat — tap berstatus Terlambat';
+   x.classList.toggle('late',left<=0);
+  }
+ });
  document.querySelectorAll('[data-exp]').forEach(e=>{
   const left=Math.max(0,Math.floor((new Date(e.dataset.exp)-Date.now())/1000));
   e.textContent=`${p2(Math.floor(left/60))}:${p2(left%60)}`;
@@ -1395,17 +1549,7 @@ function tick(){
 setInterval(tick,1000);
 setInterval(async()=>{if(document.visibilityState!=='visible')return;await load();await afterLoad();draw(true)},30000);
 setInterval(()=>{if(pg==='dash')draw(true)},60000);
-setInterval(()=>{fresh.clear();syncPhase()},20000);
-
-/* ===== EFEK 3D TILT + GLARE LOGO ===== */
-document.addEventListener('pointermove',e=>{
- const el=e.target.closest&&e.target.closest('.logo3d');
- document.querySelectorAll('.logo3d').forEach(x=>{if(x!==el){x.style.setProperty('--rx','0deg');x.style.setProperty('--ry','0deg')}});
- if(!el)return;
- const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
- el.style.setProperty('--ry',((px-.5)*30).toFixed(1)+'deg');el.style.setProperty('--rx',((.5-py)*30).toFixed(1)+'deg');
- el.style.setProperty('--gx',(px*100).toFixed(0)+'%');el.style.setProperty('--gy',(py*100).toFixed(0)+'%');
-});
+setInterval(()=>{fresh.clear()},20000);
 
 sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_IN'&&!me)boot().catch(bootFail)});
 boot().catch(bootFail);
