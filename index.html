@@ -1,257 +1,323 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Presensi RFID Polnes</title>
 <link rel="icon" href="./logo-polnes.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--em:#0B5D44;--em2:#10B981;--gd:#C5A059;--bg:#EEF3F0;--ink:#0A2119;--mut:#526B60;--ln:rgba(11,93,68,.16);--ok:#066B4B;--er:#B42336}
+:root{--em:#10B981;--em-deep:#0B5D44;--gd:#C5A059;--gd-soft:#E8D4A2;--bg:#EEF3F0;--ink:#0A2119;--mut:#526B60;--ln:rgba(11,93,68,.16);--ok:#066B4B;--er:#B42336;--card:rgba(255,255,255,.88);--card2:#fff;--hd:rgba(238,243,240,.82);--ph:0s;--camp:.16;--shadow:0 8px 24px -14px rgba(6,44,32,.28)}
+[data-theme=dark]{--bg:#050C0A;--ink:#E6F2EC;--mut:#8FB0A2;--ln:rgba(16,185,129,.22);--ok:#34D399;--er:#F0707F;--card:rgba(9,27,21,.84);--card2:#0B1F18;--hd:rgba(5,12,10,.82);--camp:.24;--shadow:0 10px 30px -14px rgba(0,0,0,.7)}
 *{box-sizing:border-box}
-body{margin:0;font:14px/1.5 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
+html{scroll-behavior:smooth}
+body{margin:0;font:14px/1.55 'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);transition:background .3s,color .3s;overflow-x:hidden}
 button,input,select{font:inherit}
-input,select{width:100%;padding:10px 12px;margin:4px 0 10px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--ink)}
-input.bad{border:2px solid var(--er)!important;background:#FFF5F6}
+.mono,.mono *{font-family:'JetBrains Mono',ui-monospace,monospace}
+input,select{width:100%;padding:10px 12px;margin:4px 0 10px;border:1px solid var(--ln);border-radius:10px;background:var(--card2);color:var(--ink);outline:none;transition:border .15s,box-shadow .15s}
+input:focus,select:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
 label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin-top:4px}
-.btn{border:1px solid var(--ln);background:#fff;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;color:var(--ink);transition:.15s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.btn:hover{filter:brightness(.97)}
-.btn:disabled{opacity:.6;cursor:not-allowed}
-.btn.p{background:var(--em);color:#fff;border:0;width:100%}
+h1,h2,h3{margin:0 0 8px}h3{font-size:15px}
+
+/* ===== BACKGROUND LAYERS ===== */
+.bgx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-campus{position:absolute;top:-5%;left:-6%;width:112%;height:110%;object-fit:cover;opacity:var(--camp);animation:campusPan 24s ease-in-out infinite;animation-delay:var(--ph)}
+.bg-pcb{position:absolute;inset:0;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg fill='none' stroke='%2310B981' stroke-opacity='.32' stroke-width='1.2'%3E%3Cpath d='M0 40h60l20 20h60M80 60v60l20 20h80M260 120h-50l-20 20M40 260v-60l20-20h40M130 0v30l20 20h50M200 260v-40l-20-20M0 200h40'/%3E%3C/g%3E%3Cg fill='%23C5A059' fill-opacity='.55'%3E%3Ccircle cx='60' cy='40' r='2.6'/%3E%3Ccircle cx='140' cy='60' r='2.6'/%3E%3Ccircle cx='180' cy='140' r='2.6'/%3E%3Ccircle cx='100' cy='160' r='2.6'/%3E%3Ccircle cx='200' cy='50' r='2.6'/%3E%3Ccircle cx='190' cy='200' r='2.6'/%3E%3C/g%3E%3C/svg%3E")}
+.bg-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(16,185,129,.28) 1px,transparent 1.4px);background-size:26px 26px;opacity:.5}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.34;animation:orb 18s ease-in-out infinite}
+.orb.o1{width:420px;height:420px;background:#10B981;top:-120px;left:-100px}
+.orb.o2{width:360px;height:360px;background:#C5A059;bottom:-120px;right:-80px;animation-delay:-6s;opacity:.26}
+.orb.o3{width:300px;height:300px;background:#0B5D44;top:40%;left:55%;animation-delay:-11s}
+@keyframes orb{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(40px,-30px,0) scale(1.12)}}
+@keyframes campusPan{0%{transform:translate3d(3.5%,-1%,0) scale(1.04)}38%,50%{transform:translate3d(-3.5%,1%,0) scale(1.05)}88%,100%{transform:translate3d(3.5%,-1%,0) scale(1.04)}}
+#app{position:relative;z-index:1;min-height:100vh}
+
+/* ===== BASE COMPONENTS ===== */
+.btn{border:1px solid var(--ln);background:var(--card2);border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;color:var(--ink);transition:.15s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{filter:brightness(.97);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn.p{background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;border:0;width:100%}
 .btn.g{background:linear-gradient(135deg,#EEDBAE,#C5A059);border:0;width:100%;color:#2a1d04}
-.btn.tg{background:#229ED9;color:#fff;border:0;width:100%}
+.btn.tg{background:linear-gradient(135deg,#2AABEE,#229ED9);color:#fff;border:0;width:100%}
+.btn.gg{background:#fff;color:#1f1f1f;border:1px solid #dadce0;width:100%}
 .btn.sm{padding:6px 10px;font-size:12px;width:auto}
+.btn.er{color:var(--er)}
 .b{padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;background:var(--ln);color:var(--mut);display:inline-block}
-.b.ok{background:rgba(16,185,129,.16);color:var(--ok)}.b.lt{background:rgba(197,160,89,.22);color:#825E18}.b.er{background:rgba(180,35,54,.14);color:var(--er)}
-.card{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 8px 24px -14px rgba(6,44,32,.2)}
+.b.ok{background:rgba(16,185,129,.18);color:var(--ok)}.b.lt{background:rgba(197,160,89,.24);color:#9A7220}.b.er{background:rgba(180,35,54,.15);color:var(--er)}
+[data-theme=dark] .b.lt{color:#E8D4A2}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--ln);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .mut{color:var(--mut);font-size:12px}
-.mono{font-family:ui-monospace,monospace}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* GATE */
-#gate{min-height:100vh;display:grid;place-items:center;padding:16px;position:relative;overflow:hidden}
-#gate .bg{position:fixed;top:-5%;left:-6%;width:112%;height:110%;object-fit:cover;z-index:0;animation:campusPan 24s ease-in-out infinite}
-#gate::before{content:"";position:fixed;inset:0;background:rgba(3,25,18,.64);z-index:1}
-@keyframes campusPan{0%{transform:translate3d(3.5%,-1%,0) scale(1.04)}38%,50%{transform:translate3d(-3.5%,1%,0) scale(1.05)}88%,100%{transform:translate3d(3.5%,-1%,0) scale(1.04)}}
-.glass{position:relative;z-index:2;width:min(430px,100%);padding:22px;border-radius:22px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1px solid rgba(197,160,89,.65);box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.glass h1{font-size:20px;margin:6px 0 2px;text-align:center;color:var(--em)}
-.glass .sub{text-align:center;font-size:12px;color:var(--mut);margin:0 0 14px}
-.glass .logo{display:block;margin:0 auto;height:62px}
-.tabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,93,68,.08);padding:4px;border-radius:12px}
-.tabs button{flex:1;border:0;background:transparent;padding:8px;border-radius:9px;font-weight:700;color:var(--mut);cursor:pointer}
-.tabs .on{background:var(--em);color:#fff;box-shadow:0 2px 8px rgba(11,93,68,.25)}
-
-/* PILIH PERAN INTERAKTIF */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 12px}
-.rbtn{position:relative;border:2px solid var(--ln);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;font-weight:700;font-size:12px;background:#fff;color:var(--ink);transition:.15s}
-.rbtn span.ico{display:block;font-size:22px;margin-bottom:2px}
-.rbtn .chk{display:none;position:absolute;top:5px;right:6px;background:var(--em);color:#fff;width:16px;height:16px;border-radius:99px;font-size:10px;line-height:16px}
-.rbtn.on{border-color:var(--em);background:rgba(16,185,129,.14);color:var(--em);box-shadow:0 4px 12px rgba(11,93,68,.18);transform:translateY(-1px)}
-.rbtn.on .chk{display:block}
-.role-status{font-size:11.5px;color:var(--ok);font-weight:600;margin:-6px 0 10px}
-
-.pw{position:relative}.pw input{padding-right:40px}.pw button{position:absolute;right:8px;top:11px;border:0;background:none;cursor:pointer;font-size:16px;padding:2px}
-.info{display:none;background:rgba(180,35,54,.08);border:1px solid var(--er);border-left:4px solid var(--er);border-radius:10px;padding:10px 12px;font-size:12px;margin:-4px 0 10px;color:var(--ink)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--ln);white-space:nowrap}th{font-size:11px;text-transform:uppercase;color:var(--mut);letter-spacing:.04em}
+.bar{height:8px;background:var(--ln);border-radius:99px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--em-deep),var(--em));transition:width .6s}.bar i.er{background:var(--er)}
+.info{display:none;background:rgba(180,35,54,.08);border:1px solid var(--er);border-left:4px solid var(--er);border-radius:10px;padding:10px 12px;font-size:12px;margin:0 0 10px}
 .info.show{display:block}
-
-/* ADMIN */
-.adm{display:grid;grid-template-columns:235px 1fr;min-height:100vh}
-.side{background:linear-gradient(180deg,#063B2B,#042118);color:#ECF5F0;padding:16px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
-.side .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px;border-bottom:1px solid rgba(197,160,89,.35);margin-bottom:8px}
-.side img{height:38px}.side h3{margin:0;font-size:15px;color:#E8D4A2}
-.side button{display:block;width:100%;text-align:left;background:none;border:0;color:#ECF5F0;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600}
-.side button:hover{background:rgba(16,185,129,.15)}
-.side button.on{background:rgba(197,160,89,.26);box-shadow:inset 3px 0 0 var(--gd)}
-.main{padding:20px;min-width:0}
-.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
-.kpi b{font-size:28px;display:block}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.mk{position:relative;border-radius:16px;overflow:hidden;min-height:130px;color:#fff;background:#063B2B}
-.mk img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
-.mk .t{position:relative;padding:14px;height:100%;min-height:130px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(0deg,rgba(3,25,18,.92),rgba(3,25,18,.12))}
-.mk small{opacity:.9}
-.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--ln);white-space:nowrap}th{font-size:11px;text-transform:uppercase;color:var(--mut)}
-.hero-auto{background:linear-gradient(125deg,#0B5D44,#042118);color:#fff;border:2px solid var(--gd);border-radius:16px;padding:18px;margin-bottom:14px}
-.uid-box{background:rgba(255,255,255,.12);border:1px dashed var(--gd);border-radius:12px;padding:12px;margin:10px 0;text-align:center}
-dialog{border:1px solid var(--ln);border-radius:18px;padding:20px;width:min(460px,94vw);background:#fff;color:var(--ink)}
-body.kiosk .side{display:none}body.kiosk .adm{grid-template-columns:1fr}
-
-/* MOBILE (DOSEN & MAHASISWA) */
-.top{position:sticky;top:0;z-index:20;background:var(--em);color:#fff;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.top button{background:none;border:0;color:#fff;font-size:24px;cursor:pointer;padding:2px 6px}
-.mob{padding:14px;max-width:480px;margin:0 auto}
-#bd{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none}#bd.show{display:block}
-#dr{position:fixed;top:0;bottom:0;left:0;width:275px;background:linear-gradient(180deg,#063B2B,#042118);color:#fff;z-index:31;transform:translateX(-100%);transition:transform .25s;padding:18px;display:flex;flex-direction:column;gap:4px}
-#dr.show{transform:none}
-#dr button{background:none;border:0;color:#fff;text-align:left;padding:12px;border-radius:10px;font-weight:600;cursor:pointer}
-#dr button.on{background:rgba(197,160,89,.26)}
-.bar{height:8px;background:var(--ln);border-radius:99px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--em)}.bar i.er{background:var(--er)}
+.pw{position:relative}.pw input{padding-right:40px}.pw button{position:absolute;right:8px;top:11px;border:0;background:none;cursor:pointer;font-size:16px;padding:2px}
+dialog{border:1px solid rgba(197,160,89,.6);border-radius:20px;padding:20px;width:min(440px,94vw);background:var(--card2);color:var(--ink);box-shadow:0 30px 70px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 #ts{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#063B2B;border-left:4px solid var(--gd);color:#fff;padding:10px 16px;border-radius:12px;z-index:99;display:none;max-width:90vw;box-shadow:0 10px 25px rgba(0,0,0,.3)}
-@media(max-width:800px){.adm{grid-template-columns:1fr}.side{height:auto;position:static}}
+
+/* ===== HEADER ===== */
+.hd{position:sticky;top:0;z-index:40;background:var(--hd);backdrop-filter:blur(16px);border-bottom:1px solid rgba(197,160,89,.45);display:flex;align-items:center;gap:14px;padding:calc(8px + env(safe-area-inset-top)) 18px 8px;flex-wrap:wrap}
+.logo3d{perspective:500px;display:inline-block;position:relative;border-radius:12px;overflow:hidden;flex:none}
+.logo3d img{display:block;height:44px;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out}
+.logo3d::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.55),transparent 55%);opacity:0;transition:opacity .2s;pointer-events:none}
+.logo3d:hover::after{opacity:1}
+.brand h3{margin:0;font-size:15px;color:var(--em-deep);line-height:1.2}[data-theme=dark] .brand h3{color:var(--em)}
+.brand small{color:var(--mut);font-size:11px}
+.nav{display:flex;gap:4px;flex:1;overflow-x:auto;padding:2px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+.nav button{border:0;background:none;color:var(--ink);padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer;white-space:nowrap;font-size:13px}
+.nav button:hover{background:rgba(16,185,129,.12)}
+.nav button.on{background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;box-shadow:0 4px 12px rgba(11,93,68,.3)}
+.hd-r{display:flex;gap:8px;align-items:center;margin-left:auto}
+.pill{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid rgba(197,160,89,.6);border-radius:99px;padding:4px 6px 4px 4px}
+.pill .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gd),#8a6a24);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
+.pill b{font-size:12.5px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.rb.mahasiswa{background:rgba(16,185,129,.18);color:var(--ok)}.rb.dosen{background:rgba(197,160,89,.28);color:#8a6a24}.rb.admin{background:rgba(180,35,54,.15);color:var(--er)}
+[data-theme=dark] .rb.dosen{color:var(--gd-soft)}
+.ib{border:1px solid var(--ln);background:var(--card2);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:16px;color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px}
+
+/* ===== HERO ===== */
+.hero{display:flex;align-items:center;gap:20px;background:linear-gradient(125deg,var(--em-deep),#042118);color:#fff;border:2px solid var(--gd);border-radius:22px;padding:20px 24px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 20px 50px -20px rgba(6,44,32,.7);flex-wrap:wrap}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(197,160,89,.3),transparent 50%),radial-gradient(circle at 10% 90%,rgba(16,185,129,.3),transparent 50%)}
+.hero>*{position:relative}
+.crest{flex:none;animation:lev 4.5s ease-in-out infinite;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45))}
+.crest img{height:84px;display:block}
+@keyframes lev{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+.eyebrow{font:700 10.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--gd-soft)}
+.hero h1{font-size:clamp(18px,3.2vw,28px);margin:4px 0;line-height:1.2}
+.hero p{margin:0;opacity:.85;font-size:13px}
+.clock{margin-left:auto;text-align:right;font-family:'JetBrains Mono',monospace}
+.clock b{display:block;font-size:30px;color:var(--gd-soft);letter-spacing:.04em}.clock span{font-size:12px;opacity:.85}
+
+/* ===== DASHBOARD ===== */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.kpi .card{margin:0;position:relative;overflow:hidden}.kpi .card::after{content:"";position:absolute;right:-20px;top:-20px;width:70px;height:70px;border-radius:50%;background:rgba(197,160,89,.18)}
+.kpi b{font-size:30px;display:block;font-family:'JetBrains Mono',monospace}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.mk{position:relative;border-radius:16px;overflow:hidden;min-height:130px;color:#fff;background:#063B2B;border:1px solid var(--ln)}
+.mk img{position:absolute;top:-5%;left:-6%;width:112%;height:110%;object-fit:cover;opacity:.85;animation:campusPan 24s ease-in-out infinite;animation-delay:var(--ph)}
+.mk .t{position:relative;padding:14px;height:100%;min-height:130px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(0deg,rgba(3,25,18,.92),rgba(3,25,18,.12))}
+.mk small{opacity:.92}
+.mk.now{border:2px solid var(--gd);box-shadow:0 0 0 3px rgba(197,160,89,.25),0 0 30px rgba(197,160,89,.45);animation:glow 2.4s ease-in-out infinite}
+.mk .live{position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#EEDBAE,#C5A059);color:#2a1d04;font:800 10.5px 'JetBrains Mono',monospace;padding:3px 9px;border-radius:99px;letter-spacing:.06em}
+.mk .live::before{content:"● ";animation:blink 1.1s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(197,160,89,.2),0 0 18px rgba(197,160,89,.35)}50%{box-shadow:0 0 0 4px rgba(197,160,89,.35),0 0 38px rgba(197,160,89,.65)}}
+@keyframes blink{50%{opacity:.2}}
+.nowbox{border:2px solid var(--gd);background:linear-gradient(135deg,rgba(197,160,89,.18),rgba(16,185,129,.08));border-radius:16px;padding:14px;margin-bottom:14px}
+.nowbox h3{color:#8a6a24;margin-bottom:10px}[data-theme=dark] .nowbox h3{color:var(--gd-soft)}
+.tap{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--ln)}
+.tap:last-child{border:0}
+.tap .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.tap .nm{flex:1;min-width:0}.tap .nm b{display:block;font-size:14.5px}.tap .nm small{color:var(--mut);font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.tap .tm{font:700 14px 'JetBrains Mono',monospace;color:var(--mut)}
+.tap.fresh{animation:fresh 1.6s ease-out}
+@keyframes fresh{0%{background:rgba(197,160,89,.4)}100%{background:transparent}}
+
+/* ===== LOGIN DIALOG ===== */
+.tabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,93,68,.08);padding:4px;border-radius:12px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font-weight:700;color:var(--mut);cursor:pointer;font-size:12.5px}
+.tabs .on{background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;box-shadow:0 2px 8px rgba(11,93,68,.25)}
+
+/* ===== KTM DIGITAL ===== */
+.ktm{position:relative;border-radius:22px;padding:2px;background:linear-gradient(135deg,#E8D4A2,#C5A059 30%,#10B981 65%,#0B5D44);box-shadow:0 22px 44px -18px rgba(6,44,32,.7);margin-bottom:16px;max-width:520px;overflow:hidden}
+.ktm::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);transform:translateX(-120%);animation:shim 5.5s ease-in-out infinite;pointer-events:none}
+@keyframes shim{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.ktm-in{border-radius:20px;background:linear-gradient(145deg,#063B2B,#042118 70%);color:#fff;padding:20px;position:relative;overflow:hidden}
+.ktm-in::before{content:"";position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(197,160,89,.4);box-shadow:0 0 0 18px rgba(197,160,89,.07),0 0 0 40px rgba(197,160,89,.04)}
+.ktm-top{display:flex;gap:12px;align-items:center;position:relative}.ktm-top img{height:46px}
+.ktm-top small{display:block;font:700 9.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--gd-soft)}.ktm-top b{font-size:13.5px}
+.ktm h2{font-size:21px;margin:16px 0 10px;color:#fff;position:relative}
+.ktm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
+.ktm-grid small{display:block;font-size:10px;color:var(--gd-soft);text-transform:uppercase;letter-spacing:.08em}.ktm-grid b{font-size:14px}.ktm-grid .full{grid-column:1/-1}
+.ktm-rfid{margin-top:14px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(197,160,89,.4);display:flex;align-items:center;gap:10px;justify-content:space-between;position:relative;flex-wrap:wrap}
+.ktm-rfid .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+.ck{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--ln)}.ck:last-child{border:0}
+.ck .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--ln);color:var(--mut);flex:none}
+.ck.done .n{background:var(--em);color:#fff}
+.ck .x{flex:1}.ck .x b{display:block}
+
+/* ===== REGISTRASI RFID ===== */
+.hero-auto{background:linear-gradient(125deg,var(--em-deep),#042118);color:#fff;border:2px solid var(--gd);border-radius:16px;padding:18px;margin-bottom:14px}
+.uid-box{background:rgba(255,255,255,.12);border:1px dashed var(--gd);border-radius:12px;padding:12px;margin:10px 0;text-align:center}
+.radar{position:relative;width:150px;height:150px;margin:6px auto 14px;display:grid;place-items:center}
+.radar i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--gd);opacity:0;animation:ping 2.4s ease-out infinite}
+.radar i:nth-child(2){animation-delay:.8s}.radar i:nth-child(3){animation-delay:1.6s}
+@keyframes ping{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1.15);opacity:0}}
+.radar .cardico{position:relative;width:74px;height:48px;border-radius:9px;background:linear-gradient(135deg,#EEDBAE,#C5A059);box-shadow:0 8px 20px rgba(0,0,0,.4);animation:pulse 1.6s ease-in-out infinite;display:grid;place-items:center;font-size:22px}
+@keyframes pulse{50%{transform:scale(1.1) rotate(-3deg)}}
+.cdown{font:800 46px 'JetBrains Mono',monospace;color:var(--gd-soft);text-align:center;letter-spacing:.06em;text-shadow:0 0 22px rgba(197,160,89,.55)}
+.cdown.low{color:#FF8A96;animation:blink 1s infinite}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills button{border:1px solid var(--ln);background:var(--card2);color:var(--ink);border-radius:99px;padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer}
+.pills button.on{background:var(--em);border-color:var(--em);color:#fff}
+.pills button small{opacity:.75;margin-left:4px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--ln);border-top-color:var(--em);border-radius:50%;animation:rot .8s linear infinite;vertical-align:-2px}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ===== KIOSK / PROYEKTOR ===== */
+#kx{display:none;position:fixed;right:14px;bottom:14px;z-index:60}
+body.kiosk #kx{display:block}
+body.kiosk .nav,body.kiosk .hd-r .pill,body.kiosk .hd-r .ib,body.kiosk .hd-r .btn:not(.kx-on){display:none}
+body.kiosk .wrap{max-width:none;padding:22px 34px}
+body.kiosk .hero{padding:26px 34px}body.kiosk .hero h1{font-size:clamp(26px,3.6vw,46px)}body.kiosk .crest img{height:116px}body.kiosk .clock b{font-size:56px}body.kiosk .clock span{font-size:16px}
+body.kiosk .kpi b{font-size:52px}body.kiosk .kpi .mut{font-size:15px}
+body.kiosk .tap{padding:16px 6px;gap:18px}body.kiosk .tap .av{width:60px;height:60px;font-size:24px}
+body.kiosk .tap .nm b{font-size:28px}body.kiosk .tap .nm small{font-size:18px}body.kiosk .tap .tm{font-size:30px}body.kiosk .tap .b{font-size:18px;padding:6px 16px}
+body.kiosk .card h3,body.kiosk .nowbox h3{font-size:24px}
+body.kiosk .mk .t{min-height:170px}body.kiosk .mk b{font-size:20px}body.kiosk .mk small{font-size:15px}
+body.kiosk .nowbox{border-width:3px;padding:20px}
+body.kiosk .card{padding:22px}
+
+@media(max-width:800px){.hd{gap:8px;padding-left:12px;padding-right:12px}.brand small{display:none}.nav{order:3;flex:1 0 100%}.wrap{padding:12px}.hero{padding:16px}.clock{margin-left:0;text-align:left}.r2{grid-template-columns:1fr}.pill b{display:none}}
 </style>
 </head>
 <body>
-<div id="app"></div><div id="bd" onclick="drawer(0)"></div><div id="ts"></div><dialog id="dg"></dialog>
+<div class="bgx" aria-hidden="true"><img class="bg-campus" src="./kampus.jpg" alt=""><div class="bg-pcb"></div><div class="bg-dots"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div id="app"></div><div id="ts"></div><dialog id="dg"></dialog>
 <script>
-// Ganti dengan username bot Telegram dari @BotFather (tanpa tanda @)
-const TG_BOT='PresensiTRKPolnesBot';
+/* ===== KONFIGURASI SUPABASE (TIDAK DIUBAH) ===== */
+const SUPABASE_URL='https://muwlrysxpuygrinrnere.supabase.co';
+const SUPABASE_KEY='sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const sb=supabase.createClient('https://muwlrysxpuygrinrnere.supabase.co','sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0');
+/* ===== UTILITAS ===== */
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-const IMG=[['administrator jaringan','administrator_jaringan'],['administrasi jaringan','administrator_jaringan'],['mikroprosesor','mikroprosesor'],['mikroprosessor','mikroprosesor'],['organisasi','organisasi_dan_arsitektur_komputer'],['arsitektur komputer','organisasi_dan_arsitektur_komputer'],['berorientasi','pemrograman_berorientasi_obyek'],['web','pemrograman_web'],['rangkaian digital','rangkaian_digital'],['telekomunikasi','telekomunikasi']];
-const imgOf=n=>{n=String(n||'').toLowerCase();const m=IMG.find(x=>n.includes(x[0]));return './'+(m?m[1]:'kampus')+'.jpg'};
+const COURSE_IMAGE_RULES=[['administrator jaringan','administrator_jaringan'],['administrasi jaringan','administrator_jaringan'],['mikroprosesor','mikroprosesor'],['mikroprosessor','mikroprosesor'],['organisasi','organisasi_dan_arsitektur_komputer'],['arsitektur komputer','organisasi_dan_arsitektur_komputer'],['berorientasi','pemrograman_berorientasi_obyek'],['web','pemrograman_web'],['rangkaian digital','rangkaian_digital'],['telekomunikasi','telekomunikasi']];
+const imgOf=n=>{n=String(n||'').toLowerCase();const m=COURSE_IMAGE_RULES.find(x=>n.includes(x[0]));return './'+(m?m[1]:'kampus')+'.jpg'};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const mn=t=>{if(!t)return 0;const a=t.split(':');return +a[0]*60+ +a[1]};
 const hm=t=>(t||'').slice(0,5);
-const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3800)};
-const dlg=h=>{$('#dg').innerHTML=h;$('#dg').showModal()},cls=()=>$('#dg').close();
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3800)};
+const dlg=h=>{$('#dg').innerHTML=h;if(!$('#dg').open)$('#dg').showModal()},cls=()=>$('#dg').close();
+const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+const shortName=n=>String(n||'').trim().split(/\s+/).slice(0,2).join(' ');
+const PL={mahasiswa:'Mahasiswa',dosen:'Dosen',admin:'Admin'};
+const kioskOn=()=>document.body.classList.contains('kiosk');
+const mask=n=>{n=String(n||'');return n.length>5?n.slice(0,3)+'•'.repeat(n.length-5)+n.slice(-2):n};
+const maskNim=n=>(me&&(me.peran==='admin'||me.peran==='dosen')&&!kioskOn())?String(n||''):mask(n);
+const isLive=k=>{const d=new Date(),n=d.getHours()*60+d.getMinutes();return k.hari==d.getDay()&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
+function syncPhase(){document.documentElement.style.setProperty('--ph',(-((Date.now()/1000)%24)).toFixed(2)+'s')}
+syncPhase();
 
-let me=null,S={mk:[],ang:[],pes:[],pre:[],dev:[],taps:[],sesi:null,ntf:[],set:{notif_aktif:true}},pg='',sel='',tab='masuk',role=localStorage.getItem('pilihPeran')||'mahasiswa',pv=[];
+/* ===== STATE ===== */
+let me=null,S={mk:[],ang:[],pes:[],pre:[],dev:[],sesi:null,ntf:[],set:{notif_aktif:true}},pg='dash',sel='',pv=[];
+let lt='google',rfidShow=false,mf='semua',memQ='',regTarget='',regPrio=true,regBusy=0,tgTimer=null,tgLeft=0,fresh=new Set(),CH=null,bt=0;
 const MENU={
- admin:[['dash','📊 Dashboard'],['mk','📚 Mata Kuliah'],['user','👥 Pengguna'],['log','📋 Log Presensi'],['auto','⚡ Mode Auto'],['ntf','✈️ Notifikasi'],['xls','📥 Import / Export']],
- mahasiswa:[['kartu','🪪 Kartu Saya'],['stat','📈 Statistik'],['riw','🕒 Riwayat'],['tg','✈️ Telegram']],
- dosen:[['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi Presensi'],['xls','📥 Import / Export'],['tg','✈️ Telegram']]
+ guest:[['dash','📊 Dashboard']],
+ admin:[['dash','📊 Dashboard'],['mk','📚 Mata Kuliah'],['mem','👥 Anggota'],['reg','⚡ Registrasi RFID'],['log','📋 Log Presensi'],['ntf','✈️ Notifikasi'],['xls','📥 Import / Export']],
+ mahasiswa:[['dash','📊 Dashboard'],['portal','🪪 Portal Saya'],['riw','🕒 Riwayat'],['tg','✈️ Telegram']],
+ dosen:[['dash','📊 Dashboard'],['portal','🪪 Portal Saya'],['kelas','🏫 Kelas Saya'],['kor','📝 Koreksi'],['xls','📥 Import / Export'],['tg','✈️ Telegram']]
 };
+const role=()=>me?me.peran:'guest';
 
-/* ===== GERBANG MASUK & DAFTAR AWAL ===== */
+/* ===== LOGIN: GOOGLE (MAHASISWA/DOSEN) & ADMIN ===== */
+function lgn(t){
+ if(t)lt=t;
+ const G='<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
+ dlg(`<div style="text-align:center"><div class="logo3d"><img src="./logo-polnes.png" alt="" style="height:54px"></div><h3 style="margin:8px 0 2px;color:var(--em-deep)">Masuk ke Presensi RFID</h3><p class="mut" style="margin:0 0 12px">Prodi TRK · Politeknik Negeri Samarinda</p></div>
+ <div class="tabs"><button type="button" class="${lt=='google'?'on':''}" onclick="lgn('google')">🎓 Mahasiswa & Dosen</button><button type="button" class="${lt=='admin'?'on':''}" onclick="lgn('admin')">🛡️ Administrator</button></div>
+ ${lt=='google'?`<button class="btn gg" onclick="google()">${G} Masuk dengan Google</button>
+  <p class="mut" style="margin:12px 0 0;text-align:center">Gunakan akun Gmail Anda. Peran (Mahasiswa / Dosen) dibaca otomatis dari data anggota; akun baru dibuat berstatus aktif.</p>`
+ :`<div class="info" id="lerr"></div><label>📧 Email Administrator</label><input id="em" type="email" autocomplete="username" placeholder="admin@polnes.ac.id"><label>🔑 Kata Sandi</label><div class="pw"><input type="password" id="pw" autocomplete="current-password" placeholder="Kata sandi" onkeydown="if(event.key==='Enter')admLogin()"><button type="button" onclick="eye(this)">👁️</button></div><button class="btn p" id="lbtn" onclick="admLogin()">Masuk Administrator</button>`}
+ <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sm" onclick="cls()">Lanjut sebagai Pengunjung</button></div>`);
+}
 function eye(b){const i=b.previousElementSibling;i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁️':'🙈'}
-const pwf=id=>`<div class="pw"><input type="password" id="${id}" placeholder="Kata sandi" autocomplete="current-password"><button type="button" onclick="eye(this)">👁️</button></div>`;
-function pilihPeran(r){
- role=r;
- localStorage.setItem('pilihPeran',r);
- document.querySelectorAll('.rbtn').forEach(el=>el.classList.toggle('on',el.dataset.r===r));
- const st=$('#role-st');
- if(st)st.textContent='✓ Peran dipilih: '+r.toUpperCase();
-}
-function gate(msg){
- const R=[['mahasiswa','🎓','Mahasiswa'],['dosen','👨‍🏫','Dosen'],['admin','🛡️','Admin']];
- $('#app').innerHTML=`<div id="gate"><img class="bg" src="./kampus.jpg" alt=""><div class="glass">
- <img class="logo" src="./logo-polnes.png" alt="">
- <h1>Presensi RFID Polnes</h1>
- <p class="sub">Prodi TRK · Politeknik Negeri Samarinda</p>
- <div class="tabs">
-   <button type="button" class="${tab=='masuk'?'on':''}" onclick="tab='masuk';gate()">🔐 Masuk</button>
-   <button type="button" class="${tab=='daftar'?'on':''}" onclick="tab='daftar';gate()">✨ Daftar Awal</button>
- </div>
- ${msg?`<div class="info show" style="margin-bottom:12px">${esc(msg)}</div>`:''}
- ${tab=='masuk'?`
-   <button class="btn g" onclick="google(0)">🚀 Masuk dengan Google</button>
-   <p class="mut" style="text-align:center;margin:10px 0">atau masuk dengan email</p>
-   <label>📧 Email</label><input id="em" type="email" autocomplete="username" placeholder="nama@gmail.com">
-   <label>🔑 Kata Sandi</label>${pwf('pw')}
-   <button class="btn p" onclick="emailAuth(0)">Masuk dengan Email</button>
- `:`
-   <label>1. Pilih peran Anda</label>
-   <div class="roles">${R.map(r=>`<button type="button" class="rbtn ${role==r[0]?'on':''}" data-r="${r[0]}" onclick="pilihPeran('${r[0]}')"><span class="chk">✓</span><span class="ico">${r[1]}</span>${r[2]}</button>`).join('')}</div>
-   <div class="role-status" id="role-st">${role?'✓ Peran dipilih: '+role.toUpperCase():'Klik salah satu kotak peran di atas'}</div>
-   <label>2. Hubungkan akun Google / Email</label>
-   <button class="btn g" onclick="google(1)">🌐 Daftar dengan Google (Gmail)</button>
-   <p class="mut" style="text-align:center;margin:10px 0">atau daftar dengan email</p>
-   <label>📧 Email</label><input id="em" type="email" placeholder="nama@gmail.com">
-   <label>🔑 Buat Kata Sandi</label>${pwf('pw')}
-   <button class="btn p" onclick="emailAuth(1)">Daftar dengan Email</button>
- `}
- </div></div>`;
-}
-async function google(daftar){
- if(daftar){
-  if(!role)return toast('Pilih peran terlebih dahulu');
-  localStorage.setItem('pend',JSON.stringify({peran:role}));
- }else{
-  localStorage.removeItem('pend');
- }
- const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+async function google(){
+ try{sessionStorage.setItem('lm','google')}catch(e){}
+ const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
  if(error)toast(error.message);
 }
-async function emailAuth(daftar){
- const email=$('#em').value.trim().toLowerCase(),password=$('#pw').value;
- if(!email||!password){toast('Isi email dan kata sandi');return}
- if(daftar){
-  if(!role)return toast('Pilih peran terlebih dahulu');
-  localStorage.setItem('pend',JSON.stringify({peran:role}));
-  const {data,error}=await sb.auth.signUp({email,password});
-  if(error){
-   const msg=/already registered/i.test(error.message)?'Email sudah terdaftar. Pindah ke tab Masuk.':error.message;
-   return toast(msg);
-  }
-  if(!data.session)return toast('Akun dibuat, namun Confirm Email di Supabase masih aktif.');
-  toast('Pendaftaran berhasil!');
- }else{
-  localStorage.removeItem('pend');
-  const {error}=await sb.auth.signInWithPassword({email,password});
-  if(error){
-   const msg=/Invalid login/i.test(error.message)?'Email belum terdaftar, kata sandi salah, atau akun memakai Google.':error.message;
-   return toast(msg);
-  }
- }
- boot();
+async function admLogin(){
+ const email=$('#em').value.trim().toLowerCase(),password=$('#pw').value,er=$('#lerr'),btn=$('#lbtn');
+ if(!email||!password){er.textContent='Isi email dan kata sandi.';er.classList.add('show');return}
+ btn.disabled=true;btn.textContent='Memeriksa…';
+ try{sessionStorage.setItem('lm','admin')}catch(e){}
+ const {error}=await sb.auth.signInWithPassword({email,password});
+ if(error){btn.disabled=false;btn.textContent='Masuk Administrator';er.textContent=/Invalid login/i.test(error.message)?'Email atau kata sandi salah.':error.message;er.classList.add('show');return}
+ cls();boot(true);
 }
-async function keluar(){if(CH){sb.removeChannel(CH);CH=null}await sb.auth.signOut();localStorage.removeItem('pend');me=null;tab='masuk';gate()}
+async function keluar(){
+ stopTgPoll();if(CH){sb.removeChannel(CH);CH=null}
+ await sb.auth.signOut();me=null;pg='dash';regTarget='';
+ try{sessionStorage.removeItem('lm')}catch(e){}
+ toast('Anda telah keluar');await boot(true);
+}
 
-/* ===== BOOT & REALTIME ===== */
-let CH=null,bt=0;
-async function boot(){if(bt)return;bt=1;try{await boot0()}finally{bt=0}}
+/* ===== BOOT: PENGUNJUNG TANPA LOGIN, ATAU SESI TERDETEKSI ===== */
+async function boot(force){if(bt&&!force)return;bt=1;try{await boot0()}finally{bt=0}}
 async function boot0(){
- const {data:{session}}=await sb.auth.getSession();
- if(!session)return gate();
- let p={};try{p=JSON.parse(localStorage.getItem('pend')||'{}')}catch(e){}
- const peranKirim=p.peran||localStorage.getItem('pilihPeran')||'mahasiswa';
- const {data:res,error:rpcErr}=await sb.rpc('tautkan_akun',{
-  p_no_wa:'',
-  p_peran:peranKirim,
-  p_nama:session.user.user_metadata?.full_name||session.user.user_metadata?.name||'',
-  p_nim:'',
-  p_kelas:''
- });
- if(rpcErr||res?.error){
-  const msg=rpcErr?.message||res?.error||'Gagal menautkan akun';
-  await sb.auth.signOut();localStorage.removeItem('pend');
-  return gate(msg);
+ let session=null;
+ try{session=(await sb.auth.getSession()).data.session}catch(e){}
+ me=null;
+ if(session){
+  const u=session.user,isAdminMeta=u.app_metadata?.role==='admin';
+  let row=null;
+  const sel1=async()=>(await sb.from('anggota').select('*').eq('auth_user_id',u.id).maybeSingle()).data;
+  try{
+   row=await sel1();
+   if(!row){try{await sb.rpc('tautkan_akun',{p_no_wa:'',p_peran:'mahasiswa',p_nama:u.user_metadata?.full_name||u.user_metadata?.name||'',p_nim:'',p_kelas:''});row=await sel1()}catch(e){}}
+   if(!row&&u.email){
+    const {data}=await sb.from('anggota').select('*').ilike('email',u.email).maybeSingle();
+    if(data){row=data;if(!data.auth_user_id)await sb.from('anggota').update({auth_user_id:u.id}).eq('id',data.id)}
+   }
+   if(!row){
+    const {data}=await sb.from('anggota').insert({nama:u.user_metadata?.full_name||u.user_metadata?.name||(u.email||'Pengguna').split('@')[0],email:(u.email||'').toLowerCase(),peran:'mahasiswa',aktif:true,auth_user_id:u.id}).select().maybeSingle();
+    row=data;
+   }
+  }catch(e){}
+  if(!row&&isAdminMeta)row={id:u.id,nama:u.email||'Administrator',email:u.email,peran:'admin',aktif:true};
+  if(row){
+   if(isAdminMeta)row.peran='admin';
+   let lm='';try{lm=sessionStorage.getItem('lm')||''}catch(e){}
+   if(row.aktif===false){await sb.auth.signOut();toast('Akun Anda dinonaktifkan oleh administrator')}
+   else if(lm==='admin'&&row.peran!=='admin'){await sb.auth.signOut();toast('Akun ini bukan Administrator')}
+   else me=row;
+  }else{await sb.auth.signOut();toast('Profil anggota tidak dapat dimuat')}
+  try{sessionStorage.removeItem('lm')}catch(e){}
  }
- if(p.peran&&p.peran!==res.peran){
-  await sb.auth.signOut();localStorage.removeItem('pend');
-  tab='daftar';
-  return gate(`Akun ini terdaftar sebagai ${res.peran.toUpperCase()}, bukan ${p.peran.toUpperCase()}.`);
- }
- const {data}=await sb.from('anggota').select('*').eq('auth_user_id',session.user.id).maybeSingle();
- me=data;
- if(!me){
-  await sb.auth.signOut();localStorage.removeItem('pend');
-  return gate('Gagal memuat profil anggota.');
- }
- localStorage.removeItem('pend');
  await load();
- pg=MENU[me.peran][0][0];
+ if(!MENU[role()].some(x=>x[0]===pg))pg='dash';
  shell();
- if(me.peran==='admin'){
-  if(CH)sb.removeChannel(CH);
-  CH=sb.channel('live-admin')
-   .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},async x=>{
-    await load();const r=x.new;
-    if(r&&r.anggota_id){const a=S.ang.find(z=>z.id==r.anggota_id)||{};S.taps=[{n:a.nama||'Tap',j:hm(r.pulang||r.masuk),s:r.status},...S.taps].slice(0,8);toast((a.nama||'Tap')+' — '+hm(r.masuk))}
-    draw();
-   })
-   .on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},async ()=>{
-    await load();if(pg==='auto')draw();
-   })
-   .subscribe();
+ setupRealtime();
+}
+function setupRealtime(){
+ if(CH){sb.removeChannel(CH);CH=null}
+ CH=sb.channel('live-presensi')
+  .on('postgres_changes',{event:'*',schema:'public',table:'presensi'},async x=>{
+   const r=x.new;if(r&&r.id)fresh.add(String(r.id));
+   await load();
+   if(r&&r.anggota_id&&me&&me.peran==='admin'){const a=S.ang.find(z=>z.id==r.anggota_id)||{};toast((a.nama||'Tap')+' — '+hm(r.masuk))}
+   draw(true);
+  });
+ if(me&&me.peran==='admin'){
+  CH.on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},async()=>{await load();await afterLoad();if(pg==='reg')draw(true)});
  }
+ CH.subscribe();
 }
-async function refreshMe(){
- if(!me)return;
+async function refreshMe(silent){
+ if(!me||!me.id)return;
  const {data}=await sb.from('anggota').select('*').eq('id',me.id).maybeSingle();
- if(data){me=data;draw();}
+ if(data){data.peran=me.peran==='admin'?'admin':data.peran;me=data}
+ if(!silent)draw();
 }
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refreshMe()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refreshMe(true).then(()=>draw(true))});
 
 async function load(){
- const adm=me.peran==='admin';
+ const adm=me&&me.peran==='admin',stf=adm||(me&&me.peran==='dosen');
  const reqs=[
   sb.from('mata_kuliah').select('*').order('kode'),
-  adm||me.peran==='dosen'?sb.from('anggota').select('*').order('nama'):sb.from('anggota').select('*').eq('id',me.id),
+  stf?sb.from('anggota').select('*').order('nama'):sb.from('anggota').select('id,nama,nim,kelas,peran').order('nama'),
   sb.from('peserta').select('anggota_id,mata_kuliah_id'),
   sb.from('presensi').select('*').order('tanggal',{ascending:false}).order('masuk',{ascending:false}).limit(1500),
   sb.from('perangkat').select('id,nama,aktif,terakhir_terlihat'),
@@ -261,38 +327,50 @@ async function load(){
   reqs.push(sb.from('sesi_registrasi').select('*').eq('selesai',false).gt('kedaluwarsa',new Date().toISOString()).order('dibuat_pada',{ascending:false}).limit(1).maybeSingle());
   reqs.push(sb.from('notifikasi_log').select('*').order('dikirim_pada',{ascending:false,nullsFirst:false}).limit(80));
  }
- const R=await Promise.all(reqs);
+ const R=await Promise.all(reqs.map(q=>Promise.resolve(q).catch(()=>({data:null}))));
  S.mk=R[0].data||[];S.ang=R[1].data||[];S.pes=R[2].data||[];S.pre=R[3].data||[];S.dev=R[4].data||[];S.set=R[5].data||S.set;
- if(adm){S.sesi=R[6]?.data||null;S.ntf=R[7]?.data||[]}
+ if(adm){S.sesi=R[6]?.data||null;S.ntf=R[7]?.data||[]}else S.sesi=null;
+ if(me&&me.id&&!S.ang.some(a=>a.id==me.id))S.ang.push(me);
 }
+async function afterLoad(){if(me&&me.peran==='admin')await assignKartu()}
 
-/* ===== SHELL ===== */
+/* ===== SHELL / HEADER ===== */
 function shell(){
- const m=MENU[me.peran],nav=c=>m.map(x=>`<button class="${x[0]==pg?'on':''}" onclick="${c}('${x[0]}')">${x[1]}</button>`).join('');
- if(me.peran==='admin'){
-  $('#app').innerHTML=`<div class="adm"><aside class="side"><div class="brand"><img src="./logo-polnes.png" alt=""><div><h3>Presensi RFID</h3><small class="mut" style="color:#A7F3D0">Admin TRK</small></div></div>${nav('go')}<span style="flex:1"></span><button onclick="toggleFull()">🖥️ Mode Proyektor</button><button onclick="keluar()">🚪 Keluar</button></aside><main class="main" id="main"></main></div>`;
- }else{
-  $('#app').innerHTML=`<header class="top"><button onclick="drawer(1)" aria-label="Menu">☰</button><b>Presensi RFID Polnes</b></header>
-  <nav id="dr"><div><b>${esc(me.nama)}</b><div class="mut" style="color:#A7F3D0">${esc(me.nim||'')} · ${me.peran}</div></div><hr style="width:100%;border-color:rgba(255,255,255,.2)">${nav('goM')}<span style="flex:1"></span><button onclick="keluar()">🚪 Keluar</button></nav>
-  <main class="mob" id="main"></main>`;
- }
+ const m=MENU[role()];
+ const nav=m.map(x=>`<button class="${x[0]==pg?'on':''}" onclick="go('${x[0]}')">${x[1]}</button>`).join('');
+ const usr=me?`<div class="pill"><span class="av">${esc(initials(me.nama))}</span><b>${esc(shortName(me.nama))}</b><span class="rb ${me.peran}">${PL[me.peran]||me.peran}</span><button class="btn sm" onclick="keluar()">Keluar</button></div>`:`<button class="btn p sm" onclick="lgn()">🔐 Masuk</button>`;
+ $('#app').innerHTML=`<header class="hd"><div class="logo3d"><img src="./logo-polnes.png" alt="Logo Polnes"></div><div class="brand"><h3>Presensi RFID Polnes</h3><small>Prodi Teknologi Rekayasa Komputer</small></div><nav class="nav">${nav}</nav><div class="hd-r"><button class="ib" title="Mode Proyektor" onclick="toggleFull()">📽️</button><button class="ib" title="Terang / Gelap" onclick="toggleTema()">🌓</button>${usr}</div></header>
+ <main class="wrap" id="main"></main><button id="kx" class="btn g sm kx-on" onclick="toggleFull()">✕ Keluar Mode Proyektor</button>`;
  draw();
 }
-function drawer(o){$('#dr')?.classList.toggle('show',!!o);$('#bd').classList.toggle('show',!!o)}
-function go(p){pg=p;shell()}
-function goM(p){pg=p;drawer(0);shell()}
-function toggleFull(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().then(()=>document.body.classList.add('kiosk'))}else document.exitFullscreen().then(()=>document.body.classList.remove('kiosk'))}
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)document.body.classList.remove('kiosk')});
-const draw=()=>{if(me.peran==='admin'&&pg==='auto'&&S.sesi?.uid_tertangkap&&document.activeElement?.closest('#main')&&/INPUT|SELECT/.test(document.activeElement.tagName))return;const f=V[me.peran+'_'+pg];$('#main').innerHTML=f?f():'<div class="card">Halaman belum tersedia.</div>'};
+function go(p){pg=p;sel='';stopTgPollIfLeft();shell();window.scrollTo(0,0)}
+function toggleTema(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('tema',t)}catch(e){}}
+function toggleFull(){
+ const on=!kioskOn();
+ document.body.classList.toggle('kiosk',on);
+ if(on){pg='dash';if(me)shell();else draw();document.documentElement.requestFullscreen?.().catch(()=>{})}
+ else if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ draw();
+}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&kioskOn()){document.body.classList.remove('kiosk');draw()}});
+function draw(soft){
+ const mainEl=$('#main');if(!mainEl)return;
+ const ae=document.activeElement;
+ if(soft&&ae&&mainEl.contains(ae)&&/INPUT|SELECT|TEXTAREA/.test(ae.tagName))return;
+ const f=V[role()+'_'+pg]||V[pg];
+ mainEl.innerHTML=f?f():'<div class="card">Halaman belum tersedia.</div>';
+ if(pg==='portal'&&role()==='mahasiswa')statLoad();
+ tick();
+}
 
 /* ===== KOMPONEN ===== */
 const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':s=='Izin'||s=='Sakit'?'':'er'}">${esc(s)}</span>`;
-const mkCard=k=>`<div class="mk"><img src="${imgOf(k.nama)}" onerror="this.onerror=null;this.src='./kampus.jpg'" alt=""><div class="t"><b>${esc(k.nama)}</b><small>${esc(k.kode)} · ${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)} ${esc(k.ruangan||'')}</small></div></div>`;
+const mkCard=k=>`<div class="mk ${isLive(k)?'now':''}">${isLive(k)?'<span class="live">BERLANGSUNG</span>':''}<img src="${imgOf(k.nama)}" onerror="this.onerror=null;this.src='./kampus.jpg'" alt=""><div class="t"><b>${esc(k.nama)}</b><small>${esc(k.kode)} · ${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)} ${esc(k.ruangan||'')}</small></div></div>`;
 const STS=['Hadir','Terlambat','Izin','Sakit'];
 const nm=id=>(S.ang.find(x=>x.id==id)||{}).nama||'-';
 const mkn=id=>(S.mk.find(x=>x.id==id)||{}).nama||'-';
 function devInfo(){const d=S.dev.find(x=>x.aktif)||S.dev[0];if(!d||!d.terakhir_terlihat)return{on:0,n:'ESP8266',t:'Belum terhubung'};const s=(Date.now()-new Date(d.terakhir_terlihat))/1000;return{on:s<=90,n:d.nama,t:s<90?'Online':'Offline'}}
-function myMk(){return me.peran==='dosen'?S.mk.filter(k=>k.dosen_id==me.id):S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id))}
+function myMk(){if(!me)return[];return me.peran==='dosen'?S.mk.filter(k=>k.dosen_id==me.id):S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id))}
 async function setStatus(aid,mid,st){
  const t=today(),r=S.pre.find(x=>x.anggota_id==aid&&x.mata_kuliah_id==mid&&x.tanggal==t);
  const q=r?sb.from('presensi').update({status:st}).eq('id',r.id):sb.from('presensi').insert({anggota_id:aid,mata_kuliah_id:mid,tanggal:t,masuk:new Date().toTimeString().slice(0,8),status:st,sumber:'manual'});
@@ -300,70 +378,98 @@ async function setStatus(aid,mid,st){
 }
 async function setStatusId(id,st){const {error}=await sb.from('presensi').update({status:st}).eq('id',id);if(error)return toast(error.message);toast('Status diperbarui');await load();draw()}
 const stSel=(id,cur)=>`<select onchange="setStatusId('${id}',this.value)" style="width:auto;margin:0">${STS.map(s=>`<option ${s==cur?'selected':''}>${s}</option>`).join('')}</select>`;
+const hasCard=a=>!!a.uid_kartu;
 
-/* ===== VIEW ADMIN, MAHASISWA, DOSEN ===== */
+/* ===== VIEW ===== */
 const V={
- admin_dash(){
-  const t=today(),p=S.pre.filter(x=>x.tanggal==t),d=devInfo();
-  return `<div class="kpi"><div class="card"><span class="mut">Hadir hari ini</span><b>${p.length}</b></div><div class="card"><span class="mut">Terlambat</span><b>${p.filter(x=>x.status=='Terlambat').length}</b></div><div class="card"><span class="mut">Mahasiswa</span><b>${S.ang.filter(x=>x.peran=='mahasiswa').length}</b></div><div class="card"><span class="mut">${esc(d.n)}</span><b style="font-size:20px">${d.on?'🟢 Online':'🔴 Offline'}</b></div></div>
-  <div class="card"><h3>Live Tap Monitor</h3>${S.taps.map(x=>`<div class="row" style="padding:6px 0"><b>${esc(x.n)}</b><span class="mut">${x.j}</span>${bd(x.s)}</div>`).join('')||'<p class="mut">Tempelkan kartu pada pembaca…</p>'}</div>
-  <h3>Mata Kuliah</h3><div class="grid">${S.mk.map(mkCard).join('')}</div>`},
+ dash(){
+  const t=today(),p=S.pre.filter(x=>x.tanggal==t),d=devInfo(),dow=new Date().getDay();
+  const live=S.mk.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,kioskOn()?6:8);
+  const hari=S.mk.filter(k=>k.hari==dow).length;
+  return `<section class="hero"><div class="crest"><img src="./logo-polnes.png" alt="Lambang Polnes"></div><div><div class="eyebrow">POLNES ACADEMIC COMMAND CENTER &amp; TELEMETRY</div><h1>Sistem Presensi RFID &amp; IoT Real-Time</h1><p>Program Studi Teknologi Rekayasa Komputer · Politeknik Negeri Samarinda</p></div><div class="clock"><b data-clock="t">--:--:--</b><span data-clock="d"></span></div></section>
+  ${live.length?`<div class="nowbox"><h3>🟡 Kelas Sedang Berlangsung</h3><div class="grid">${live.map(mkCard).join('')}</div></div>`:''}
+  <div class="kpi"><div class="card"><span class="mut">Hadir hari ini</span><b>${p.length}</b></div><div class="card"><span class="mut">Terlambat</span><b>${p.filter(x=>x.status=='Terlambat').length}</b></div><div class="card"><span class="mut">Kelas hari ini</span><b>${hari}</b></div><div class="card"><span class="mut">${esc(d.n)}</span><b style="font-size:${kioskOn()?'34':'20'}px">${d.on?'🟢 Online':'🔴 Offline'}</b></div></div>
+  <div class="card"><div class="row"><h3>📡 Live Tap Monitor</h3><span class="mut">${me?'':'Mode Pengunjung · '}NIM disamarkan</span></div>${taps.map(x=>{const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id));return `<div class="tap ${f?'fresh':''}"><span class="av">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Mahasiswa')}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hm(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`}).join('')||'<p class="mut">Menunggu tap kartu pada pembaca…</p>'}</div>
+  <h3>📚 Jadwal Mata Kuliah</h3><div class="grid">${S.mk.map(mkCard).join('')||'<p class="mut">Belum ada data mata kuliah.</p>'}</div>
+  ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk membuka KTM Digital, statistik kehadiran, dan notifikasi Telegram.</div></div><button class="btn p sm" onclick="lgn()">🔐 Masuk</button></div></div>`}`},
  admin_mk(){return `<div style="margin-bottom:10px"><button class="btn p sm" onclick="mkForm()">+ Tambah Mata Kuliah</button></div><div class="card tw"><table><tr><th>Kode<th>Nama<th>Jadwal<th>Toleransi<th>Dosen<th>Ruangan<th>Aksi</tr>${S.mk.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><b>${esc(k.nama)}</b><td>${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)}<td>${k.toleransi_menit??'-'} mnt<td>${esc(nm(k.dosen_id))}<td>${esc(k.ruangan||'-')}<td><button class="btn sm" onclick="mkForm('${k.id}')">Ubah</button> <button class="btn sm" onclick="mkDel('${k.id}')">Hapus</button></tr>`).join('')}</table></div>`},
- admin_user(){return `<div class="card tw"><table><tr><th>Nama<th>NIM/NIDN<th>Peran<th>Gmail<th>Kartu<th>Telegram<th>Status<th>Aksi</tr>${S.ang.map(a=>`<tr><td><b>${esc(a.nama)}</b><td class="mono">${esc(a.nim||'')}<td>${esc(a.peran)}<td>${esc(a.email||'-')}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.telegram_chat_id?'<span class="b ok">Tertaut</span>':'<span class="b">belum</span>'}<td>${a.aktif?'<span class="b ok">Aktif</span>':'<span class="b er">Nonaktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">Atur Gmail</button> <button class="btn sm" onclick="togAktif('${a.id}',${!a.aktif})">${a.aktif?'Nonaktifkan':'Aktifkan'}</button></tr>`).join('')}</table></div>`},
+ admin_mem(){
+  const c={semua:S.ang.length,ada:S.ang.filter(a=>hasCard(a)).length,belum:S.ang.filter(a=>!hasCard(a)).length,non:S.ang.filter(a=>a.aktif===false).length};
+  const P=[['semua','Semua'],['ada','Sudah Punya Kartu'],['belum','Belum Ada Kartu'],['non','Nonaktif']];
+  return `<div class="card"><div class="row"><div class="pills">${P.map(p=>`<button class="${mf==p[0]?'on':''}" onclick="mf='${p[0]}';draw()">${p[1]}<small>${c[p[0]]}</small></button>`).join('')}</div><input id="mq" style="max-width:260px;margin:0" placeholder="🔍 Cari nama / NIM / Gmail…" value="${esc(memQ)}" oninput="memQ=this.value;memRefresh()"></div></div>
+  <div class="card tw"><table><thead><tr><th>Nama<th>NIM/NIDN<th>Peran<th>Gmail<th>Kartu<th>Telegram<th>Status<th>Aksi</tr></thead><tbody id="memtb">${memRows()}</tbody></table></div>`},
+ admin_reg(){
+  const s=S.sesi,list=S.ang.filter(a=>a.peran!=='admin'&&a.aktif!==false),noCard=list.filter(a=>!hasCard(a)),has=list.filter(hasCard);
+  const opt=a=>`<option value="${a.id}" ${a.id==regTarget?'selected':''}>${esc(a.nama)} · ${esc(a.nim||PL[a.peran]||'')}${a.email?' · '+esc(a.email):''}</option>`;
+  const dd=regPrio?`<optgroup label="🆕 Belum punya kartu (${noCard.length})">${noCard.map(opt).join('')}</optgroup><optgroup label="Sudah punya kartu (${has.length})">${has.map(opt).join('')}</optgroup>`:list.map(opt).join('');
+  const tgt=regTarget?S.ang.find(a=>a.id==regTarget):null;
+  if(s&&tgt){
+   return `<div class="hero-auto" style="max-width:560px"><div class="row"><b>⚡ Menunggu Tap Kartu</b><button class="btn sm" onclick="batalAuto()">Batalkan</button></div>
+   <div class="radar"><i></i><i></i><i></i><div class="cardico">💳</div></div>
+   <div style="text-align:center">Tempelkan kartu RFID milik <b style="color:var(--gd-soft)">${esc(tgt.nama)}</b> ke alat ESP8266</div>
+   <div class="cdown" data-exp="${esc(s.kedaluwarsa)}">--:--</div><div style="text-align:center;font-size:12px;opacity:.8">sisa waktu sesi registrasi</div></div>`;
+  }
+  if(s){
+   const uid=s.uid_tertangkap;
+   return `<div class="hero-auto" style="max-width:560px"><div class="row"><b>⚡ Mode Auto Aktif (Data Baru)</b><button class="btn sm" onclick="batalAuto()">Batalkan</button></div>
+   <div class="uid-box">${uid?`<div style="font-size:12px;opacity:.85">UID Kartu Tertangkap:</div><b class="mono" style="font-size:24px;letter-spacing:2px;color:var(--gd-soft)">${esc(uid)}</b>${s.pemilik_sebelumnya?`<div style="margin-top:6px;background:rgba(180,35,54,.35);padding:4px 8px;border-radius:8px;font-size:12px">⚠️ Kartu ini sebelumnya terdaftar milik: <b>${esc(s.pemilik_sebelumnya)}</b></div>`:''}`:`<div class="radar" style="width:110px;height:110px;margin:0 auto 6px"><i></i><i></i><i></i><div class="cardico" style="width:56px;height:36px;font-size:16px">💳</div></div><b>📡 Menunggu tempelan kartu…</b>`}</div>
+   <div class="cdown" style="font-size:34px" data-exp="${esc(s.kedaluwarsa)}">--:--</div></div>
+   ${uid?`<div class="card" style="max-width:560px"><h3>Isi Data Pemilik Kartu</h3>
+   <label>Peran<select id="au1" onchange="autoPeran()"><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option><option value="admin">Admin</option></select></label>
+   <label>Nama Lengkap<input id="au2" placeholder="Nama lengkap sesuai SIAKAD"></label>
+   <div class="r2"><label><span id="au3l">NIM</span><input id="au3" inputmode="numeric" placeholder="256661001"></label><label id="au4w">Kelas<input id="au4" placeholder="TRK-3A"></label></div>
+   <label>Alamat Gmail (untuk menyatukan akun login)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
+   <label>Mata Kuliah (<span id="au7l">diikuti</span>)</label>
+   <div style="max-height:140px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:8px;margin:4px 0 12px">${S.mk.map(k=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--ink)"><input type="checkbox" class="auc" style="width:auto;margin:0" value="${k.id}">${esc(k.nama)} (${esc(k.kode)})</label>`).join('')}</div>
+   <div class="r2"><button class="btn p" onclick="simpanAuto(false)">Simpan &amp; Selesai</button><button class="btn g" onclick="simpanAuto(true)">Simpan &amp; Scan Berikutnya</button></div></div>`:''}`;
+  }
+  return `<div class="r2" style="align-items:start">
+   <div class="card"><h3>⚡ Cara 1: Tap Langsung di Alat (Otomatis)</h3><p class="mut" style="margin-top:0">Pilih anggota yang sudah ada (misalnya mahasiswa yang baru login lewat Gmail), aktifkan sesi, lalu tempelkan kartunya. UID otomatis tertaut.</p>
+    <label style="display:flex;gap:8px;align-items:center;cursor:pointer;color:var(--ink)"><input type="checkbox" style="width:auto;margin:0" ${regPrio?'checked':''} onchange="regPrio=this.checked;draw()"> Prioritaskan Anggota Belum Punya Kartu <span class="b lt">${noCard.length}</span></label>
+    <label>Pilih Anggota<select id="rt" onchange="regTarget=this.value"><option value="">— Pilih anggota —</option>${dd}</select></label>
+    <button class="btn p" onclick="mulaiTap()">📡 Mulai Menunggu Tap (3 Menit)</button></div>
+   <div class="card"><h3>🆕 Cara 2: Scan Dulu, Isi Data Baru</h3><p class="mut" style="margin-top:0">Untuk kartu baru yang pemiliknya belum terdaftar. Tempelkan kartu terlebih dahulu, UID muncul di layar, lalu lengkapi datanya.</p><button class="btn g" onclick="regTarget='';mulaiAuto()">Aktifkan Mode Auto (3 Menit)</button></div></div>`;
+ },
  admin_log(){
   const f=sel,r=S.pre.filter(x=>!f||x.mata_kuliah_id==f).slice(0,100);
   return `<select onchange="sel=this.value;draw()"><option value="">Semua mata kuliah</option>${S.mk.map(k=>`<option value="${k.id}" ${k.id==f?'selected':''}>${esc(k.nama)}</option>`).join('')}</select><div class="card tw"><table><tr><th>Tanggal<th>Nama<th>Matkul<th>Masuk<th>Pulang<th>Status</tr>${r.map(x=>`<tr><td>${x.tanggal}<td>${esc(nm(x.anggota_id))}<td>${esc(mkn(x.mata_kuliah_id))}<td>${hm(x.masuk)}<td>${hm(x.pulang)||'—'}<td>${stSel(x.id,x.status)}</tr>`).join('')}</table></div>`},
- admin_auto(){
-  const s=S.sesi;
-  if(!s)return `<div class="card" style="max-width:520px"><h3>⚡ Mode Auto (Scan-First)</h3><p class="mut">Aktifkan Mode Auto terlebih dahulu, lalu tempelkan kartu RFID ke alat ESP8266. UID kartu akan langsung muncul di layar untuk diisi datanya.</p><button class="btn p" onclick="mulaiAuto()">Aktifkan Mode Auto (3 Menit)</button></div>`;
-  const uid=s.uid_tertangkap;
-  return `<div class="hero-auto" style="max-width:560px"><div class="row"><b>⚡ Mode Auto Aktif</b><button class="btn sm" onclick="batalAuto()">Batalkan</button></div>
-  <div class="uid-box">${uid?`<div style="font-size:12px;opacity:.85">UID Kartu Tertangkap:</div><b class="mono" style="font-size:24px;letter-spacing:2px;color:#E8D4A2">${esc(uid)}</b>${s.pemilik_sebelumnya?`<div style="margin-top:6px;background:rgba(180,35,54,.35);padding:4px 8px;border-radius:8px;font-size:12px">⚠️ Kartu ini sebelumnya terdaftar milik: <b>${esc(s.pemilik_sebelumnya)}</b></div>`:''}`:'<b style="font-size:16px">📡 Menunggu tempelan kartu pada alat…</b><div style="font-size:12px;opacity:.8">Tempelkan kartu RFID ke pembaca sekarang</div>'}</div></div>
-  ${uid?`<div class="card" style="max-width:560px"><h3>Isi Data Pemilik Kartu</h3>
-  <label>Peran<select id="au1" onchange="autoPeran()"><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option><option value="admin">Admin</option></select></label>
-  <label>Nama Lengkap<input id="au2" placeholder="Nama lengkap sesuai SIAKAD"></label>
-  <div class="r2"><label><span id="au3l">NIM</span><input id="au3" inputmode="numeric" placeholder="256661001"></label><label id="au4w">Kelas<input id="au4" placeholder="TRK-3A"></label></div>
-  <label>Alamat Gmail (untuk menyatukan akun login)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
-  <label>Mata Kuliah (<span id="au7l">diikuti</span>)</label>
-  <div style="max-height:140px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:8px;margin:4px 0 12px">${S.mk.map(k=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--ink)"><input type="checkbox" class="auc" style="width:auto;margin:0" value="${k.id}">${esc(k.nama)} (${esc(k.kode)})</label>`).join('')}</div>
-  <div class="r2"><button class="btn p" onclick="simpanAuto(false)">Simpan & Selesai</button><button class="btn g" onclick="simpanAuto(true)">Simpan & Scan Berikutnya</button></div></div>`:''}`;
- },
- admin_ntf(){return `<div class="card"><div class="row"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;margin:0"><input type="checkbox" style="width:auto;margin:0" ${S.set.notif_aktif?'checked':''} onchange="togNotif(this.checked)"> Aktifkan pengingat Telegram otomatis saat jam mulai mata kuliah (maks. 1x per matkul)</label><button type="button" class="btn p sm" onclick="kirimNotifManual(this)">✈️ Kirim Antrean Telegram Sekarang</button></div></div><div class="card tw"><table><tr><th>Tanggal<th>Matkul<th>Penerima<th>Peran<th>Chat ID<th>Status<th>Waktu Kirim<th>Respon Bot</tr>${S.ntf.map(n=>`<tr><td>${n.tanggal}<td>${esc(mkn(n.mata_kuliah_id))}<td>${esc(nm(n.anggota_id))}<td>${esc(n.peran)}<td class="mono">${esc(n.nomor_tujuan)}<td>${bd(n.status_kirim=='terkirim'?'Hadir':n.status_kirim=='antri'||n.status_kirim=='proses'?'Terlambat':'Gagal')}<td>${n.dikirim_pada?new Date(n.dikirim_pada).toLocaleTimeString('id-ID'):'-'}<td class="mut" style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${esc(n.respon_gateway||'')}">${esc(n.respon_gateway||'-')}</tr>`).join('')||'<tr><td colspan=8>Belum ada log notifikasi.</tr>'}</table></div>`},
+ admin_ntf(){return `<div class="card"><div class="row"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;margin:0;color:var(--ink)"><input type="checkbox" style="width:auto;margin:0" ${S.set.notif_aktif?'checked':''} onchange="togNotif(this.checked)"> Aktifkan pengingat Telegram otomatis saat jam mulai mata kuliah (maks. 1x per matkul)</label><button type="button" class="btn p sm" onclick="kirimNotifManual(this)">✈️ Kirim Antrean Telegram Sekarang</button></div></div><div class="card tw"><table><tr><th>Tanggal<th>Matkul<th>Penerima<th>Peran<th>Chat ID<th>Status<th>Waktu Kirim<th>Respon Bot</tr>${S.ntf.map(n=>`<tr><td>${n.tanggal}<td>${esc(mkn(n.mata_kuliah_id))}<td>${esc(nm(n.anggota_id))}<td>${esc(n.peran)}<td class="mono">${esc(n.nomor_tujuan)}<td>${bd(n.status_kirim=='terkirim'?'Hadir':n.status_kirim=='antri'||n.status_kirim=='proses'?'Terlambat':'Gagal')}<td>${n.dikirim_pada?new Date(n.dikirim_pada).toLocaleTimeString('id-ID'):'-'}<td class="mut" style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${esc(n.respon_gateway||'')}">${esc(n.respon_gateway||'-')}</tr>`).join('')||'<tr><td colspan=8>Belum ada log notifikasi.</tr>'}</table></div>`},
  admin_xls(){return xlsView()},
  dosen_xls(){return xlsView()},
- mahasiswa_kartu(){
-  const hr=myMk().filter(k=>k.hari==new Date().getDay());
-  const adaKartu=!!(me.uid_kartu||me.punya_kartu);
-  const tgSiap=!!me.telegram_chat_id;
-  const kalibrasi=me.aktif&&adaKartu&&tgSiap&&!!me.email;
-  return `<div class="card" style="background:linear-gradient(135deg,#0B5D44,#063024);color:#fff"><img src="./logo-polnes.png" style="height:40px" alt=""><h2 style="margin:8px 0 2px">${esc(me.nama)}</h2><div>${esc(me.nim||'')} · ${esc(me.kelas||'-')}</div>
-  <p style="margin:8px 0 4px">Kartu RFID: ${adaKartu?'<span class="b ok">'+esc(me.uid_kartu||'Terdaftar')+'</span>':'<span class="b er">Belum di-scan (Mode Auto)</span>'}</p>
-  <p style="margin:4px 0 0;font-size:12px">Notifikasi Telegram: ${kalibrasi?'<span class="b ok">✓ Aktif & Terkalibrasi</span>':tgSiap?'<span class="b lt">Telegram Aktif · Menunggu Kartu RFID</span>':'<span class="b lt">Belum ditautkan (buka menu Telegram)</span>'}</p></div>
-  <h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`
+ portal(){
+  if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
+  const dsn=me.peran==='dosen',adaKartu=hasCard(me)||!!me.punya_kartu,tgSiap=!!me.telegram_chat_id,uid=me.uid_kartu||'Terdaftar';
+  const steps=[
+   ['Login Akun Gmail','Akun Google Anda sudah terhubung',true,'Selesai'],
+   ['Tautkan Notifikasi Telegram',tgSiap?'Pengingat otomatis aktif':'Buka menu Telegram untuk menautkan',tgSiap,tgSiap?'Terhubung':'Belum'],
+   ['Registrasi Kartu RFID di Lab',adaKartu?'Kartu sudah terpasang pada akun Anda':'Hubungi admin untuk scan kartu di lab',adaKartu,adaKartu?'Terpasang':'Menunggu Scan Admin']];
+  const done=steps.filter(s=>s[2]).length;
+  let h=`<div class="ktm"><div class="ktm-in"><div class="ktm-top"><img src="./logo-polnes.png" alt=""><div><small>${dsn?'KARTU IDENTITAS DOSEN DIGITAL':'KARTU TANDA MAHASISWA DIGITAL'}</small><b>Teknologi Rekayasa Komputer</b><small style="letter-spacing:.06em">Politeknik Negeri Samarinda</small></div></div>
+   <h2>${esc(me.nama)}</h2>
+   <div class="ktm-grid"><div><small>${dsn?'NIDN / NIP':'NIM'}</small><b class="mono">${esc(me.nim||'-')}</b></div>${dsn?`<div><small>Peran</small><b>Dosen</b></div>`:`<div><small>Kelas</small><b>${esc(me.kelas||'-')}</b></div>`}<div class="full"><small>Email Gmail</small><b>${esc(me.email||'-')}</b></div></div>
+   <div class="ktm-rfid"><div><small style="display:block;font-size:10px;color:var(--gd-soft);letter-spacing:.08em">KARTU RFID</small>${adaKartu?`<b class="mono" style="font-size:15px;letter-spacing:.08em">${rfidShow?esc(uid):'••••••••'}</b>`:'<span class="b er">Belum terdaftar</span>'}</div>${adaKartu?`<button class="btn sm" onclick="rfidShow=!rfidShow;draw()">${rfidShow?'🙈 Sembunyikan UID':'👁️ Tampilkan UID'}</button>`:''}</div></div></div>
+  <div class="card" style="max-width:520px"><div class="row"><h3 style="margin:0">Checklist Aktivasi</h3><span class="b ${done==3?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?'✓':i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[2]?'ok':'lt'}">${s[3]}</span></div>`).join('')}${!tgSiap?`<button class="btn tg" style="margin-top:10px" onclick="go('tg')">✈️ Tautkan Telegram Sekarang</button>`:''}</div>`;
+  if(dsn){h+=`<h3>Kelas yang Diampu</h3><div class="grid">${myMk().map(mkCard).join('')||'<p class="mut">Belum ada mata kuliah yang diampu.</p>'}</div>`}
+  else{
+   const hr=myMk().filter(k=>k.hari==new Date().getDay());
+   h+=`<h3>📈 Ringkasan Kehadiran Saya</h3><div id="st"><p class="mut">Memuat…</p></div><h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`;
+  }
+  return h;
  },
- mahasiswa_stat(){setTimeout(statLoad,0);return '<div id="st"><p class="mut">Memuat…</p></div>'},
- mahasiswa_riw(){return S.pre.filter(x=>x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
- mahasiswa_tg(){
-  const tertaut=!!me.telegram_chat_id;
-  return `<div class="card">
-   <div class="row" style="margin-bottom:8px"><b>✈️ Notifikasi Telegram Otomatis</b>${tertaut?'<span class="b ok">🟢 Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
-   <p class="mut" style="margin-top:0">${tertaut
-    ?`Akun Telegram Anda sudah tertaut (Chat ID: <span class="mono">${esc(me.telegram_chat_id)}</span>). Anda akan menerima pengingat otomatis saat jam kuliah dimulai jika belum tap kartu RFID.`
-    :'Hubungkan akun Telegram Anda dalam 1 klik untuk menerima pengingat otomatis tepat saat jam mata kuliah dimulai (tanpa memakai nomor HP pribadi).'}</p>
-   ${tertaut?`
-    <button type="button" class="btn p" onclick="tesTelegram(this)">📨 Kirim Pesan Tes ke Telegram Saya</button>
-    <div class="row" style="margin-top:8px">
-     <button type="button" class="btn sm" onclick="hubungkanTg(this)">🔄 Tautkan Ulang</button>
-     <button type="button" class="btn sm" style="color:var(--er)" onclick="putusTelegram()">Putuskan Tautan</button>
-    </div>
-   `:`
-    <button type="button" class="btn tg" onclick="hubungkanTg(this)">🔗 Hubungkan Telegram (1 Klik)</button>
-    <p class="mut" style="margin:10px 0 6px">Setelah menekan tombol <b>START</b> di aplikasi Telegram, kembali ke halaman ini atau tekan tombol di bawah:</p>
-    <button type="button" class="btn sm" onclick="refreshMe()">🔄 Cek Status Koneksi</button>
-   `}
+ mahasiswa_riw(){return S.pre.filter(x=>me&&x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
+ tg(){
+  if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
+  const ok=!!me.telegram_chat_id,poll=!!tgTimer;
+  return `<div class="card" style="max-width:560px">
+   <div class="row" style="margin-bottom:8px"><b>✈️ Notifikasi Telegram Otomatis</b>${ok?'<span class="b ok">🟢 Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
+   <p class="mut" style="margin-top:0">${ok?`Akun Telegram Anda sudah tertaut (Chat ID: <span class="mono">${esc(me.telegram_chat_id)}</span>). Anda menerima pengingat otomatis saat jam kuliah dimulai jika belum tap kartu RFID.`:'Hubungkan Telegram dalam 1 klik untuk menerima pengingat otomatis tepat saat jam mata kuliah dimulai, tanpa memakai nomor HP pribadi.'}</p>
+   ${ok?`<button type="button" class="btn p" onclick="tesTelegram(this)">📨 Kirim Pesan Tes ke Telegram Saya</button>
+    <div class="row" style="margin-top:8px;justify-content:flex-start"><button type="button" class="btn sm" onclick="tautUlang(this)">🔄 Tautkan Ulang</button><button type="button" class="btn sm er" onclick="putusTelegram()">Putuskan Tautan</button></div>`
+   :`<button type="button" class="btn tg" onclick="hubungkanTg(this)" ${poll?'disabled':''}>🔗 Hubungkan Telegram (1 Klik)</button>
+    ${poll?`<div class="card" style="margin:12px 0 0;background:rgba(34,158,217,.1)"><span class="spin"></span> <b>Menunggu Anda menekan START di Telegram…</b><div class="mut" id="tgleft">Mengecek otomatis setiap 3 detik · sisa ${tgLeft} dtk</div></div>`:`<p class="mut" style="margin:10px 0 6px">Setelah menekan <b>START</b> di Telegram, status berubah otomatis. Jika tidak, tekan tombol di bawah.</p>`}
+    <button type="button" class="btn sm" onclick="cekTg(this)">🔄 Cek Status Koneksi</button>`}
   </div>`;
  },
- dosen_tg(){return V.mahasiswa_tg()},
  dosen_kelas(){
   const ks=myMk();if(!ks.length)return '<div class="card">Belum ada mata kuliah yang diampu.</div>';
   const k=ks.find(x=>x.id==sel)||ks[0],t=today(),ps=S.ang.filter(a=>S.pes.some(p=>p.anggota_id==a.id&&p.mata_kuliah_id==k.id)),
@@ -371,28 +477,62 @@ const V={
    h=ps.filter(a=>by(a.id)&&by(a.id).status=='Hadir').length,l=ps.filter(a=>by(a.id)&&by(a.id).status=='Terlambat').length,my=by(me.id);
   return `<select onchange="sel=this.value;draw()">${ks.map(x=>`<option value="${x.id}" ${x.id==k.id?'selected':''}>${esc(x.nama)}</option>`).join('')}</select>${mkCard(k)}
   <p>Tap saya hari ini: ${my?bd(my.status)+' '+hm(my.masuk):'<span class="b er">Belum tap</span>'}</p>
-  <div class="kpi" style="grid-template-columns:1fr 1fr"><div class="card"><span class="mut">Peserta</span><b>${ps.length}</b></div><div class="card"><span class="mut">Hadir</span><b>${h}</b></div><div class="card"><span class="mut">Terlambat</span><b>${l}</b></div><div class="card"><span class="mut">Belum hadir</span><b>${ps.filter(a=>!by(a.id)).length}</b></div></div>
+  <div class="kpi"><div class="card"><span class="mut">Peserta</span><b>${ps.length}</b></div><div class="card"><span class="mut">Hadir</span><b>${h}</b></div><div class="card"><span class="mut">Terlambat</span><b>${l}</b></div><div class="card"><span class="mut">Belum hadir</span><b>${ps.filter(a=>!by(a.id)).length}</b></div></div>
   ${ps.map(a=>{const r=by(a.id);return `<div class="card"><div class="row"><b>${esc(a.nama)}</b>${r?bd(r.status):'<span class="b er">Belum hadir</span>'}</div><div class="mut">${esc(a.nim||'')}</div><div class="row" style="justify-content:flex-start;margin-top:8px">${STS.map(s=>`<button class="btn sm" onclick="setStatus('${a.id}','${k.id}','${s}')">${s}</button>`).join('')}</div></div>`}).join('')}`},
  dosen_kor(){
   const ids=myMk().map(k=>k.id),r=S.pre.filter(x=>ids.includes(x.mata_kuliah_id)&&(!sel||x.mata_kuliah_id==sel)).slice(0,100);
   return `<select onchange="sel=this.value;draw()"><option value="">Semua kelas saya</option>${myMk().map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)}</option>`).join('')}</select>${r.map(x=>`<div class="card"><div class="row"><b>${esc(nm(x.anggota_id))}</b>${stSel(x.id,x.status)}</div><div class="mut">${esc(mkn(x.mata_kuliah_id))} · ${x.tanggal} · ${hm(x.masuk)}</div></div>`).join('')}`}
 };
 
- async function hubungkanTg(btn){
- btn.disabled=true;const lbl=btn.textContent;btn.textContent='Membuka Telegram…';
+/* ===== ANGGOTA: FILTER & PENCARIAN ===== */
+function memList(){
+ const q=memQ.trim().toLowerCase();
+ return S.ang.filter(a=>{
+  if(mf==='ada'&&!hasCard(a))return false;
+  if(mf==='belum'&&hasCard(a))return false;
+  if(mf==='non'&&a.aktif!==false)return false;
+  if(q&&!(`${a.nama||''} ${a.nim||''} ${a.email||''}`.toLowerCase().includes(q)))return false;
+  return true;
+ });
+}
+function memRows(){
+ const l=memList();
+ return l.map(a=>`<tr><td><b>${esc(a.nama)}</b><td class="mono">${esc(a.nim||'')}<td>${esc(PL[a.peran]||a.peran)}<td>${esc(a.email||'-')}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.telegram_chat_id?'<span class="b ok">Tertaut</span>':'<span class="b">belum</span>'}<td>${a.aktif===false?'<span class="b er">Nonaktif</span>':'<span class="b ok">Aktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">Atur Gmail</button> ${a.peran!=='admin'&&!a.uid_kartu?`<button class="btn sm" onclick="regTarget='${a.id}';go('reg')">💳 Kartu</button> `:''}<button class="btn sm" onclick="togAktif('${a.id}',${a.aktif===false})">${a.aktif===false?'Aktifkan':'Nonaktifkan'}</button></tr>`).join('')||'<tr><td colspan=8>Tidak ada anggota yang cocok.</tr>';
+}
+function memRefresh(){const t=$('#memtb');if(t)t.innerHTML=memRows()}
+
+/* ===== TELEGRAM ===== */
+async function hubungkanTg(btn){
+ if(!me)return;
+ const w=window.open('','_blank');
+ if(btn){btn.disabled=true}
  try{
   const res=await fetch('/api/telegram-webhook?bot=1');
   const j=await res.json().catch(()=>({}));
   if(!j.ok||!j.username)throw new Error('Token bot di Vercel belum valid atau belum di-redeploy');
-  window.open(`https://t.me/${encodeURIComponent(j.username)}?start=${encodeURIComponent(me.id)}`,'_blank','noopener');
+  const url=`https://t.me/${encodeURIComponent(j.username)}?start=${encodeURIComponent(me.id)}`;
+  if(w)w.location.href=url;else window.open(url,'_blank');
+  startTgPoll();
  }catch(e){
-  toast(e.message);
+  if(w)w.close();toast(e.message);
  }finally{
-  btn.disabled=false;btn.textContent=lbl;
+  if(btn)btn.disabled=false;
  }
 }
- 
-/* ===== AKSI TELEGRAM, ADMIN & EXCEL ===== */
+function startTgPoll(){
+ stopTgPoll(true);tgLeft=60;
+ tgTimer=setInterval(async()=>{
+  tgLeft-=3;
+  await refreshMe(true);
+  if(me&&me.telegram_chat_id){stopTgPoll();toast('🟢 Telegram berhasil terhubung!');draw();return}
+  if(tgLeft<=0){stopTgPoll();toast('Waktu tunggu habis. Tekan "Cek Status Koneksi" setelah START.');draw();return}
+  const el=$('#tgleft');if(el)el.textContent=`Mengecek otomatis setiap 3 detik · sisa ${tgLeft} dtk`;
+ },3000);
+ draw();
+}
+function stopTgPoll(silent){if(tgTimer){clearInterval(tgTimer);tgTimer=null}tgLeft=0}
+function stopTgPollIfLeft(){if(pg!=='tg')stopTgPoll()}
+async function cekTg(btn){if(btn)btn.disabled=true;await refreshMe(true);if(btn)btn.disabled=false;toast(me.telegram_chat_id?'🟢 Telegram sudah terhubung':'Belum terhubung. Tekan START di Telegram terlebih dahulu.');draw()}
 async function tesTelegram(btn){
  btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim pesan tes…';
  try{
@@ -400,19 +540,22 @@ async function tesTelegram(btn){
   if(!session)throw new Error('Sesi login habis');
   const res=await fetch('/api/kirim-wa?action=test',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
   const j=await res.json().catch(()=>({}));
-  if(!res.ok||!j.ok)throw new Error(j.error||'HTTP '+res.status);
+  if(!res.ok||j.ok===false)throw new Error(j.error||'HTTP '+res.status);
   toast(j.message||'Pesan tes terkirim ke Telegram!');
- }catch(e){
-  toast('Gagal tes Telegram: '+e.message);
- }finally{
-  btn.disabled=false;btn.textContent=lbl;
- }
+ }catch(e){toast('Gagal tes Telegram: '+e.message)}
+ finally{btn.disabled=false;btn.textContent=lbl}
 }
 async function putusTelegram(){
  if(!confirm('Putuskan tautan notifikasi Telegram dari akun ini?'))return;
  const {error}=await sb.from('anggota').update({telegram_chat_id:null}).eq('id',me.id);
  if(error)return toast(error.message);
  me.telegram_chat_id=null;toast('Tautan Telegram diputuskan');draw();
+}
+async function tautUlang(btn){
+ if(!confirm('Tautkan ulang ke akun Telegram lain? Tautan lama akan dilepas.'))return;
+ const {error}=await sb.from('anggota').update({telegram_chat_id:null}).eq('id',me.id);
+ if(error)return toast(error.message);
+ me.telegram_chat_id=null;draw();hubungkanTg(null);
 }
 async function kirimNotifManual(btn){
  btn.disabled=true;const lbl=btn.textContent;btn.textContent='Mengirim…';
@@ -424,14 +567,29 @@ async function kirimNotifManual(btn){
   if(!res.ok||j.ok===false)throw new Error(j.error||'HTTP '+res.status);
   toast(`Antrean baru: ${j.antrean_baru} · Terkirim: ${j.terkirim} · Gagal: ${j.gagal}`);
   await load();draw();
- }catch(e){
-  toast('Gagal memicu notifikasi: '+e.message);
- }finally{
-  btn.disabled=false;btn.textContent=lbl;
- }
+ }catch(e){toast('Gagal memicu notifikasi: '+e.message)}
+ finally{btn.disabled=false;btn.textContent=lbl}
 }
+
+/* ===== REGISTRASI RFID ===== */
 async function mulaiAuto(){const {error}=await sb.from('sesi_registrasi').insert({});if(error)return toast(error.message);toast('Mode Auto aktif! Tempelkan kartu ke alat.');await load();draw()}
-async function batalAuto(){await sb.from('sesi_registrasi').update({selesai:true}).eq('selesai',false);await load();draw()}
+async function mulaiTap(){const s=$('#rt');regTarget=s?s.value:regTarget;if(!regTarget)return toast('Pilih anggota terlebih dahulu');await mulaiAuto()}
+async function batalAuto(){regTarget='';await sb.from('sesi_registrasi').update({selesai:true}).eq('selesai',false);await load();draw()}
+async function assignKartu(){
+ if(regBusy||!S.sesi||!S.sesi.uid_tertangkap||!regTarget)return;
+ regBusy=1;
+ const id=regTarget,uid=S.sesi.uid_tertangkap,a=S.ang.find(x=>x.id==id)||{};
+ try{
+  if(S.sesi.pemilik_sebelumnya&&!confirm(`Kartu ${uid} sebelumnya milik ${S.sesi.pemilik_sebelumnya}. Pindahkan ke ${a.nama}?`)){regTarget='';await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);await load();draw();return}
+  regTarget='';
+  const {error}=await sb.from('anggota').update({uid_kartu:uid}).eq('id',id);
+  if(error){toast(error.message);return}
+  await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);
+  sb.from('riwayat_kartu').insert({anggota_id:id,uid_kartu:uid}).then(()=>{},()=>{});
+  toast(`💳 Kartu berhasil ditautkan ke ${a.nama||'anggota'}`);
+  await load();draw();
+ }finally{regBusy=0}
+}
 function autoPeran(){const d=$('#au1').value==='dosen';$('#au3l').textContent=d?'NIDN/NIP':'NIM';$('#au4w').style.display=$('#au1').value==='mahasiswa'?'block':'none';$('#au7l').textContent=d?'diampu':'diikuti'}
 async function simpanAuto(lanjut){
  const mks=[...document.querySelectorAll('.auc:checked')].map(x=>x.value);
@@ -440,31 +598,37 @@ async function simpanAuto(lanjut){
  toast(lanjut?'Tersimpan! Tempelkan kartu berikutnya.':'Data & kartu berhasil disimpan!');
  await load();draw();
 }
+
+/* ===== ADMIN: MATA KULIAH & PENGGUNA ===== */
 function mkForm(id){const k=S.mk.find(x=>x.id==id)||{hari:1,mulai:'08:00',selesai:'09:40',ruangan:'Lab TRK'};
  dlg(`<h3>${id?'Ubah':'Tambah'} Mata Kuliah</h3><label>Kode<input id="k1" value="${esc(k.kode||'')}"></label><label>Nama<input id="k2" value="${esc(k.nama||'')}"></label><label>Hari<select id="k3">${[1,2,3,4,5,6,0].map(d=>`<option value="${d}" ${d==k.hari?'selected':''}>${DN[d]}</option>`).join('')}</select></label>
  <div class="r2"><label>Mulai<input type="time" id="k4" value="${hm(k.mulai)}"></label><label>Selesai<input type="time" id="k5" value="${hm(k.selesai)}"></label></div>
  <label>Toleransi (menit, kosong = umum)<input type="number" id="k6" value="${k.toleransi_menit??''}"></label>
  <label>Dosen Pengampu<select id="k7"><option value="">—</option>${S.ang.filter(a=>a.peran=='dosen').map(a=>`<option value="${a.id}" ${a.id==k.dosen_id?'selected':''}>${esc(a.nama)}</option>`).join('')}</select></label><label>Ruangan<input id="k8" value="${esc(k.ruangan||'')}"></label>
- <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" onclick="mkSave('${id||''}')">Simpan</button></div>`)}
+ <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="mkSave('${id||''}')">Simpan</button></div>`)}
 async function mkSave(id){const v=$('#k6').value,p={kode:$('#k1').value.trim(),nama:$('#k2').value.trim(),hari:+$('#k3').value,mulai:$('#k4').value+':00',selesai:$('#k5').value+':00',toleransi_menit:v===''?null:+v,dosen_id:$('#k7').value||null,ruangan:$('#k8').value.trim()};
  const {error}=id?await sb.from('mata_kuliah').update(p).eq('id',id):await sb.from('mata_kuliah').insert(p);if(error)return toast(error.message);cls();await load();draw()}
 async function mkDel(id){if(!confirm('Hapus mata kuliah ini?'))return;const {error}=await sb.from('mata_kuliah').delete().eq('id',id);if(error)return toast(error.message);await load();draw()}
 function editUsr(id){const a=S.ang.find(x=>x.id==id);if(!a)return;
- dlg(`<h3>Atur Gmail & Peran</h3><p class="mut">${esc(a.nama)} (${esc(a.nim)})</p><label>Peran<select id="u1"><option value="mahasiswa" ${a.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${a.peran=='dosen'?'selected':''}>Dosen</option><option value="admin" ${a.peran=='admin'?'selected':''}>Admin</option></select></label><label>Alamat Gmail<input id="u2" type="email" value="${esc(a.email||'')}" placeholder="nama@gmail.com"></label><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" onclick="saveUsr('${id}')">Simpan</button></div>`)}
+ dlg(`<h3>Atur Gmail & Peran</h3><p class="mut">${esc(a.nama)} (${esc(a.nim||'')})</p><label>Peran<select id="u1"><option value="mahasiswa" ${a.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${a.peran=='dosen'?'selected':''}>Dosen</option><option value="admin" ${a.peran=='admin'?'selected':''}>Admin</option></select></label><label>Alamat Gmail<input id="u2" type="email" value="${esc(a.email||'')}" placeholder="nama@gmail.com"></label><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="saveUsr('${id}')">Simpan</button></div>`)}
 async function saveUsr(id){const {error}=await sb.from('anggota').update({email:$('#u2').value.trim().toLowerCase()||null,peran:$('#u1').value}).eq('id',id);if(error)return toast(error.message);cls();toast('Data pengguna diperbarui');await load();draw()}
 async function togAktif(id,v){const {error}=await sb.from('anggota').update({aktif:v}).eq('id',id);if(error)return toast(error.message);await load();draw()}
 async function togNotif(v){const {error}=await sb.from('pengaturan').update({notif_aktif:v}).eq('id',true);if(error)return toast(error.message);toast('Pengaturan notifikasi diperbarui');await load();draw()}
+
+/* ===== STATISTIK PRIBADI ===== */
 async function statLoad(){
  const el=$('#st');if(!el)return;let h='';
  for(const k of myMk()){
   const {data,error}=await sb.rpc('jumlah_pertemuan',{p_mk:k.id});
   const tot=!error&&data!=null?+data:new Set(S.pre.filter(x=>x.mata_kuliah_id==k.id).map(x=>x.tanggal)).size;
   const hd=S.pre.filter(x=>x.mata_kuliah_id==k.id&&x.anggota_id==me.id&&(x.status=='Hadir'||x.status=='Terlambat')).length,pc=tot?Math.round(hd/tot*100):0;
-  h+=`<div class="card"><div class="row"><b>${esc(k.nama)}</b><span class="b ${pc<80?'er':'ok'}">${pc}%</span></div><div class="bar"><i class="${pc<80?'er':''}" style="width:${Math.min(100,pc)}%"></i></div><div class="mut">${hd}/${tot} pertemuan${pc<80?' · ⚠️ di bawah 80%':''}</div></div>`;
+  h+=`<div class="card"><div class="row"><b>${esc(k.nama)}</b><span class="b ${pc<80?'er':'ok'}">${pc}%</span></div><div class="bar"><i class="${pc<80?'er':''}" style="width:${Math.min(100,pc)}%"></i></div><div class="mut">${hd}/${tot} pertemuan${pc<80?' · ⚠️ Peringatan dini: kehadiran di bawah 80%':''}</div></div>`;
  }
- el.innerHTML=h||'<p class="mut">Belum ada mata kuliah.</p>';
+ const t=$('#st');if(t)t.innerHTML=h||'<p class="mut">Belum ada mata kuliah yang diikuti.</p>';
 }
-function xlsView(){return `<div class="card"><h3>Template & Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" onclick="exportXls()">Export Laporan .xlsx (3 Sheet)</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
+
+/* ===== EXCEL ===== */
+function xlsView(){return `<div class="card"><h3>Template & Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" style="width:auto" onclick="exportXls()">Export Laporan .xlsx (3 Sheet)</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" style="width:auto" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
 function tpl(){const ws=XLSX.utils.aoa_to_sheet([['Peran','NIM_atau_NIDN','Nama','Kelas','Email_Gmail','Kode_Matkul'],['mahasiswa','256661001','Budi Santoso','TRK-3A','budi@gmail.com','2601;2603'],['dosen','198501012010','Dr. Siti Aminah','','siti@gmail.com','2603']]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');XLSX.writeFile(wb,'template-presensi-polnes.xlsx')}
 async function pickXls(inp){const f=inp.files[0];if(!f)return;const wb=XLSX.read(await f.arrayBuffer());pv=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});draw()}
 async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,email,aktif:true},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
@@ -476,7 +640,34 @@ function exportXls(){
  XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx');
 }
 
-setInterval(()=>document.querySelectorAll('[data-cd]').forEach(e=>{const d=new Date(),n=d.getHours()*60+d.getMinutes(),s=d.getSeconds(),left=+e.dataset.cd*60-(n*60+s);e.textContent=left>0?`⏳ Batas tepat waktu ${String(Math.floor(left/3600)).padStart(2,'0')}:${String(Math.floor(left%3600/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'⛔ Batas tepat waktu sudah lewat'}),1000);
+/* ===== TICKER: JAM, COUNTDOWN, BATAS TEPAT WAKTU ===== */
+const p2=n=>String(n).padStart(2,'0');
+function tick(){
+ const d=new Date();
+ document.querySelectorAll('[data-clock]').forEach(e=>{e.textContent=e.dataset.clock==='t'?`${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`:`${DN[d.getDay()]}, ${d.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()]} ${d.getFullYear()}`});
+ document.querySelectorAll('[data-cd]').forEach(e=>{const n=d.getHours()*60+d.getMinutes(),left=+e.dataset.cd*60-(n*60+d.getSeconds());e.textContent=left>0?`⏳ Batas tepat waktu ${p2(Math.floor(left/3600))}:${p2(Math.floor(left%3600/60))}:${p2(left%60)}`:'⛔ Batas tepat waktu sudah lewat'});
+ document.querySelectorAll('[data-exp]').forEach(e=>{
+  const left=Math.max(0,Math.floor((new Date(e.dataset.exp)-Date.now())/1000));
+  e.textContent=`${p2(Math.floor(left/60))}:${p2(left%60)}`;
+  e.classList.toggle('low',left<=30);
+  if(left<=0&&S.sesi&&!tick.exp){tick.exp=1;S.sesi=null;regTarget='';toast('Sesi registrasi kedaluwarsa');draw(true);setTimeout(()=>tick.exp=0,1500)}
+ });
+}
+setInterval(tick,1000);
+setInterval(async()=>{if(document.visibilityState!=='visible')return;await load();await afterLoad();draw(true)},30000);
+setInterval(()=>{if(pg==='dash')draw(true)},60000);
+setInterval(()=>{fresh.clear();syncPhase()},20000);
+
+/* ===== EFEK 3D TILT + GLARE LOGO ===== */
+document.addEventListener('pointermove',e=>{
+ const el=e.target.closest&&e.target.closest('.logo3d');
+ document.querySelectorAll('.logo3d').forEach(x=>{if(x!==el){x.style.setProperty('--rx','0deg');x.style.setProperty('--ry','0deg')}});
+ if(!el)return;
+ const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+ el.style.setProperty('--ry',((px-.5)*30).toFixed(1)+'deg');el.style.setProperty('--rx',((.5-py)*30).toFixed(1)+'deg');
+ el.style.setProperty('--gx',(px*100).toFixed(0)+'%');el.style.setProperty('--gy',(py*100).toFixed(0)+'%');
+});
+
 sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_IN'&&!me)boot()});
 boot();
 </script>
