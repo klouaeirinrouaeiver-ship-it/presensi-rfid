@@ -306,6 +306,35 @@ body.kiosk .card{padding:22px}
  table.rt td.emp{display:block;text-align:center;border:0;padding:16px 0}
  table.rt td select{max-width:60%}
 }
+
+/* ===== GERBANG MASUK SIMPEL ===== */
+.gate{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:72px 16px 32px}
+.gate-theme{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px}
+.gate-card{width:min(440px,100%);background:var(--card);border:1px solid rgba(197,160,89,.55);border-top:4px solid var(--gd);border-radius:24px;padding:26px 22px 22px;box-shadow:0 30px 70px -30px rgba(6,44,32,.6);text-align:center}
+.gate-card .logo3d img{height:76px}
+.gate-card h1{font-size:clamp(20px,5.4vw,26px);line-height:1.2;color:var(--em-deep);margin:12px 0 4px}
+[data-theme=dark] .gate-card h1{color:var(--em)}
+.gate-sub{margin:0 0 16px;color:var(--mut);font-size:12.5px;font-weight:600}
+.gate-body{text-align:left}
+.gate-note{margin:12px 0 0;text-align:center}
+.gate-card .tabs{margin-bottom:16px}
+
+/* ===== TUR TUTORIAL WAJIB (TANPA SKIP) ===== */
+#tour{position:fixed;inset:0;z-index:9000;touch-action:none}
+#tour-spot{position:fixed;left:50%;top:50%;width:0;height:0;border:3px solid var(--gd);border-radius:16px;box-shadow:0 0 0 9999px rgba(2,18,13,.82),0 0 0 5px rgba(197,160,89,.35),0 0 30px 6px rgba(232,212,162,.45);pointer-events:none;transition:top .28s ease,left .28s ease,width .28s ease,height .28s ease}
+#tour-spot.none{border-color:transparent}
+#tour-tip{position:fixed;left:12px;top:12px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--gd);border-radius:18px;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,.55);transition:opacity .18s ease;touch-action:auto}
+#tour-tip.hide{opacity:0}
+.tour-step{font:800 10.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#9A7220;display:flex;align-items:center;gap:6px}
+[data-theme=dark] .tour-step{color:var(--gd-soft)}
+.tour-dots{display:flex;gap:5px;margin-left:auto}
+.tour-dots i{width:18px;height:5px;border-radius:99px;background:var(--ln)}
+.tour-dots i.on{background:var(--gd)}
+.tour-dots i.past{background:var(--em)}
+#tour-tip h3{margin:8px 0 6px;font-size:16px;line-height:1.3;color:var(--em-deep)}
+[data-theme=dark] #tour-tip h3{color:var(--em)}
+#tour-tip p{margin:0 0 14px;font-size:13px;line-height:1.55}
+@media(prefers-reduced-motion:reduce){#tour-spot,#tour-tip{transition:none}}
 </style>
 </head>
 <body>
@@ -498,16 +527,22 @@ function renderPaketPreview(prodiName){
 }
 
 /* ===== LOGIN: GOOGLE & ADMIN ===== */
-function lgn(t){
- if(t)lt=t;
- const G='<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
- dlg(`<div style="text-align:center"><div class="logo3d"><img src="./logo-polnes.png" alt="" style="height:54px"></div><h3 style="margin:8px 0 2px;color:var(--em-deep)">Masuk ke Presensi RFID</h3><p class="mut" style="margin:0 0 12px">Jurusan Teknologi Informasi · Politeknik Negeri Samarinda</p></div>
+const GSVG='<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
+/* Gerbang Masuk Simpel: dirender saat !me. Tidak ada kueri data, tidak ada header/prodibar/dashboard. */
+function renderGate(){
+ const app=$('#app');if(!app)return;
+ app.innerHTML=`<div class="gate"><button type="button" class="ib gate-theme" title="Terang / Gelap" aria-label="Ganti tema Terang / Gelap" onclick="toggleTema()">${ico('theme',16)}</button>
+ <main class="gate-card"><div class="logo3d"><img src="./logo-polnes.png" alt="Logo Polnes"></div>
+ <h1>Presensi RFID Polnes</h1><p class="gate-sub">Sistem Presensi RFID &amp; IoT Real-Time · Jurusan Teknologi Informasi</p>
  <div class="tabs"><button type="button" class="${lt=='google'?'on':''}" onclick="lgn('google')">${ico('kelas',14)} Mahasiswa &amp; Dosen</button><button type="button" class="${lt=='admin'?'on':''}" onclick="lgn('admin')">${ico('shield',14)} Administrator</button></div>
- ${lt=='google'?`<button class="btn gg" onclick="google()">${G} Masuk dengan Google</button>
-  <p class="mut" style="margin:12px 0 0;text-align:center">Setelah masuk dengan Gmail, isi Nama Asli, Program Studi, dan NIM/NIDN pada Portal Saya, lalu cocokan dengan scan kartu Mode Auto.</p>`
- :`<div class="info" id="lerr"></div><label>Email Administrator</label><input id="em" type="email" autocomplete="username" placeholder="admin@polnes.ac.id"><label>Kata Sandi</label><div class="pw"><input type="password" id="pw" autocomplete="current-password" placeholder="Kata sandi" onkeydown="if(event.key==='Enter')admLogin()"><button type="button" onclick="eye(this)">${ico('eye',16)}</button></div><button class="btn p" id="lbtn" onclick="admLogin()">${ico('lock',15)} Masuk Administrator</button>`}
- <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sm" onclick="cls()">Lanjut sebagai Pengunjung</button></div>`);
+ <div class="gate-body">${lt=='google'?`<button type="button" class="btn gg" onclick="google()">${GSVG} Masuk dengan Google</button>
+  <p class="mut gate-note">Setelah masuk dengan Gmail, isi Nama Asli, Program Studi, dan NIM/NIDN pada Portal Saya, lalu cocokkan dengan scan kartu Mode Auto oleh admin.</p>`
+ :`<div class="info" id="lerr"></div><label for="em">Email Administrator</label><input id="em" type="email" autocomplete="username" placeholder="admin@polnes.ac.id"><label for="pw">Kata Sandi</label><div class="pw"><input type="password" id="pw" autocomplete="current-password" placeholder="Kata sandi" onkeydown="if(event.key==='Enter')admLogin()"><button type="button" aria-label="Tampilkan kata sandi" onclick="eye(this)">${ico('eye',16)}</button></div><button type="button" class="btn p" id="lbtn" onclick="admLogin()">${ico('lock',15)} Masuk Administrator</button>`}</div>
+ </main></div>`;
+ bindTilt(app);
 }
+/* lgn() dipertahankan sebagai nama publik: ganti tab pada gerbang masuk */
+function lgn(t){if(t)lt=t;renderGate()}
 function eye(b){const i=b.previousElementSibling;i.type=i.type==='password'?'text':'password';b.innerHTML=ico(i.type==='password'?'eye':'eyeOff',16)}
 async function google(){
  try{sessionStorage.setItem('lm','google')}catch(e){}
@@ -525,12 +560,12 @@ async function admLogin(){
 }
 async function keluar(){
  stopTgPoll();if(CH){sb.removeChannel(CH);CH=null}
- await sb.auth.signOut();me=null;pg='dash';regTarget='';pfRes=null;
+ endTour(true);tourFor=null;await sb.auth.signOut();me=null;pg='dash';regTarget='';pfRes=null;
  try{sessionStorage.removeItem('lm')}catch(e){}
  toast('Anda telah keluar');await boot(true);
 }
 
-/* ===== BOOT: PENGUNJUNG & SESI LOGIN ===== */
+/* ===== BOOT: GERBANG MASUK & SESI LOGIN ===== */
 async function boot(force){if(bt&&!force)return;bt=1;try{await boot0()}finally{bt=0}}
 async function boot0(){
  let session=null;
@@ -577,10 +612,20 @@ async function boot0(){
   }else{await sb.auth.signOut();toast('Profil anggota tidak dapat dimuat')}
   try{sessionStorage.removeItem('lm')}catch(e){}
  }
+ if(!me){
+  /* Belum login: tampilkan gerbang masuk saja. Tidak ada kueri ke mata_kuliah/presensi/dll. */
+  stopTgPoll();endTour(true);
+  if(CH){sb.removeChannel(CH);CH=null}
+  S.mk=[];S.ang=[];S.pes=[];S.pre=[];S.dev=[];S.sesi=null;S.ntf=[];S.err='';
+  document.body.classList.remove('kiosk');
+  renderGate();
+  return;
+ }
  await load();
  if(!MENU[role()].some(x=>x[0]===pg))pg='dash';
  shell();
  setupRealtime();
+ maybeStartTour();
 }
 function setupRealtime(){
  if(CH){sb.removeChannel(CH);CH=null}
@@ -673,6 +718,7 @@ function draw(soft){
  mainEl.innerHTML=f?f():'<div class="card">Halaman belum tersedia.</div>';
  if(pg==='portal'&&role()==='mahasiswa')statLoad();
  tick();
+ if(TOUR.on)tourPlace();
 }
 
 /* ===== KOMPONEN ===== */
@@ -865,7 +911,7 @@ const V={
     <div class="card" style="margin-top:12px"><div class="row"><h3 style="margin:0">Checklist Aktivasi Presensi</h3><span class="b ${done==3&&syn?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?ico('check',14):i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[3]==='TRUE'||s[3]==='Terhubung'||s[3]==='Terpasang'?'ok':'lt'}">${s[3]}</span></div>`).join('')}${!tgSiap?`<button class="btn tg" style="margin-top:10px" onclick="go('tg')">${ico('tg',15)} Tautkan Telegram Sekarang</button>`:''}</div>
    </div>
 
-   <div class="card">
+   <div class="card" id="pf_card">
     <div class="row" style="margin-bottom:8px"><h3 class="sec-h" style="margin:0">${ico('userCheck',16)} Data Manual User &amp; Sinkronisasi</h3>${syncBadge(me)}</div>
     <div class="sync-box ${syn?'ok':'er'}">
      <b>Status Sinkronisasi: ${syn?'TRUE (Kartu Mode Auto & Data Manual Cocok — LCD Aktif)':'FALSE (Belum Sinkron — LCD Perangkat Akan Gagal)'}</b>
@@ -901,7 +947,7 @@ const V={
  tg(){
   if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
   const ok=!!me.telegram_chat_id,poll=!!tgTimer,isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  return `<div class="card" style="max-width:560px">
+  return `<div class="card" id="tg_card" style="max-width:560px">
    <div class="row" style="margin-bottom:8px"><b style="display:flex;align-items:center;gap:7px">${ico('tg',16)} Notifikasi Telegram Otomatis</b>${ok?'<span class="b ok"><span class="dot"></span> Terhubung</span>':'<span class="b er">Belum Terhubung</span>'}</div>
    <p class="mut" style="margin-top:0">${ok?`Akun Telegram Anda sudah tertaut (Chat ID: <span class="mono">${esc(me.telegram_chat_id)}</span>). Anda menerima pengingat otomatis saat jam kuliah dimulai jika belum tap kartu RFID.`:'Hubungkan Telegram dalam 1 klik untuk menerima pengingat otomatis tepat saat jam mata kuliah dimulai, tanpa memakai nomor HP pribadi.'}</p>
    ${ok?`<button type="button" class="btn p" onclick="tesTelegram(this)">${ico('ntf',15)} Kirim Pesan Tes ke Telegram Saya</button>
@@ -1523,6 +1569,120 @@ async function exportXls(btn){
  finally{exportXls.busy=0;if(btn&&btn.isConnected)done()}
 }
 
+
+/* ===== TUR TUTORIAL WAJIB LINTAS-MENU (TIDAK BISA DI-SKIP) ===== */
+/* Berjalan otomatis untuk mahasiswa/dosen berstatus FALSE. Tanpa tombol lewati/tutup; Escape & klik luar diblokir. */
+const TOUR_STEPS=[
+ {pg:'dash',sel:'.dash-main',title:'Dashboard: Pantauan Real-Time',body:'Halaman ini menampilkan pantauan tap kartu RFID secara real-time (Live Tap Spotlight) dan jadwal kuliah aktif untuk setiap Program Studi.',btn:'Lanjut → (1/4)'},
+ {pg:'portal',sel:'.ktm',title:'KTM Digital & Status FALSE',body:'Ini KTM Digital Anda. Selama Status Sinkronisasi masih FALSE, kartu RFID Anda belum bisa dipakai presensi di alat, sampai data manual Anda dan scan kartu Mode Auto oleh admin cocok.',btn:'Lanjut → (2/4)'},
+ {pg:'portal',sel:'#pf_card',title:'Data Manual User & Sinkronisasi',body:'Wajib isi Nama Asli sesuai KTM/SIAKAD, Program Studi, dan NIM/NIDN pada formulir ini, lalu tekan Simpan agar cocok 100% dengan data yang direkam Admin di Mode Auto.',btn:'Lanjut → (3/4)'},
+ {pg:'tg',sel:'#tg_card',title:'Notifikasi Telegram Otomatis',body:'Tautkan Telegram dalam 1 klik untuk menerima pengingat otomatis tepat saat jam kuliah dimulai.',btn:'Selesai & Isi Data Sekarang →',final:true}
+];
+const TOUR={on:false,i:0,tok:0};
+let tourFor=null;
+function maybeStartTour(){
+ if(!me||TOUR.on||tourFor===me.id)return;
+ if((me.peran==='mahasiswa'||me.peran==='dosen')&&!isSynced(me)){tourFor=me.id;startTour()}
+}
+function tourBlockKeys(e){
+ if(e.key==='Escape'){e.preventDefault();e.stopPropagation();return}
+ if(e.key==='Tab'){e.preventDefault();e.stopPropagation();const b=$('#tour-next');if(b&&!b.disabled)b.focus()}
+}
+let tourRaf=0;
+function tourOnMove(){if(tourRaf)return;tourRaf=requestAnimationFrame(()=>{tourRaf=0;if(TOUR.on)tourPlace()})}
+function startTour(){
+ if(TOUR.on)return;
+ TOUR.on=true;
+ const root=document.createElement('div');
+ root.id='tour';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-labelledby','tour-ttl');
+ root.innerHTML='<div id="tour-spot" class="none"></div><div id="tour-tip" class="hide"></div>';
+ root.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
+ document.body.appendChild(root);
+ const app=$('#app');if(app)app.inert=true;
+ window.addEventListener('keydown',tourBlockKeys,true);
+ window.addEventListener('resize',tourOnMove);
+ window.addEventListener('scroll',tourOnMove,{passive:true});
+ tourShow(0);
+}
+function tourShow(i){
+ const st=TOUR_STEPS[i];if(!st||!TOUR.on)return;
+ TOUR.i=i;const tok=++TOUR.tok;
+ const tip=$('#tour-tip');
+ tip.classList.add('hide');
+ tip.innerHTML=`<div class="tour-step">LANGKAH ${i+1} / ${TOUR_STEPS.length}<span class="tour-dots" aria-hidden="true">${TOUR_STEPS.map((_,k)=>`<i class="${k<i?'past':k===i?'on':''}"></i>`).join('')}</span></div><h3 id="tour-ttl">${esc(st.title)}</h3><p>${esc(st.body)}</p><button type="button" class="btn p" id="tour-next" disabled>${esc(st.btn)}</button>`;
+ $('#tour-next').onclick=()=>tourNext();
+ if(st.pg!==pg)go(st.pg);
+ requestAnimationFrame(()=>{
+  if(tok!==TOUR.tok||!TOUR.on)return;
+  const el=document.querySelector(st.sel);
+  if(!el){tourPlace();tourReady(tok);return}
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  let last=null,n=0;const t0=performance.now();
+  (function chk(){
+   if(tok!==TOUR.tok||!TOUR.on)return;
+   const y=window.scrollY;n=(y===last)?n+1:0;last=y;
+   if(n>=4||performance.now()-t0>1500){tourPlace();tourReady(tok);return}
+   requestAnimationFrame(chk);
+  })();
+ });
+}
+function tourReady(tok){
+ if(tok!==TOUR.tok||!TOUR.on)return;
+ const tip=$('#tour-tip'),b=$('#tour-next');
+ tourPlace();
+ tip.classList.remove('hide');
+ if(b){b.disabled=false;b.focus({preventScroll:true})}
+}
+function tourPlace(){
+ const st=TOUR_STEPS[TOUR.i],spot=$('#tour-spot'),tip=$('#tour-tip');
+ if(!st||!spot||!tip)return;
+ const el=document.querySelector(st.sel),vw=window.innerWidth,vh=window.innerHeight,PAD=6,M=12;
+ let r=null;
+ if(el){
+  const b=el.getBoundingClientRect();
+  const t=Math.max(b.top-PAD,4),l=Math.max(b.left-PAD,4),rr=Math.min(b.right+PAD,vw-4),bb=Math.min(b.bottom+PAD,vh-4);
+  if(rr-l>0&&bb-t>0)r={top:t,left:l,width:rr-l,height:bb-t};
+ }
+ if(r){spot.classList.remove('none');spot.style.top=r.top+'px';spot.style.left=r.left+'px';spot.style.width=r.width+'px';spot.style.height=r.height+'px'}
+ else{spot.classList.add('none');spot.style.top=(vh/2)+'px';spot.style.left=(vw/2)+'px';spot.style.width='0px';spot.style.height='0px'}
+ const tw=tip.offsetWidth,th=tip.offsetHeight;
+ let top,left;
+ if(!r){top=(vh-th)/2;left=(vw-tw)/2}
+ else{
+  left=Math.min(Math.max(r.left+r.width/2-tw/2,M),Math.max(vw-tw-M,M));
+  const below=vh-(r.top+r.height)-M,above=r.top-M;
+  if(below>=th)top=r.top+r.height+M;
+  else if(above>=th)top=r.top-th-M;
+  else top=vh-th-M;
+ }
+ tip.style.left=Math.round(left)+'px';tip.style.top=Math.round(Math.max(top,M))+'px';
+}
+function tourNext(){
+ if(!TOUR.on)return;
+ const st=TOUR_STEPS[TOUR.i];
+ if(st&&st.final)return finishTour();
+ tourShow(TOUR.i+1);
+}
+function endTour(silent){
+ if(!TOUR.on)return;
+ TOUR.on=false;TOUR.tok++;
+ window.removeEventListener('keydown',tourBlockKeys,true);
+ window.removeEventListener('resize',tourOnMove);
+ window.removeEventListener('scroll',tourOnMove);
+ const root=$('#tour');if(root)root.remove();
+ const app=$('#app');if(app)app.inert=false;
+}
+function finishTour(){
+ endTour();
+ go('portal');
+ requestAnimationFrame(()=>{
+  const card=$('#pf_card');
+  if(card)card.scrollIntoView({behavior:'smooth',block:'center'});
+  const f=['pf_prodi','pf_nama','pf_nim'].map(id=>document.getElementById(id)).find(x=>x&&!x.disabled&&!String(x.value||'').trim());
+  if(f)setTimeout(()=>f.focus({preventScroll:true}),350);
+ });
+}
+
 /* ===== TICKER: JAM, COUNTDOWN, BATAS TEPAT WAKTU & BILAH TOLERANSI ===== */
 const p2=n=>String(n).padStart(2,'0');
 function tick(){
@@ -1547,7 +1707,7 @@ function tick(){
  });
 }
 setInterval(tick,1000);
-setInterval(async()=>{if(document.visibilityState!=='visible')return;await load();await afterLoad();draw(true)},30000);
+setInterval(async()=>{if(document.visibilityState!=='visible'||!me)return;await load();await afterLoad();draw(true)},30000);
 setInterval(()=>{if(pg==='dash')draw(true)},60000);
 setInterval(()=>{fresh.clear()},20000);
 
