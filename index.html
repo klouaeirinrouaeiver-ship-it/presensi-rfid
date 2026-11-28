@@ -141,7 +141,7 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 @keyframes fresh{0%{background:rgba(197,160,89,.4)}100%{background:transparent}}
 
 /* ===== DASHBOARD SPLIT-SCREEN ===== */
-.dash-main{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
+.dash-split{display:grid;grid-template-columns:1fr;gap:18px;align-items:start;margin-bottom:14px}
 .dcol{display:flex;flex-direction:column;gap:12px;min-width:0}
 .dcol>.card{margin:0}
 .spot{border:2px solid var(--gd);background-color:var(--card);background-image:linear-gradient(135deg,rgba(197,160,89,.14),rgba(197,160,89,0) 55%)}
@@ -171,10 +171,8 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .tolbar .bar i{width:100%;transform-origin:left center;transition:transform 1s linear}
 .tolt{font-size:12px;color:var(--mut)}
 .tolt.late{color:var(--er);font-weight:700}
-@media(min-width:861px){
- .dash-main{grid-template-columns:1.4fr 1fr;align-items:start}
- .kpi{grid-template-columns:repeat(4,1fr)}
-}
+@media(min-width:901px){.dash-split{grid-template-columns:1.45fr 1fr}}
+@media(min-width:861px){.kpi{grid-template-columns:repeat(4,1fr)}}
 
 /* ===== LOGIN DIALOG ===== */
 .tabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,93,68,.08);padding:4px;border-radius:12px}
@@ -376,6 +374,32 @@ body.kiosk .prodi-tg{pointer-events:none}body.kiosk .prodi-tg .chev{display:none
  .mkban h2{font-size:17px}
  .mkban-chips{font-size:11px;gap:2px 10px}
 }
+
+/* ===== SPLIT-SCREEN: SPOTLIGHT, TOLERANSI ===== */
+.spot-nm{font-size:clamp(1.25rem,2vw,1.65rem);font-weight:800}
+.spot-tm{font-family:'JetBrains Mono',monospace;color:var(--ink)}
+.spot-type{font-size:12.5px;font-weight:700;color:var(--mut)}
+.spot-st.ok{background:#10B981;color:#022C1E}
+.spot-st.lt{background:#F59E0B;color:#2A1D04}
+[data-theme=dark] .spot-st.lt{color:#2A1D04}
+.spot.pulse{animation:spotlightPulse .9s ease-out}
+@keyframes spotlightPulse{
+ 0%{border-color:#10B981;box-shadow:0 0 0 6px rgba(16,185,129,.45)}
+ 50%{border-color:#E8D4A2;box-shadow:0 0 0 10px rgba(197,160,89,.35)}
+ 100%{border-color:var(--gd);box-shadow:var(--shadow)}}
+.spot-idle{display:flex;align-items:center;gap:14px}
+.idle-dot{width:14px;height:14px;border-radius:50%;background:#10B981;flex:none;animation:idle 2.2s ease-in-out infinite}
+@keyframes idle{50%{opacity:.25}}
+.tap .nm small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tap .b{font-size:10.5px;padding:2px 8px}
+.tolbar .bar i.ok{background:#10B981}
+.tolbar .bar i.warn,.tolbar .bar i.late{background:#F59E0B}
+.tols{font-weight:800;font-size:13px;letter-spacing:.04em}
+.tols.ok{color:var(--ok)}
+.tols.late{color:#9A7220}
+[data-theme=dark] .tols.late{color:#F59E0B}
+body.kiosk .tols{font-size:20px}
+@media(prefers-reduced-motion:reduce){.spot.pulse,.idle-dot{animation:none}}
 </style>
 </head>
 <body>
@@ -517,7 +541,10 @@ const isDummyNim=n=>/^99\d{10}$/.test(String(n||'').trim());
 const cleanNim=n=>{const s=String(n||'').trim();return(!s||isDummyNim(s))?'':s};
 const mask=n=>{n=cleanNim(n);if(!n)return'Belum ada NIM';return n.length>5?n.slice(0,3)+'•'.repeat(n.length-5)+n.slice(-2):n};
 const maskNim=n=>{const stf=me&&(me.peran==='admin'||me.peran==='dosen')&&!kioskOn();if(stf)return cleanNim(n)||'Belum ada NIM';return n===undefined?'•••••••••':mask(n)};
-const isLive=k=>{const d=new Date(),n=d.getHours()*60+d.getMinutes();return k.hari==d.getDay()&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
+const _wf=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Makassar',weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+const _WD={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+function nowW(){const o={};_wf.formatToParts(new Date()).forEach(p=>o[p.type]=p.value);return{dow:_WD[o.weekday],sec:(+o.hour%24)*3600+(+o.minute)*60+(+o.second)}}
+const isLive=k=>{const w=nowW(),n=Math.floor(w.sec/60);return k.hari==w.dow&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
 /* Sinkronisasi TRUE wajib memiliki kartu RFID DAN tersinkronisasi === true (berlaku untuk Mahasiswa, Dosen, maupun Admin) */
 const isSynced=a=>Boolean(a&&a.uid_kartu&&a.tersinkronisasi===true);
 
@@ -803,41 +830,41 @@ const hasCard=a=>!!a.uid_kartu;
 
 /* ===== KOMPONEN DASHBOARD SPLIT-SCREEN ===== */
 const tapRow=x=>{
- const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id));
- return `<div class="tap ${f?'fresh':''}"><span class="av">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Pengguna')} ${roleBadge(a.peran)}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hm(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`;
+ const a=S.ang.find(z=>z.id==x.anggota_id)||{};
+ return `<div class="tap"><span class="av" style="width:32px;height:32px;font-size:12px">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Pengguna')}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hms(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`;
 };
+let lastSpotlightId=null;
+const spotIdle=()=>`<div class="card spot"><h3 class="sec-h">${ico('pulse',16)} Live Tap Spotlight</h3><div class="spot-idle"><span class="idle-dot" aria-hidden="true"></span><div><b style="font-size:17px">Siap Menerima Tap</b><div class="mut">Tempelkan kartu RFID pada pembaca…</div></div></div></div>`;
 const spotCard=x=>{
- const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id)),st=x.status||'';
+ const a=S.ang.find(z=>z.id==x.anggota_id)||{},st=x.status||'';
  const c=st=='Hadir'?'ok':st=='Terlambat'?'lt':(st=='Izin'||st=='Sakit')?'':'er';
- return `<div class="card spot ${f?'fresh':''}"><div class="row" style="margin-bottom:12px"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Live Tap Spotlight</h3><span class="mut">${me?'':'Pengunjung · '}NIM disamarkan</span></div>
- <div class="spot-main"><span class="spot-av">${esc(initials(a.nama))}</span><div class="spot-id"><div class="spot-nm">${esc(a.nama||'Pengguna')}</div><div class="spot-sub">${roleBadge(a.peran)} <span class="mono mut">${esc(maskNim(a.nim))}</span></div><div class="spot-mk">${esc(mkn(x.mata_kuliah_id))}</div></div></div>
- <div class="spot-foot"><span class="spot-tm mono">${hms(x.pulang||x.masuk)}</span><span class="spot-st ${c}">${esc(st)}</span></div></div>`;
-};
-const durTxt=w=>{
- if(w<1)return'kurang dari 1 menit';
- const dd=Math.floor(w/1440),jj=Math.floor(w%1440/60),mm=w%60;
- return [dd?dd+' hari':'',jj?jj+' jam':'',(!dd&&mm)?mm+' menit':''].filter(Boolean).join(' ')||'kurang dari 1 menit';
+ const isNew=lastSpotlightId!==null&&lastSpotlightId!==String(x.id);
+ lastSpotlightId=String(x.id);
+ return `<div class="card spot ${isNew?'pulse':''}"><div class="row" style="margin-bottom:12px"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Live Tap Spotlight</h3><span class="mut">${me?'':'Pengunjung · '}NIM disamarkan</span></div>
+ <div class="spot-main"><span class="spot-av">${esc(initials(a.nama))}</span><div class="spot-id"><div class="spot-nm">${esc(a.nama||'Pengguna')}</div><div class="spot-sub">${roleBadge(a.peran)} <span class="mono mut">${esc(maskNim(a.nim))}</span></div><div class="spot-mk">${esc(mkn(x.mata_kuliah_id))}</div><div class="spot-type">${x.pulang?'Pulang':'Datang / Masuk'}</div></div></div>
+ <div class="spot-foot"><span class="spot-tm mono">${hms(x.pulang||x.masuk)} <small style="font-size:.4em">WITA</small></span><span class="spot-st ${c}">${esc(st.toUpperCase())}</span></div></div>`;
 };
 function nextKelas(list){
- const d=new Date(),dow=d.getDay(),nowM=d.getHours()*60+d.getMinutes();
+ const w=nowW(),nowM=Math.floor(w.sec/60);
  let best=null,bm=1e9;
  list.forEach(k=>{
-  const m=mn(k.mulai);let off=((+k.hari)-dow+7)%7;
+  const m=mn(k.mulai);let off=((+k.hari)-w.dow+7)%7;
   if(off===0&&m<=nowM)off=7;
   const tot=off*1440+m-nowM;
   if(tot<bm){bm=tot;best={k,off,tot}}
  });
  return best;
 }
-const liveCard=list=>`<div class="card nowc"><h3 class="sec-h">${ico('pulse',16)} Kelas Sedang Berlangsung</h3>${list.map(k=>{
+const liveCard=list=>`<div class="card nowc"><div class="row" style="margin-bottom:8px"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Kelas Sedang Berlangsung</h3><span class="b ok"><span class="dot"></span> SEDANG BERLANGSUNG</span></div>${list.map(k=>{
  const tol=+(k.toleransi_menit??15);
- return `<div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">${hm(k.mulai)}–${hm(k.selesai)} · ${esc(k.ruangan||'-')} · Toleransi ${tol} mnt</div><div class="tolbar" data-tolbar data-s="${mn(k.mulai)}" data-t="${tol}"><div class="bar"><i></i></div><div class="tolt mono"></div></div></div>`;
+ return `<div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">Dosen: <b>${esc(nm(k.dosen_id))}</b> · Ruang ${esc(k.ruangan||'-')} · ${hm(k.mulai)} – ${hm(k.selesai)}</div><div class="tolbar" data-tolbar data-s="${mn(k.mulai)}" data-t="${tol}" data-e="${mn(k.selesai)}"><div class="bar"><i></i></div><div class="tolt mono"></div><div class="tols"></div></div></div>`;
 }).join('')}</div>`;
 const nextCard=list=>{
  const nx=nextKelas(list);
  if(!nx)return `<div class="card"><h3 class="sec-h">${ico('kelas',16)} Jadwal Kelas Terdekat</h3><p class="mut" style="margin:0">Belum ada jadwal mata kuliah pada program studi ini.</p></div>`;
- const k=nx.k,tol=k.toleransi_menit??15,hr=nx.off===0?'Hari ini':nx.off===1?'Besok':nx.off===7?DN[k.hari]+' depan':DN[k.hari];
- return `<div class="card"><h3 class="sec-h">${ico('kelas',16)} Jadwal Kelas Terdekat</h3><div class="mut" style="margin-bottom:8px">Tidak ada kelas yang sedang berlangsung.</div><div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">${hr} · ${hm(k.mulai)}–${hm(k.selesai)} · ${esc(k.ruangan||'-')}</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="b lt">Dimulai dalam ${durTxt(nx.tot)}</span><span class="b ok">Toleransi ${tol} mnt</span></div></div></div>`;
+ const k=nx.k,tol=+(k.toleransi_menit??15),hr=nx.off===0?'Hari ini':nx.off===1?'Besok':nx.off===7?DN[k.hari]+' depan':DN[k.hari];
+ const lim=mn(k.mulai)+tol;
+ return `<div class="card"><h3 class="sec-h">${ico('kelas',16)} Jadwal Kelas Terdekat</h3><div class="mut" style="margin-bottom:8px">Tidak ada kelas yang sedang berlangsung.</div><div class="lv"><div class="lv-h"><span class="mono mut">${esc(k.kode)}</span><b class="lv-nm">${esc(k.nama)}</b></div><div class="mut">${hr} · ${hm(k.mulai)}–${hm(k.selesai)} · ${esc(k.ruangan||'-')} · Dosen: ${esc(nm(k.dosen_id))}</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="b lt mono" data-nx data-off="${nx.off}" data-s="${mn(k.mulai)}">Dimulai…</span><span class="b ok">Toleransi ${tol} mnt (s/d ${p2(Math.floor(lim/60)%24)}:${p2(lim%60)})</span></div></div></div>`;
 };
 
 /* ===== VIEW ===== */
@@ -849,12 +876,12 @@ const V={
   const live=prodiMks.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,6);
   const hari=prodiMks.filter(k=>k.hari==dow).length;
   const prodiTitle=activeProdi==='ALL'?'Jurusan Teknologi Informasi':`Program Studi ${activeProdi}`;
-  const spotHtml=taps.length?spotCard(taps[0]):`<div class="card spot"><h3 class="sec-h">${ico('pulse',16)} Live Tap Spotlight</h3><p class="mut" style="margin:0">Menunggu tap kartu pada pembaca…</p></div>`;
+  const spotHtml=taps.length?spotCard(taps[0]):spotIdle();
   const histHtml=taps.length>1?`<div class="card"><h3 class="sec-h">${ico('riw',16)} Riwayat Tap Sebelumnya</h3>${taps.slice(1).map(tapRow).join('')}</div>`:'';
   const rightHtml=live.length?liveCard(live):nextCard(prodiMks);
   return `${S.err?`<div class="info show" role="alert"><b>Data belum berhasil dimuat.</b> ${esc(S.err)} <button type="button" class="btn sm" onclick="retryLoad(this)">Muat ulang data</button></div>`:''}<section class="hero"><div class="crest"><img src="./logo-polnes.png" alt="Lambang Polnes"></div><div><div class="eyebrow">POLNES ACADEMIC COMMAND CENTER &amp; TELEMETRY</div><h1>Sistem Presensi RFID &amp; IoT Real-Time</h1><p>${esc(prodiTitle)} · Politeknik Negeri Samarinda</p></div><div class="clock"><b data-clock="t">--:--:--</b><span data-clock="d"></span></div></section>
   <div class="kpi"><div class="card"><span class="mut">Hadir hari ini</span><b>${p.length}</b></div><div class="card"><span class="mut">Terlambat</span><b>${p.filter(x=>x.status=='Terlambat').length}</b></div><div class="card"><span class="mut">Kelas hari ini</span><b>${hari}</b></div><div class="card"><span class="mut">${esc(d.n)}</span><b style="font-size:${kioskOn()?'30':'20'}px;display:flex;align-items:center;gap:8px;margin-top:4px">${d.on?'<span class="b ok" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Online</span>':'<span class="b er" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Offline</span>'}</b></div></div>
-  <div class="dash-main"><div class="dcol">${spotHtml}${histHtml}</div><div class="dcol">${rightHtml}</div></div>
+  <div class="dash-split"><div class="dcol">${spotHtml}${histHtml}</div><div class="dcol">${rightHtml}</div></div>
   <div class="row" style="margin:14px 0 10px"><h3 class="sec-h" style="margin:0">${ico('mk',16)} Paket Mata Kuliah — ${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</h3><span class="mut">${prodiMks.length} mata kuliah</span></div>
   ${S.mk.some(k=>k._seed)?'<div class="sim-note"><b>Data Simulasi.</b> Tabel mata kuliah di database masih kosong, sehingga yang tampil adalah contoh jadwal untuk demonstrasi. Data ini tidak tersimpan dan tidak ikut diekspor.</div>':''}<div class="grid">${prodiMks.map(k=>mkCardLink(k)).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>
   ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk mengisi identitas asli, membuka KTM Digital, dan menautkan Telegram.</div></div><button class="btn p sm" onclick="lgn()">${ico('lock',14)} Masuk</button></div></div>`}`},
@@ -1669,7 +1696,7 @@ async function exportXls(btn){
 /* ===== TUR TUTORIAL WAJIB LINTAS-MENU (TIDAK BISA DI-SKIP) ===== */
 /* Berjalan otomatis untuk mahasiswa/dosen berstatus FALSE. Tanpa tombol lewati/tutup; Escape & klik luar diblokir. */
 const TOUR_STEPS=[
- {pg:'dash',sel:'.dash-main',title:'Dashboard: Pantauan Real-Time',body:'Halaman ini menampilkan pantauan tap kartu RFID secara real-time (Live Tap Spotlight) dan jadwal kuliah aktif untuk setiap Program Studi.',btn:'Lanjut → (1/4)'},
+ {pg:'dash',sel:'.dash-split',title:'Dashboard: Pantauan Real-Time',body:'Halaman ini menampilkan pantauan tap kartu RFID secara real-time (Live Tap Spotlight) dan jadwal kuliah aktif untuk setiap Program Studi.',btn:'Lanjut → (1/4)'},
  {pg:'portal',sel:'.ktm',title:'KTM Digital & Status FALSE',body:'Ini KTM Digital Anda. Selama Status Sinkronisasi masih FALSE, kartu RFID Anda belum bisa dipakai presensi di alat, sampai data manual Anda dan scan kartu Mode Auto oleh admin cocok.',btn:'Lanjut → (2/4)'},
  {pg:'portal',sel:'#pf_card',title:'Data Manual User & Sinkronisasi',body:'Wajib isi Nama Asli sesuai KTM/SIAKAD, Program Studi, dan NIM/NIDN pada formulir ini, lalu tekan Simpan agar cocok 100% dengan data yang direkam Admin di Mode Auto.',btn:'Lanjut → (3/4)'},
  {pg:'tg',sel:'#tg_card',title:'Notifikasi Telegram Otomatis',body:'Tautkan Telegram dalam 1 klik untuk menerima pengingat otomatis tepat saat jam kuliah dimulai.',btn:'Selesai & Isi Data Sekarang →',final:true}
@@ -1785,15 +1812,29 @@ function tick(){
  const d=new Date();
  document.querySelectorAll('[data-clock]').forEach(e=>{e.textContent=e.dataset.clock==='t'?`${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`:`${DN[d.getDay()]}, ${d.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()]} ${d.getFullYear()}`});
  document.querySelectorAll('[data-cd]').forEach(e=>{const n=d.getHours()*60+d.getMinutes(),left=+e.dataset.cd*60-(n*60+d.getSeconds());e.textContent=left>0?`Batas tepat waktu ${p2(Math.floor(left/3600))}:${p2(Math.floor(left%3600/60))}:${p2(left%60)}`:'Batas tepat waktu sudah lewat'});
+ const W=nowW();
+ const redrawNow=()=>{if(tick.nx)return;tick.nx=1;setTimeout(()=>{tick.nx=0;draw(true)},50)};
  document.querySelectorAll('[data-tolbar]').forEach(e=>{
-  const total=+e.dataset.t*60,left=(+e.dataset.s*60+total)-(d.getHours()*3600+d.getMinutes()*60+d.getSeconds());
-  const pct=total>0?Math.max(0,Math.min(1,left/total)):0;
-  const i=e.querySelector('i'),x=e.querySelector('.tolt');
-  if(i){i.style.transform='scaleX('+pct.toFixed(4)+')';i.classList.toggle('er',left<=0)}
-  if(x){
-   x.textContent=left>0?`Sisa ${p2(Math.floor(left/60))}:${p2(left%60)} sebelum status berubah dari Hadir menjadi Terlambat`:'Batas toleransi lewat — tap berstatus Terlambat';
-   x.classList.toggle('late',left<=0);
+  const tol=+e.dataset.t*60,s=+e.dataset.s*60,en=+e.dataset.e*60,lim=s+tol,left=lim-W.sec;
+  const i=e.querySelector('i'),x=e.querySelector('.tolt'),y=e.querySelector('.tols');
+  const lt=p2(Math.floor(lim/3600)%24)+':'+p2(Math.floor(lim%3600/60));
+  if(left>0){
+   if(i){i.style.transform='scaleX('+Math.min(1,left/Math.max(tol,1)).toFixed(4)+')';i.className=left<300?'warn':'ok'}
+   if(x)x.innerHTML=`Batas Toleransi Keterlambatan (${e.dataset.t} mnt): sisa <b>${Math.floor(left/60)}m ${p2(left%60)}d</b> (s/d ${lt})`;
+   if(y){y.className='tols ok';y.textContent='Tap sekarang = HADIR'}
+  }else{
+   const rest=Math.max(en-W.sec,0);
+   if(i){i.style.transform='scaleX('+Math.min(1,rest/Math.max(en-lim,1)).toFixed(4)+')';i.className='late'}
+   if(x)x.textContent=`Masa toleransi (${e.dataset.t} mnt) telah berakhir pada ${lt}. Kelas selesai dalam ${Math.floor(rest/60)}m ${p2(rest%60)}d`;
+   if(y){y.className='tols late';y.textContent='Tap sekarang = TERLAMBAT'}
   }
+  if(W.sec>en+60)redrawNow();
+ });
+ document.querySelectorAll('[data-nx]').forEach(e=>{
+  const left=(+e.dataset.off)*86400+(+e.dataset.s)*60-W.sec;
+  if(left<=0){redrawNow();return}
+  const dd=Math.floor(left/86400);
+  e.textContent='Dimulai dalam '+(dd?dd+' hari ':'')+p2(Math.floor(left%86400/3600))+':'+p2(Math.floor(left%3600/60))+':'+p2(left%60);
  });
  document.querySelectorAll('[data-exp]').forEach(e=>{
   const left=Math.max(0,Math.floor((new Date(e.dataset.exp)-Date.now())/1000));
