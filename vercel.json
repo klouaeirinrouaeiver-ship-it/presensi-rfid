@@ -1,0 +1,1 @@
+{"functions":{"api/kirim-wa.js":{"maxDuration":60},"api/telegram-webhook.js":{"maxDuration":15}}}
