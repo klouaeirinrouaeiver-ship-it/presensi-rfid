@@ -23,6 +23,7 @@ button,input,select{font:inherit}
 .ico svg{display:block}
 input,select{width:100%;padding:10px 12px;margin:4px 0 10px;border:1px solid var(--ln);border-radius:10px;background:var(--card2);color:var(--ink);outline:none;transition:border .15s,box-shadow .15s}
 input:focus,select:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+input:disabled,select:disabled{opacity:.68;cursor:not-allowed;background:rgba(11,93,68,.06)}
 label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin-top:4px}
 h1,h2,h3{margin:0 0 8px}h3{font-size:15px}
 .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:15px}
@@ -63,7 +64,7 @@ h1,h2,h3{margin:0 0 8px}h3{font-size:15px}
 .info{display:none;background:rgba(180,35,54,.08);border:1px solid var(--er);border-left:4px solid var(--er);border-radius:10px;padding:10px 12px;font-size:12px;margin:0 0 10px}
 .info.show{display:block}
 .pw{position:relative}.pw input{padding-right:40px}.pw button{position:absolute;right:8px;top:9px;border:0;background:none;cursor:pointer;color:var(--mut);padding:4px;display:grid;place-items:center}
-dialog{border:1px solid rgba(197,160,89,.6);border-radius:20px;padding:20px;width:min(450px,94vw);background:var(--card2);color:var(--ink);box-shadow:0 30px 70px rgba(0,0,0,.4)}
+dialog{border:1px solid rgba(197,160,89,.6);border-radius:20px;padding:20px;width:min(490px,94vw);background:var(--card2);color:var(--ink);box-shadow:0 30px 70px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 #ts{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#063B2B;border-left:4px solid var(--gd);color:#fff;padding:10px 16px;border-radius:12px;z-index:99;display:none;max-width:90vw;box-shadow:0 10px 25px rgba(0,0,0,.3)}
 
@@ -145,8 +146,9 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .tabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font-weight:700;color:var(--mut);cursor:pointer;font-size:12.5px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .tabs .on{background:linear-gradient(135deg,var(--em),var(--em-deep));color:#fff;box-shadow:0 2px 8px rgba(11,93,68,.25)}
 
-/* ===== KTM DIGITAL ===== */
-.ktm{position:relative;border-radius:22px;padding:2px;background:linear-gradient(135deg,#E8D4A2,#C5A059 30%,#10B981 65%,#0B5D44);box-shadow:0 22px 44px -18px rgba(6,44,32,.7);margin-bottom:16px;max-width:520px;overflow:hidden}
+/* ===== KTM DIGITAL & PORTAL ===== */
+.portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start;margin-bottom:14px}
+.ktm{position:relative;border-radius:22px;padding:2px;background:linear-gradient(135deg,#E8D4A2,#C5A059 30%,#10B981 65%,#0B5D44);box-shadow:0 22px 44px -18px rgba(6,44,32,.7);overflow:hidden}
 .ktm::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);transform:translateX(-120%);animation:shim 5.5s ease-in-out infinite;pointer-events:none}
 @keyframes shim{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 .ktm-in{border-radius:20px;background:linear-gradient(145deg,#063B2B,#042118 70%);color:#fff;padding:20px;position:relative;overflow:hidden}
@@ -162,6 +164,9 @@ dialog::backdrop{background:rgba(3,25,18,.6);backdrop-filter:blur(4px)}
 .ck .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--ln);color:var(--mut);flex:none}
 .ck.done .n{background:var(--em);color:#fff}
 .ck .x{flex:1}.ck .x b{display:block}
+.cal-box{padding:10px 12px;border-radius:12px;margin-bottom:12px;font-size:12.5px;border:1px solid var(--ln)}
+.cal-box.ok{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4)}
+.cal-box.er{background:rgba(180,35,54,.08);border-color:rgba(180,35,54,.35)}
 
 /* ===== REGISTRASI RFID ===== */
 .hero-auto{background:linear-gradient(125deg,var(--em-deep),#042118);color:#fff;border:2px solid var(--gd);border-radius:16px;padding:18px;margin-bottom:14px}
@@ -207,7 +212,7 @@ const SUPABASE_URL='https://muwlrysxpuygrinrnere.supabase.co';
 const SUPABASE_KEY='sb_publishable_AYYctBNraAafTSMnPzFomw_xLICzKw0';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-/* ===== IKON VEKTOR PROFESIONAL (LUCIDE STYLE) ===== */
+/* ===== IKON VEKTOR PROFESIONAL ===== */
 const SVG={
  dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
  mk:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
@@ -235,15 +240,15 @@ const SVG={
  warn:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
  refresh:'<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
  building:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
- sliders:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>'
+ sliders:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+ userCheck:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/>'
 };
 const ico=(n,s=15)=>`<span class="ico" aria-hidden="true"><svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SVG[n]||''}</svg></span>`;
 
-/* ===== UTILITAS & PEMETAAN GAMBAR + 4 PRODI ===== */
+/* ===== UTILITAS, PEMETAAN GAMBAR & 4 PRODI ===== */
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const DN=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 
-/* 4 Program Studi Jurusan Teknologi Informasi Polnes */
 const PRODI_LIST=[
  {code:'TI',name:'Teknik Informatika'},
  {code:'TK',name:'Teknik Komputer'},
@@ -251,7 +256,6 @@ const PRODI_LIST=[
  {code:'TRK',name:'Teknologi Rekayasa Komputer'}
 ];
 
-/* Mata kuliah bawaan untuk 3 Prodi lain jika belum disisipkan ke Supabase */
 const DEFAULT_OTHER_MK=[
  {id:'seed-ti1',kode:'TI101',nama:'Algoritma dan Struktur Data',hari:2,mulai:'08:00:00',selesai:'10:30:00',toleransi_menit:15,ruangan:'Lab Pemrograman TI',prodi:'Teknik Informatika',_seed:1},
  {id:'seed-ti2',kode:'TI102',nama:'Basis Data Lanjut',hari:4,mulai:'10:00:00',selesai:'12:30:00',toleransi_menit:15,ruangan:'Lab Basis Data TI',prodi:'Teknik Informatika',_seed:1},
@@ -270,7 +274,6 @@ function prodiOf(k){
  return 'Teknologi Rekayasa Komputer';
 }
 
-/* Multi-candidate image fallback agar Mikroprosesor & Organisasi Komputer 100% tampil */
 const COURSE_IMAGE_CANDIDATES=[
  ['mikroprosesor',['./mikroprosessor.jpg','./Mikroprosessor.jpg','./mikroprosesor.jpg','./Mikroprosesor.jpg','./mikroprosessor.jpeg','./mikroprosesor.png','./kampus.jpg']],
  ['mikroprosessor',['./mikroprosessor.jpg','./Mikroprosessor.jpg','./mikroprosesor.jpg','./Mikroprosesor.jpg','./mikroprosessor.jpeg','./mikroprosesor.png','./kampus.jpg']],
@@ -308,7 +311,7 @@ function courseImg(nama){
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const mn=t=>{if(!t)return 0;const a=t.split(':');return +a[0]*60+ +a[1]};
 const hm=t=>(t||'').slice(0,5);
-const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3800)};
+const toast=m=>{const t=$('#ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',4200)};
 const dlg=h=>{$('#dg').innerHTML=h;if(!$('#dg').open)$('#dg').showModal()},cls=()=>$('#dg').close();
 const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 const shortName=n=>String(n||'').trim().split(/\s+/).slice(0,2).join(' ');
@@ -319,6 +322,7 @@ const cleanNim=n=>{const s=String(n||'').trim();return(!s||isDummyNim(s))?'':s};
 const mask=n=>{n=cleanNim(n);if(!n)return'Belum ada NIM';return n.length>5?n.slice(0,3)+'•'.repeat(n.length-5)+n.slice(-2):n};
 const maskNim=n=>(me&&(me.peran==='admin'||me.peran==='dosen')&&!kioskOn())?(cleanNim(n)||'Belum ada NIM'):mask(n);
 const isLive=k=>{const d=new Date(),n=d.getHours()*60+d.getMinutes();return k.hari==d.getDay()&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
+const isVerified=a=>a&&(a.terverifikasi===true||a.peran==='admin');
 function syncPhase(){document.documentElement.style.setProperty('--ph',(-((Date.now()/1000)%24)).toFixed(2)+'s')}
 syncPhase();
 
@@ -334,15 +338,16 @@ const MENU={
 };
 const role=()=>me?me.peran:'guest';
 const mkByProdi=()=>activeProdi==='ALL'?S.mk:S.mk.filter(k=>prodiOf(k)===activeProdi);
+const angByProdi=()=>activeProdi==='ALL'?S.ang:S.ang.filter(a=>(a.prodi||'')===activeProdi);
 
-/* ===== LOGIN: GOOGLE (MAHASISWA/DOSEN) & ADMIN ===== */
+/* ===== LOGIN: GOOGLE & ADMIN ===== */
 function lgn(t){
  if(t)lt=t;
  const G='<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
  dlg(`<div style="text-align:center"><div class="logo3d"><img src="./logo-polnes.png" alt="" style="height:54px"></div><h3 style="margin:8px 0 2px;color:var(--em-deep)">Masuk ke Presensi RFID</h3><p class="mut" style="margin:0 0 12px">Jurusan Teknologi Informasi · Politeknik Negeri Samarinda</p></div>
  <div class="tabs"><button type="button" class="${lt=='google'?'on':''}" onclick="lgn('google')">${ico('kelas',14)} Mahasiswa &amp; Dosen</button><button type="button" class="${lt=='admin'?'on':''}" onclick="lgn('admin')">${ico('shield',14)} Administrator</button></div>
  ${lt=='google'?`<button class="btn gg" onclick="google()">${G} Masuk dengan Google</button>
-  <p class="mut" style="margin:12px 0 0;text-align:center">Gunakan akun Gmail Anda. Akun baru akan dibuat tanpa NIM/NIDN hingga diverifikasi dan ditautkan kartu oleh Administrator.</p>`
+  <p class="mut" style="margin:12px 0 0;text-align:center">Setelah masuk dengan Gmail, Anda dapat mengisi Nama Asli, Program Studi, dan NIM/NIDN secara mandiri untuk dikalibrasi oleh Administrator.</p>`
  :`<div class="info" id="lerr"></div><label>Email Administrator</label><input id="em" type="email" autocomplete="username" placeholder="admin@polnes.ac.id"><label>Kata Sandi</label><div class="pw"><input type="password" id="pw" autocomplete="current-password" placeholder="Kata sandi" onkeydown="if(event.key==='Enter')admLogin()"><button type="button" onclick="eye(this)">${ico('eye',16)}</button></div><button class="btn p" id="lbtn" onclick="admLogin()">${ico('lock',15)} Masuk Administrator</button>`}
  <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sm" onclick="cls()">Lanjut sebagai Pengunjung</button></div>`);
 }
@@ -368,7 +373,7 @@ async function keluar(){
  toast('Anda telah keluar');await boot(true);
 }
 
-/* ===== BOOT: PENGUNJUNG & SESI LOGIN (TANPA AUTO-GENERATE NIM) ===== */
+/* ===== BOOT: PENGUNJUNG & SESI LOGIN ===== */
 async function boot(force){if(bt&&!force)return;bt=1;try{await boot0()}finally{bt=0}}
 async function boot0(){
  let session=null;
@@ -388,22 +393,30 @@ async function boot0(){
     try{await sb.rpc('tautkan_akun',{p_no_wa:'',p_peran:'mahasiswa',p_nama:u.user_metadata?.full_name||u.user_metadata?.name||'',p_nim:'',p_kelas:''});row=await sel1()}catch(e){}
    }
    if(!row){
-    const {data}=await sb.from('anggota').insert({nama:u.user_metadata?.full_name||u.user_metadata?.name||(u.email||'Pengguna').split('@')[0],email:(u.email||'').toLowerCase(),peran:'mahasiswa',nim:null,aktif:true,auth_user_id:u.id}).select().maybeSingle();
-    row=data;
+    const payload={nama:u.user_metadata?.full_name||u.user_metadata?.name||(u.email||'Pengguna').split('@')[0],email:(u.email||'').toLowerCase(),peran:'mahasiswa',nim:null,prodi:null,aktif:true,auth_user_id:u.id,terverifikasi:false,sumber_daftar:'mandiri'};
+    let res=await sb.from('anggota').insert(payload).select().maybeSingle();
+    if(res.error&&/terverifikasi|sumber_daftar/i.test(res.error.message)){
+     delete payload.terverifikasi;delete payload.sumber_daftar;
+     res=await sb.from('anggota').insert(payload).select().maybeSingle();
+    }
+    row=res.data;
    }
-   /* Pastikan akun baru tidak membawa NIM dummy '99...' */
    if(row&&isDummyNim(row.nim)&&!row.uid_kartu){
     await sb.from('anggota').update({nim:null}).eq('id',row.id);
     row.nim=null;
    }
   }catch(e){}
-  if(!row&&isAdminMeta)row={id:u.id,nama:u.email||'Administrator',email:u.email,peran:'admin',aktif:true};
+  if(!row&&isAdminMeta)row={id:u.id,nama:u.email||'Administrator',email:u.email,peran:'admin',aktif:true,terverifikasi:true};
   if(row){
    if(isAdminMeta)row.peran='admin';
    let lm='';try{lm=sessionStorage.getItem('lm')||''}catch(e){}
    if(row.aktif===false){await sb.auth.signOut();toast('Akun Anda dinonaktifkan oleh administrator')}
    else if(lm==='admin'&&row.peran!=='admin'){await sb.auth.signOut();toast('Akun ini bukan Administrator')}
-   else{me=row;if(me.prodi&&PRODI_LIST.some(p=>p.name===me.prodi))activeProdi=me.prodi;}
+   else{
+    me=row;
+    if(me.prodi&&PRODI_LIST.some(p=>p.name===me.prodi))activeProdi=me.prodi;
+    if(me.peran!=='admin'&&(!cleanNim(me.nim)||!me.prodi))pg='portal';
+   }
   }else{await sb.auth.signOut();toast('Profil anggota tidak dapat dimuat')}
   try{sessionStorage.removeItem('lm')}catch(e){}
  }
@@ -438,7 +451,7 @@ async function load(){
  const adm=me&&me.peran==='admin',stf=adm||(me&&me.peran==='dosen');
  const reqs=[
   sb.from('mata_kuliah').select('*').order('kode'),
-  stf?sb.from('anggota').select('*').order('nama'):sb.from('anggota').select('id,nama,nim,kelas,peran').order('nama'),
+  stf?sb.from('anggota').select('*').order('nama'):sb.from('anggota').select('id,nama,nim,kelas,peran,prodi,terverifikasi').order('nama'),
   sb.from('peserta').select('anggota_id,mata_kuliah_id'),
   sb.from('presensi').select('*').order('tanggal',{ascending:false}).order('masuk',{ascending:false}).limit(1500),
   sb.from('perangkat').select('id,nama,aktif,terakhir_terlihat'),
@@ -450,7 +463,6 @@ async function load(){
  }
  const R=await Promise.all(reqs.map(q=>Promise.resolve(q).catch(()=>({data:null}))));
  const dbMk=R[0].data||[];
- /* Gabungkan mata kuliah database dengan 2 matkul bawaan untuk 3 Prodi lain jika belum ada di DB */
  const existingCodes=new Set(dbMk.map(x=>String(x.kode||'').toUpperCase()));
  const missingSeeds=DEFAULT_OTHER_MK.filter(s=>!existingCodes.has(s.kode));
  S.mk=[...dbMk,...missingSeeds];
@@ -475,7 +487,7 @@ function shell(){
  <main class="wrap" id="main"></main><button id="kx" class="btn g sm kx-on" onclick="toggleFull()">Keluar Mode Proyektor</button>`;
  draw();
 }
-function setProdi(p){activeProdi=p;shell()}
+function setProdi(p){activeProdi=p;sel='';shell()}
 function go(p){pg=p;sel='';stopTgPollIfLeft();shell();window.scrollTo(0,0)}
 function toggleTema(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('tema',t)}catch(e){}}
 function toggleFull(){
@@ -498,6 +510,7 @@ function draw(soft){
 
 /* ===== KOMPONEN ===== */
 const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':s=='Izin'||s=='Sakit'?'':'er'}">${esc(s)}</span>`;
+const calBadge=a=>isVerified(a)?'<span class="b ok">TRUE</span>':'<span class="b er">FALSE</span>';
 const mkCard=k=>{
  const tol=k.toleransi_menit??15;
  return `<div class="mk ${isLive(k)?'now':''}"><span class="tol-tag">${ico('riw',11)} Toleransi ${tol} mnt</span>${isLive(k)?'<span class="live">BERLANGSUNG</span>':''}${courseImg(k.nama)}<div class="t"><b>${esc(k.nama)}</b><small>${esc(k.kode)} · ${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)} · Toleransi ${tol} mnt · ${esc(k.ruangan||'')}</small></div></div>`;
@@ -505,6 +518,7 @@ const mkCard=k=>{
 const STS=['Hadir','Terlambat','Izin','Sakit'];
 const nm=id=>(S.ang.find(x=>x.id==id)||{}).nama||'-';
 const mkn=id=>(S.mk.find(x=>x.id==id)||{}).nama||'-';
+const mkProdiById=id=>{const k=S.mk.find(x=>x.id==id);return k?prodiOf(k):''};
 function devInfo(){const d=S.dev.find(x=>x.aktif)||S.dev[0];if(!d||!d.terakhir_terlihat)return{on:0,n:'ESP8266',t:'Belum terhubung'};const s=(Date.now()-new Date(d.terakhir_terlihat))/1000;return{on:s<=90,n:d.nama,t:s<90?'Online':'Offline'}}
 function myMk(){if(!me)return[];return me.peran==='dosen'?S.mk.filter(k=>k.dosen_id==me.id):S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id))}
 async function setStatus(aid,mid,st){
@@ -519,8 +533,9 @@ const hasCard=a=>!!a.uid_kartu;
 /* ===== VIEW ===== */
 const V={
  dash(){
-  const t=today(),p=S.pre.filter(x=>x.tanggal==t),d=devInfo(),dow=new Date().getDay();
+  const t=today(),d=devInfo(),dow=new Date().getDay();
   const prodiMks=mkByProdi();
+  const p=S.pre.filter(x=>x.tanggal==t&&(activeProdi==='ALL'||mkProdiById(x.mata_kuliah_id)===activeProdi));
   const live=prodiMks.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,kioskOn()?6:8);
   const hari=prodiMks.filter(k=>k.hari==dow).length;
   const prodiTitle=activeProdi==='ALL'?'Jurusan Teknologi Informasi':`Program Studi ${activeProdi}`;
@@ -530,19 +545,40 @@ const V={
   <div class="card"><div class="row"><h3 class="sec-h" style="margin:0">${ico('pulse',16)} Live Tap Monitor</h3><span class="mut">${me?'':'Mode Pengunjung · '}NIM disamarkan</span></div>${taps.map(x=>{const a=S.ang.find(z=>z.id==x.anggota_id)||{},f=fresh.has(String(x.id));return `<div class="tap ${f?'fresh':''}"><span class="av">${esc(initials(a.nama))}</span><div class="nm"><b>${esc(a.nama||'Mahasiswa')}</b><small>${esc(maskNim(a.nim))} · ${esc(mkn(x.mata_kuliah_id))}</small></div><span class="tm">${hm(x.pulang||x.masuk)}</span>${bd(x.status)}</div>`}).join('')||'<p class="mut">Menunggu tap kartu pada pembaca…</p>'}</div>
   <div class="row" style="margin:14px 0 10px"><h3 class="sec-h" style="margin:0">${ico('mk',16)} Jadwal Mata Kuliah — ${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</h3><span class="mut">${prodiMks.length} mata kuliah</span></div>
   <div class="grid">${prodiMks.map(mkCard).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>
-  ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk membuka KTM Digital, statistik kehadiran, dan notifikasi Telegram.</div></div><button class="btn p sm" onclick="lgn()">${ico('lock',14)} Masuk</button></div></div>`}`},
+  ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk mengisi identitas asli, membuka KTM Digital, dan menautkan Telegram.</div></div><button class="btn p sm" onclick="lgn()">${ico('lock',14)} Masuk</button></div></div>`}`},
  admin_mk(){
   const list=mkByProdi();
   return `<div class="row" style="margin-bottom:10px"><button class="btn p sm" onclick="mkForm()">${ico('plus',14)} Tambah Mata Kuliah</button><span class="mut">Menampilkan: <b>${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</b> (${list.length} matkul)</span></div>
   <div class="card tw"><table><tr><th>Kode<th>Nama<th>Program Studi<th>Jadwal<th>Toleransi<th>Dosen<th>Ruangan<th>Aksi</tr>${list.map(k=>`<tr><td class="mono">${esc(k.kode)}<td><b>${esc(k.nama)}</b><td><span class="b">${esc(prodiOf(k))}</span><td>${DN[k.hari]} ${hm(k.mulai)}–${hm(k.selesai)}<td><span class="b ok">${k.toleransi_menit??15} mnt</span><td>${esc(nm(k.dosen_id))}<td>${esc(k.ruangan||'-')}<td>${k._seed?`<button class="btn sm" onclick="simpanSeedMk('${k.id}')">Simpan ke DB</button>`:`<button class="btn sm" onclick="mkForm('${k.id}')">Ubah</button> <button class="btn sm er" onclick="mkDel('${k.id}')">Hapus</button>`}</tr>`).join('')}</table></div>`},
  admin_mem(){
-  const c={semua:S.ang.length,ada:S.ang.filter(a=>hasCard(a)).length,belum:S.ang.filter(a=>!hasCard(a)).length,non:S.ang.filter(a=>a.aktif===false).length};
-  const P=[['semua','Semua'],['ada','Sudah Punya Kartu'],['belum','Belum Ada Kartu'],['non','Nonaktif']];
-  return `<div class="card"><div class="row"><div class="pills">${P.map(p=>`<button class="${mf==p[0]?'on':''}" onclick="mf='${p[0]}';draw()">${p[1]}<small>${c[p[0]]}</small></button>`).join('')}</div><div style="position:relative;width:min(270px,100%)"><span style="position:absolute;left:11px;top:11px;color:var(--mut)">${ico('search',15)}</span><input id="mq" style="padding-left:34px;margin:0" placeholder="Cari nama / NIM / Gmail…" value="${esc(memQ)}" oninput="memQ=this.value;memRefresh()"></div></div></div>
-  <div class="card tw"><table><thead><tr><th>Nama<th>NIM/NIDN<th>Peran<th>Program Studi<th>Gmail<th>Kartu<th>Telegram<th>Status<th>Aksi</tr></thead><tbody id="memtb">${memRows()}</tbody></table></div>`},
+  const base=angByProdi();
+  const unAssigned=S.ang.filter(a=>!a.prodi).length;
+  const c={
+   semua:base.length,
+   cal_false:base.filter(a=>!isVerified(a)).length,
+   cal_true:base.filter(a=>isVerified(a)).length,
+   ada:base.filter(a=>hasCard(a)).length,
+   belum:base.filter(a=>!hasCard(a)).length,
+   non:base.filter(a=>a.aktif===false).length,
+   noprodi:unAssigned
+  };
+  const P=[
+   ['semua','Semua'],
+   ['cal_false','Perlu Kalibrasi (FALSE)'],
+   ['cal_true','Terkalibrasi (TRUE)'],
+   ['ada','Sudah Punya Kartu'],
+   ['belum','Belum Ada Kartu'],
+   ['non','Nonaktif']
+  ];
+  if(unAssigned>0&&activeProdi!=='ALL')P.push(['noprodi','Belum Pilih Prodi']);
+  return `<div class="card"><div class="row" style="margin-bottom:10px"><span class="mut">Filter Program Studi Aktif: <b>${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</b> (${base.length} anggota)</span><button class="btn p sm" onclick="newUsrForm()">${ico('plus',14)} Tambah Anggota (Admin)</button></div>
+  <div class="row"><div class="pills">${P.map(p=>`<button class="${mf==p[0]?'on':''}" onclick="mf='${p[0]}';draw()">${p[1]}<small>${c[p[0]]}</small></button>`).join('')}</div><div style="position:relative;width:min(270px,100%)"><span style="position:absolute;left:11px;top:11px;color:var(--mut)">${ico('search',15)}</span><input id="mq" style="padding-left:34px;margin:0" placeholder="Cari nama / NIM / Gmail…" value="${esc(memQ)}" oninput="memQ=this.value;memRefresh()"></div></div></div>
+  <div class="card tw"><table><thead><tr><th>Nama Asli<th>NIM/NIDN<th>Peran<th>Program Studi<th>Gmail<th>Kalibrasi<th>Kartu<th>Telegram<th>Status<th>Aksi</tr></thead><tbody id="memtb">${memRows()}</tbody></table></div>`},
  admin_reg(){
-  const s=S.sesi,list=S.ang.filter(a=>a.peran!=='admin'&&a.aktif!==false),noCard=list.filter(a=>!hasCard(a)),has=list.filter(hasCard);
-  const opt=a=>{const n=cleanNim(a.nim);return `<option value="${a.id}" ${a.id==regTarget?'selected':''}>${esc(a.nama)} · ${n?esc(n):'NIM kosong'} · ${esc(PL[a.peran]||'')}${a.email?' · '+esc(a.email):''}</option>`};
+  const s=S.sesi;
+  const prodiPool=activeProdi==='ALL'?S.ang:S.ang.filter(a=>(a.prodi||'')===activeProdi||!a.prodi);
+  const list=prodiPool.filter(a=>a.peran!=='admin'&&a.aktif!==false),noCard=list.filter(a=>!hasCard(a)),has=list.filter(hasCard);
+  const opt=a=>{const n=cleanNim(a.nim);return `<option value="${a.id}" ${a.id==regTarget?'selected':''}>${esc(a.nama)} · ${n?esc(n):'NIM kosong'} · ${esc(PL[a.peran]||'')}${a.prodi?' · '+esc(a.prodi):' · Belum pilih prodi'}</option>`};
   const dd=regPrio?`<optgroup label="Belum punya kartu (${noCard.length})">${noCard.map(opt).join('')}</optgroup><optgroup label="Sudah punya kartu (${has.length})">${has.map(opt).join('')}</optgroup>`:list.map(opt).join('');
   const tgt=regTarget?S.ang.find(a=>a.id==regTarget):null;
   const selObj=$('#rt')?.value?S.ang.find(a=>a.id==$('#rt').value):(regTarget?tgt:null);
@@ -554,46 +590,74 @@ const V={
   }
   if(s){
    const uid=s.uid_tertangkap;
-   return `<div class="hero-auto" style="max-width:560px"><div class="row"><b>Mode Auto Aktif (Isi Data &amp; Nomor Induk)</b><button class="btn sm" onclick="batalAuto()">Batalkan</button></div>
+   return `<div class="hero-auto" style="max-width:560px"><div class="row"><b>Mode Auto Aktif (Pendaftaran Langsung Admin · Kalibrasi TRUE)</b><button class="btn sm" onclick="batalAuto()">Batalkan</button></div>
    <div class="uid-box">${uid?`<div style="font-size:12px;opacity:.85">UID Kartu Tertangkap:</div><b class="mono" style="font-size:24px;letter-spacing:2px;color:var(--gd-soft)">${esc(uid)}</b>${s.pemilik_sebelumnya?`<div style="margin-top:6px;background:rgba(180,35,54,.35);padding:4px 8px;border-radius:8px;font-size:12px">Kartu ini sebelumnya terdaftar milik: <b>${esc(s.pemilik_sebelumnya)}</b></div>`:''}`:`<div class="radar" style="width:110px;height:110px;margin:0 auto 6px"><i></i><i></i><i></i><div class="cardico" style="width:56px;height:36px">${ico('card',20)}</div></div><b>Menunggu tempelan kartu…</b>`}</div>
    <div class="cdown" style="font-size:34px" data-exp="${esc(s.kedaluwarsa)}">--:--</div></div>
-   ${uid?`<div class="card" style="max-width:560px"><h3>Isi Data &amp; Nomor Induk Pemilik Kartu</h3>
+   ${uid?`<div class="card" style="max-width:560px"><h3>Daftarkan Pemilik Kartu Baru (Otomatis TRUE)</h3>
+   <p class="mut" style="margin-top:0">Untuk pengguna yang belum login Gmail / belum memiliki data sama sekali. Data yang didaftarkan Admin langsung berstatus <b>TRUE (Terverifikasi)</b>.</p>
    <div class="r2"><label>Peran<select id="au1" onchange="autoPeran()"><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option><option value="admin">Admin</option></select></label>
    <label>Program Studi<select id="au0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${p.name===activeProdi?'selected':''}>${p.name}</option>`).join('')}</select></label></div>
-   <label>Nama Lengkap<input id="au2" placeholder="Nama lengkap sesuai SIAKAD"></label>
+   <label>Nama Asli Lengkap<input id="au2" placeholder="Nama asli sesuai KTM / SIAKAD"></label>
    <div class="r2"><label><span id="au3l">NIM</span><input id="au3" inputmode="numeric" placeholder="256661001"></label><label id="au4w">Kelas<input id="au4" placeholder="TRK-3A"></label></div>
-   <label>Alamat Gmail (otomatis menautkan jika sudah pernah login)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
+   <label>Alamat Gmail (opsional — boleh dikosongkan jika belum login)<input id="au5" type="email" placeholder="nama@gmail.com"></label>
    <label>Mata Kuliah (<span id="au7l">diikuti</span>)</label>
-   <div style="max-height:140px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:8px;margin:4px 0 12px">${S.mk.map(k=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--ink)"><input type="checkbox" class="auc" style="width:auto;margin:0" value="${k.id}">${esc(k.nama)} (${esc(k.kode)})</label>`).join('')}</div>
+   <div style="max-height:140px;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:8px;margin:4px 0 12px">${S.mk.map(k=>`<label style="display:flex;gap:8px;align-items:center;margin:3px 0;color:var(--ink)"><input type="checkbox" class="auc" style="width:auto;margin:0" value="${k.id}">${esc(k.nama)} (${esc(k.kode)} · ${esc(prodiOf(k))})</label>`).join('')}</div>
    <div class="r2"><button class="btn p" onclick="simpanAuto(false)">Simpan &amp; Selesai</button><button class="btn g" onclick="simpanAuto(true)">Simpan &amp; Scan Berikutnya</button></div></div>`:''}`;
   }
   return `<div class="r2" style="align-items:start">
-   <div class="card"><h3 class="sec-h">${ico('reg',16)} Cara 1: Tap Langsung di Alat</h3><p class="mut" style="margin-top:0">Pilih anggota yang sudah login dengan Gmail, lengkapi NIM/NIDN jika masih kosong, lalu tempelkan kartunya.</p>
+   <div class="card"><h3 class="sec-h">${ico('reg',16)} Cara 1: Tap Langsung di Alat (Prodi ${esc(activeProdi==='ALL'?'Semua':activeProdi)})</h3><p class="mut" style="margin-top:0">Pilih anggota pada program studi ini yang sudah login Gmail, lengkapi NIM/NIDN jika masih kosong, lalu tempelkan kartunya.</p>
     <label style="display:flex;gap:8px;align-items:center;cursor:pointer;color:var(--ink)"><input type="checkbox" style="width:auto;margin:0" ${regPrio?'checked':''} onchange="regPrio=this.checked;draw()"> Prioritaskan Anggota Belum Punya Kartu <span class="b lt">${noCard.length}</span></label>
     <label>Pilih Anggota<select id="rt" onchange="regTarget=this.value;draw()"><option value="">— Pilih anggota —</option>${dd}</select></label>
     ${selObj&&!cleanNim(selObj.nim)?`<div class="r2"><label>${selObj.peran==='dosen'?'NIDN / NIP':'NIM'} (isi sekalian)<input id="rtnim" inputmode="numeric" placeholder="Nomor induk"></label>${selObj.peran==='mahasiswa'?`<label>Kelas<input id="rtkls" placeholder="TRK-3A" value="${esc(selObj.kelas||'')}"></label>`:'<div></div>'}</div>`:''}
     <button class="btn p" onclick="mulaiTap()">${ico('pulse',15)} Mulai Menunggu Tap (3 Menit)</button></div>
-   <div class="card"><h3 class="sec-h">${ico('card',16)} Cara 2: Mode Auto (Scan Dulu, Isi Data &amp; NIM)</h3><p class="mut" style="margin-top:0">Untuk kartu baru atau melengkapi NIM/NIDN &amp; data anggota baru setelah kartu ditempelkan ke pembaca RFID.</p><button class="btn g" onclick="regTarget='';mulaiAuto()">Aktifkan Mode Auto (3 Menit)</button></div></div>`;
+   <div class="card"><h3 class="sec-h">${ico('card',16)} Cara 2: Mode Auto (Scan Kartu Dulu, Daftar Baru)</h3><p class="mut" style="margin-top:0">Untuk user baru yang belum login sama sekali (belum punya username, NIM/NIDN, maupun Gmail). Langsung didaftarkan Admin dengan status <b>TRUE</b>.</p><button class="btn g" onclick="regTarget='';mulaiAuto()">Aktifkan Mode Auto (3 Menit)</button></div></div>`;
  },
  admin_log(){
-  const f=sel,r=S.pre.filter(x=>!f||x.mata_kuliah_id==f).slice(0,100);
-  return `<select onchange="sel=this.value;draw()"><option value="">Semua mata kuliah</option>${S.mk.map(k=>`<option value="${k.id}" ${k.id==f?'selected':''}>${esc(k.nama)} (${esc(prodiOf(k))})</option>`).join('')}</select><div class="card tw"><table><tr><th>Tanggal<th>Nama<th>Matkul<th>Masuk<th>Pulang<th>Status</tr>${r.map(x=>`<tr><td>${x.tanggal}<td>${esc(nm(x.anggota_id))}<td>${esc(mkn(x.mata_kuliah_id))}<td>${hm(x.masuk)}<td>${hm(x.pulang)||'—'}<td>${stSel(x.id,x.status)}</tr>`).join('')}</table></div>`},
+  const f=sel,prodiMks=mkByProdi();
+  const r=S.pre.filter(x=>(activeProdi==='ALL'||mkProdiById(x.mata_kuliah_id)===activeProdi)&&(!f||x.mata_kuliah_id==f)).slice(0,100);
+  return `<select onchange="sel=this.value;draw()"><option value="">Semua mata kuliah (${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)})</option>${prodiMks.map(k=>`<option value="${k.id}" ${k.id==f?'selected':''}>${esc(k.nama)} (${esc(prodiOf(k))})</option>`).join('')}</select><div class="card tw"><table><tr><th>Tanggal<th>Nama<th>Matkul<th>Masuk<th>Pulang<th>Status</tr>${r.map(x=>`<tr><td>${x.tanggal}<td>${esc(nm(x.anggota_id))}<td>${esc(mkn(x.mata_kuliah_id))}<td>${hm(x.masuk)}<td>${hm(x.pulang)||'—'}<td>${stSel(x.id,x.status)}</tr>`).join('')||'<tr><td colspan=6>Belum ada log presensi pada program studi ini.</tr>'}</table></div>`},
  admin_ntf(){return `<div class="card"><div class="row"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;margin:0;color:var(--ink)"><input type="checkbox" style="width:auto;margin:0" ${S.set.notif_aktif?'checked':''} onchange="togNotif(this.checked)"> Aktifkan pengingat Telegram otomatis saat jam mulai mata kuliah (maks. 1x per matkul)</label><button type="button" class="btn p sm" onclick="kirimNotifManual(this)">${ico('ntf',14)} Kirim Antrean Telegram Sekarang</button></div></div><div class="card tw"><table><tr><th>Tanggal<th>Matkul<th>Penerima<th>Peran<th>Chat ID<th>Status<th>Waktu Kirim<th>Respon Bot</tr>${S.ntf.map(n=>`<tr><td>${n.tanggal}<td>${esc(mkn(n.mata_kuliah_id))}<td>${esc(nm(n.anggota_id))}<td>${esc(n.peran)}<td class="mono">${esc(n.nomor_tujuan)}<td>${bd(n.status_kirim=='terkirim'?'Hadir':n.status_kirim=='antri'||n.status_kirim=='proses'?'Terlambat':'Gagal')}<td>${n.dikirim_pada?new Date(n.dikirim_pada).toLocaleTimeString('id-ID'):'-'}<td class="mut" style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${esc(n.respon_gateway||'')}">${esc(n.respon_gateway||'-')}</tr>`).join('')||'<tr><td colspan=8>Belum ada log notifikasi.</tr>'}</table></div>`},
  admin_xls(){return xlsView()},
  dosen_xls(){return xlsView()},
  portal(){
   if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
   const dsn=me.peran==='dosen',adaKartu=hasCard(me)||!!me.punya_kartu,tgSiap=!!me.telegram_chat_id,uid=me.uid_kartu||'Terdaftar',nomorInduk=cleanNim(me.nim);
+  const ver=isVerified(me),locked=ver;
   const steps=[
-   ['Login Akun Gmail','Akun Google Anda sudah terhubung',true,'Selesai'],
+   ['Lengkapi Nama Asli & NIM/NIDN',nomorInduk?(ver?'Identitas terkalibrasi TRUE oleh Admin':'Tersimpan — menunggu kalibrasi Admin (FALSE)'):'Isi Nama Asli, Prodi, dan NIM/NIDN pada form di sebelah',!!nomorInduk,ver?'TRUE':(nomorInduk?'FALSE':'Belum')],
    ['Tautkan Notifikasi Telegram',tgSiap?'Pengingat otomatis aktif':'Buka menu Telegram untuk menautkan',tgSiap,tgSiap?'Terhubung':'Belum'],
-   ['Registrasi Kartu & NIM/NIDN di Lab',adaKartu?'Kartu dan nomor induk sudah terpasang':'Hubungi admin untuk scan kartu & pengisian NIM/NIDN',adaKartu,adaKartu?'Terpasang':'Menunggu Admin']];
+   ['Registrasi Kartu RFID di Lab',adaKartu?'Kartu sudah tertaut ke akun Anda':'Temui Admin di lab untuk scan kartu RFID',adaKartu,adaKartu?'Terpasang':'Menunggu']];
   const done=steps.filter(s=>s[2]).length;
-  let h=`<div class="ktm"><div class="ktm-in"><div class="ktm-top"><img src="./logo-polnes.png" alt=""><div><small>${dsn?'KARTU IDENTITAS DOSEN DIGITAL':'KARTU TANDA MAHASISWA DIGITAL'}</small><b>${esc(me.prodi||'Teknologi Rekayasa Komputer')}</b><small style="letter-spacing:.06em">Politeknik Negeri Samarinda</small></div></div>
-   <h2>${esc(me.nama)}</h2>
-   <div class="ktm-grid"><div><small>${dsn?'NIDN / NIP':'NIM'}</small><b class="mono">${nomorInduk?esc(nomorInduk):'Menunggu pengisian Admin'}</b></div>${dsn?`<div><small>Peran</small><b>Dosen</b></div>`:`<div><small>Kelas</small><b>${esc(me.kelas||'-')}</b></div>`}<div class="full"><small>Email Gmail</small><b>${esc(me.email||'-')}</b></div></div>
-   <div class="ktm-rfid"><div><small style="display:block;font-size:10px;color:var(--gd-soft);letter-spacing:.08em">KARTU RFID</small>${adaKartu?`<b class="mono" style="font-size:15px;letter-spacing:.08em">${rfidShow?esc(uid):'••••••••'}</b>`:'<span class="b er">Belum terdaftar</span>'}</div>${adaKartu?`<button class="btn sm" onclick="rfidShow=!rfidShow;draw()">${ico(rfidShow?'eyeOff':'eye',14)} ${rfidShow?'Sembunyikan UID':'Tampilkan UID'}</button>`:''}</div></div></div>
-  <div class="card" style="max-width:520px"><div class="row"><h3 style="margin:0">Checklist Aktivasi</h3><span class="b ${done==3?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?ico('check',14):i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[2]?'ok':'lt'}">${s[3]}</span></div>`).join('')}${!tgSiap?`<button class="btn tg" style="margin-top:10px" onclick="go('tg')">${ico('tg',15)} Tautkan Telegram Sekarang</button>`:''}</div>`;
+  let h=`<div class="portal-grid">
+   <div>
+    <div class="ktm"><div class="ktm-in"><div class="ktm-top"><img src="./logo-polnes.png" alt=""><div><small>${dsn?'KARTU IDENTITAS DOSEN DIGITAL':'KARTU TANDA MAHASISWA DIGITAL'}</small><b>${esc(me.prodi||'Program Studi Belum Dipilih')}</b><small style="letter-spacing:.06em">Politeknik Negeri Samarinda</small></div></div>
+     <h2>${esc(me.nama)}</h2>
+     <div class="ktm-grid"><div><small>${dsn?'NIDN / NIP':'NIM'}</small><b class="mono">${nomorInduk?esc(nomorInduk):'Belum diisi'}</b></div><div><small>Status Kalibrasi</small><b>${ver?'TRUE · Terverifikasi':'FALSE · Belum Kalibrasi'}</b></div>${dsn?`<div><small>Peran</small><b>Dosen</b></div>`:`<div><small>Kelas</small><b>${esc(me.kelas||'-')}</b></div>`}<div><small>Email Gmail</small><b style="font-size:12px">${esc(me.email||'-')}</b></div></div>
+     <div class="ktm-rfid"><div><small style="display:block;font-size:10px;color:var(--gd-soft);letter-spacing:.08em">KARTU RFID</small>${adaKartu?`<b class="mono" style="font-size:15px;letter-spacing:.08em">${rfidShow?esc(uid):'••••••••'}</b>`:'<span class="b er">Belum terdaftar</span>'}</div>${adaKartu?`<button class="btn sm" onclick="rfidShow=!rfidShow;draw()">${ico(rfidShow?'eyeOff':'eye',14)} ${rfidShow?'Sembunyikan UID':'Tampilkan UID'}</button>`:''}</div></div></div>
+    <div class="card" style="margin-top:12px"><div class="row"><h3 style="margin:0">Checklist Aktivasi</h3><span class="b ${done==3&&ver?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?ico('check',14):i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[3]==='TRUE'||s[3]==='Terhubung'||s[3]==='Terpasang'?'ok':'lt'}">${s[3]}</span></div>`).join('')}${!tgSiap?`<button class="btn tg" style="margin-top:10px" onclick="go('tg')">${ico('tg',15)} Tautkan Telegram Sekarang</button>`:''}</div>
+   </div>
+
+   <div class="card">
+    <div class="row" style="margin-bottom:8px"><h3 class="sec-h" style="margin:0">${ico('userCheck',16)} Pendaftaran &amp; Identitas Mandiri</h3>${calBadge(me)}</div>
+    <div class="cal-box ${ver?'ok':'er'}">
+     <b>Status Kalibrasi: ${ver?'TRUE (Valid / Terverifikasi)':'FALSE (Belum Terkalibrasi Admin)'}</b>
+     <div class="mut" style="margin-top:2px">${esc(me.catatan_kalibrasi||(ver?'Identitas Anda telah sesuai dengan data Administrator.':'Masukkan Nama Asli dan NIM/NIDN Anda. Jika cocok dengan data Admin, status otomatis menjadi TRUE; jika belum, Admin akan mengkalibrasi Gmail, Nama Asli, dan Nomor Induk Anda.'))}</div>
+    </div>
+    <div class="r2">
+     <label>Peran<select id="pf_peran" ${locked?'disabled':''} onchange="$('#pf_kls_w').style.display=this.value==='mahasiswa'?'block':'none';$('#pf_nim_l').textContent=this.value==='dosen'?'NIDN / NIP':'NIM'"><option value="mahasiswa" ${me.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${me.peran=='dosen'?'selected':''}>Dosen</option></select></label>
+     <label>Program Studi<select id="pf_prodi" ${locked?'disabled':''}><option value="">— Pilih Program Studi —</option>${PRODI_LIST.map(p=>`<option value="${p.name}" ${me.prodi===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label>
+    </div>
+    <label>Nama Asli Lengkap (sesuai KTM / SIAKAD)<input id="pf_nama" value="${esc(me.nama||'')}" placeholder="Contoh: Yona Riviansyah"></label>
+    <div class="r2">
+     <label><span id="pf_nim_l">${dsn?'NIDN / NIP':'NIM'}</span><input id="pf_nim" inputmode="numeric" ${locked?'disabled':''} value="${esc(nomorInduk)}" placeholder="${dsn?'Masukkan NIDN/NIP':'Masukkan NIM'}"></label>
+     <label id="pf_kls_w" style="display:${dsn?'none':'block'}">Kelas<input id="pf_kls" value="${esc(me.kelas||'')}" placeholder="Contoh: TRK-3A / TK-3A"></label>
+    </div>
+    <label>Email Gmail Terdaftar<input value="${esc(me.email||'-')}" disabled></label>
+    <button type="button" class="btn p" id="pf_btn" onclick="simpanProfilMandiri(this)">${ico('check',15)} ${ver?'Perbarui Nama & Kelas':'Simpan & Kalibrasi Identitas'}</button>
+    ${locked?'<p class="mut" style="margin:8px 0 0">Peran, Program Studi, dan NIM/NIDN terkunci karena sudah terkalibrasi <b>TRUE</b>. Hubungi Admin jika butuh koreksi.</p>':''}
+   </div>
+  </div>`;
+
   if(dsn){h+=`<h3>Kelas yang Diampu</h3><div class="grid">${myMk().map(mkCard).join('')||'<p class="mut">Belum ada mata kuliah yang diampu.</p>'}</div>`}
   else{
    const hr=myMk().filter(k=>k.hari==new Date().getDay());
@@ -635,10 +699,48 @@ const V={
   return `<select onchange="sel=this.value;draw()"><option value="">Semua kelas saya</option>${myMk().map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)}</option>`).join('')}</select>${r.map(x=>`<div class="card"><div class="row"><b>${esc(nm(x.anggota_id))}</b>${stSel(x.id,x.status)}</div><div class="mut">${esc(mkn(x.mata_kuliah_id))} · ${x.tanggal} · ${hm(x.masuk)}</div></div>`).join('')}`}
 };
 
-/* ===== ANGGOTA: FILTER & PENCARIAN ===== */
+/* ===== PENDAFTARAN & KALIBRASI MANDIRI USER ===== */
+async function simpanProfilMandiri(btn){
+ const nama=$('#pf_nama').value.trim();
+ const nim=$('#pf_nim').value.trim();
+ const peran=$('#pf_peran').value;
+ const prodi=$('#pf_prodi').value;
+ const kelas=$('#pf_kls')?.value.trim()||'';
+ if(!nama||!nim||!prodi)return toast('Lengkapi Nama Asli, Program Studi, dan NIM/NIDN terlebih dahulu.');
+ btn.disabled=true;const lbl=btn.innerHTML;btn.textContent='Mengkalibrasi data…';
+ try{
+  const {data,error}=await sb.rpc('simpan_profil_mandiri',{p_nama:nama,p_nim:nim,p_peran:peran,p_prodi:prodi,p_kelas:kelas});
+  if(error){
+   /* Fallback jika RPC SQL belum dijalankan */
+   if(/simpan_profil_mandiri/i.test(error.message)){
+    const match=S.ang.find(x=>x.id!==me.id&&cleanNim(x.nim).toLowerCase()===nim.toLowerCase());
+    const ver=!!match;
+    const upd={nama,nim,peran,prodi,kelas:peran==='mahasiswa'?kelas:null};
+    const r2=await sb.from('anggota').update(upd).eq('id',me.id);
+    if(r2.error)throw r2.error;
+    toast(ver?'Kalibrasi TRUE: NIM cocok dengan data sistem!':'Profil tersimpan. Menunggu kalibrasi Admin (FALSE).');
+   }else throw error;
+  }else if(data&&data.ok===false){
+   throw new Error(data.error||'Gagal menyimpan profil');
+  }else{
+   toast(data?.pesan||'Profil berhasil disimpan');
+  }
+  activeProdi=prodi;
+  await boot(true);
+ }catch(e){
+  toast(e.message);
+ }finally{
+  if(btn){btn.disabled=false;btn.innerHTML=lbl}
+ }
+}
+
+/* ===== ANGGOTA: FILTER PRODI + KALIBRASI + PENCARIAN ===== */
 function memList(){
  const q=memQ.trim().toLowerCase();
- return S.ang.filter(a=>{
+ const base=mf==='noprodi'?S.ang.filter(a=>!a.prodi):angByProdi();
+ return base.filter(a=>{
+  if(mf==='cal_false'&&isVerified(a))return false;
+  if(mf==='cal_true'&&!isVerified(a))return false;
   if(mf==='ada'&&!hasCard(a))return false;
   if(mf==='belum'&&hasCard(a))return false;
   if(mf==='non'&&a.aktif!==false)return false;
@@ -650,8 +752,9 @@ function memRows(){
  const l=memList();
  return l.map(a=>{
   const n=cleanNim(a.nim);
-  return `<tr><td><b>${esc(a.nama)}</b><td class="mono">${n?esc(n):'<span class="b">kosong</span>'}<td>${esc(PL[a.peran]||a.peran)}<td><span class="b">${esc(a.prodi||'Teknologi Rekayasa Komputer')}</span><td>${esc(a.email||'-')}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.telegram_chat_id?'<span class="b ok">Tertaut</span>':'<span class="b">belum</span>'}<td>${a.aktif===false?'<span class="b er">Nonaktif</span>':'<span class="b ok">Aktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">${ico('sliders',13)} Atur Peran</button> ${a.peran!=='admin'&&!a.uid_kartu?`<button class="btn sm" onclick="regTarget='${a.id}';go('reg')">${ico('card',13)} Kartu</button> `:''}<button class="btn sm" onclick="togAktif('${a.id}',${a.aktif===false})">${a.aktif===false?'Aktifkan':'Nonaktifkan'}</button></tr>`;
- }).join('')||'<tr><td colspan=9>Tidak ada anggota yang cocok.</tr>';
+  const ver=isVerified(a);
+  return `<tr><td><b>${esc(a.nama)}</b>${a.sumber_daftar==='admin'?' <span class="b" style="font-size:10px">Admin</span>':''}<td class="mono">${n?esc(n):'<span class="b">kosong</span>'}<td>${esc(PL[a.peran]||a.peran)}<td>${a.prodi?`<span class="b">${esc(a.prodi)}</span>`:'<span class="b lt">Belum pilih prodi</span>'}<td>${esc(a.email||'-')}<td>${calBadge(a)}<td class="mono">${a.uid_kartu?'<span class="b ok">'+esc(a.uid_kartu)+'</span>':'<span class="b">belum</span>'}<td>${a.telegram_chat_id?'<span class="b ok">Tertaut</span>':'<span class="b">belum</span>'}<td>${a.aktif===false?'<span class="b er">Nonaktif</span>':'<span class="b ok">Aktif</span>'}<td><button class="btn sm" onclick="editUsr('${a.id}')">${ico('sliders',13)} ${ver?'Atur Peran':'Kalibrasi &amp; Peran'}</button> ${a.peran!=='admin'&&!a.uid_kartu?`<button class="btn sm" onclick="regTarget='${a.id}';go('reg')">${ico('card',13)} Kartu</button> `:''}<button class="btn sm" onclick="togAktif('${a.id}',${a.aktif===false})">${a.aktif===false?'Aktifkan':'Nonaktifkan'}</button></tr>`;
+ }).join('')||`<tr><td colspan=10>Tidak ada anggota pada Program Studi <b>${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</b> untuk filter ini.</tr>`;
 }
 function memRefresh(){const t=$('#memtb');if(t)t.innerHTML=memRows()}
 
@@ -729,7 +832,7 @@ async function kirimNotifManual(btn){
  finally{btn.disabled=false;btn.innerHTML=lbl}
 }
 
-/* ===== REGISTRASI RFID ===== */
+/* ===== REGISTRASI RFID (MODE AUTO = LANGSUNG TRUE) ===== */
 async function mulaiAuto(){const {error}=await sb.from('sesi_registrasi').insert({});if(error)return toast(error.message);toast('Mode Auto aktif! Tempelkan kartu ke alat.');await load();draw()}
 async function mulaiTap(){
  const s=$('#rt');regTarget=s?s.value:regTarget;
@@ -737,9 +840,12 @@ async function mulaiTap(){
  const nimVal=$('#rtnim')?.value.trim();
  const klsVal=$('#rtkls')?.value.trim();
  if(nimVal||klsVal){
-  const upd={};if(nimVal)upd.nim=nimVal;if(klsVal)upd.kelas=klsVal;
-  const {error}=await sb.from('anggota').update(upd).eq('id',regTarget);
-  if(error)return toast('Gagal menyimpan NIM/Kelas: '+error.message);
+  const upd={};
+  if(nimVal){upd.nim=nimVal;upd.terverifikasi=true;upd.catatan_kalibrasi='NIM diisi & diverifikasi Admin saat registrasi kartu';}
+  if(klsVal)upd.kelas=klsVal;
+  let r=await sb.from('anggota').update(upd).eq('id',regTarget);
+  if(r.error&&/terverifikasi|catatan_kalibrasi/i.test(r.error.message)){delete upd.terverifikasi;delete upd.catatan_kalibrasi;r=await sb.from('anggota').update(upd).eq('id',regTarget);}
+  if(r.error)return toast('Gagal menyimpan NIM/Kelas: '+r.error.message);
  }
  await mulaiAuto();
 }
@@ -751,8 +857,11 @@ async function assignKartu(){
  try{
   if(S.sesi.pemilik_sebelumnya&&!confirm(`Kartu ${uid} sebelumnya milik ${S.sesi.pemilik_sebelumnya}. Pindahkan ke ${a.nama}?`)){regTarget='';await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);await load();draw();return}
   regTarget='';
-  const {error}=await sb.from('anggota').update({uid_kartu:uid}).eq('id',id);
-  if(error){toast(error.message);return}
+  const upd={uid_kartu:uid};
+  if(cleanNim(a.nim)){upd.terverifikasi=true;upd.catatan_kalibrasi='Kartu & identitas terkalibrasi TRUE oleh Admin';}
+  let res=await sb.from('anggota').update(upd).eq('id',id);
+  if(res.error&&/terverifikasi|catatan_kalibrasi/i.test(res.error.message)){delete upd.terverifikasi;delete upd.catatan_kalibrasi;res=await sb.from('anggota').update(upd).eq('id',id);}
+  if(res.error){toast(res.error.message);return}
   await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);
   sb.from('riwayat_kartu').insert({anggota_id:id,uid_kartu:uid}).then(()=>{},()=>{});
   toast(`Kartu berhasil ditautkan ke ${a.nama||'anggota'}`);
@@ -769,46 +878,77 @@ async function simpanAuto(lanjut){
  const peranVal=$('#au1').value;
  const kelasVal=$('#au4')?.value.trim()||'';
  const uid=S.sesi.uid_tertangkap;
- if(!namaVal)return toast('Isi nama lengkap terlebih dahulu');
+ if(!namaVal)return toast('Isi nama asli terlebih dahulu');
 
- /* Jika email sudah ada (anggota baru login Gmail tanpa NIM & tanpa kartu), gabungkan datanya */
- const existing=emailVal?S.ang.find(x=>(x.email||'').toLowerCase()===emailVal):null;
- if(existing){
-  const {error}=await sb.from('anggota').update({
-   nama:namaVal,peran:peranVal,prodi:prodiVal,nim:nimVal||null,kelas:peranVal==='mahasiswa'?kelasVal:null,uid_kartu:uid,aktif:true
-  }).eq('id',existing.id);
-  if(error)return toast(error.message);
+ /* 1. Cek jika email cocok dengan akun yang sudah pernah login Gmail */
+ const existingByEmail=emailVal?S.ang.find(x=>(x.email||'').toLowerCase()===emailVal):null;
+ if(existingByEmail){
+  const userNim=cleanNim(existingByEmail.nim);
+  const mismatch=userNim&&nimVal&&userNim.toLowerCase()!==nimVal.toLowerCase();
+  const upd={
+   nama:namaVal,peran:peranVal,prodi:prodiVal,nim:nimVal||userNim||null,
+   kelas:peranVal==='mahasiswa'?kelasVal:null,uid_kartu:uid,aktif:true,
+   terverifikasi:!mismatch,
+   catatan_kalibrasi:mismatch?`Konflik NIM: input user (${userNim}) vs input Admin (${nimVal})`:'Terkalibrasi TRUE oleh Admin via Mode Auto'
+  };
+  let res=await sb.from('anggota').update(upd).eq('id',existingByEmail.id);
+  if(res.error&&/terverifikasi|catatan_kalibrasi/i.test(res.error.message)){delete upd.terverifikasi;delete upd.catatan_kalibrasi;res=await sb.from('anggota').update(upd).eq('id',existingByEmail.id);}
+  if(res.error)return toast(res.error.message);
   for(const mid of mks){
-   if(peranVal==='mahasiswa')await sb.from('peserta').upsert({anggota_id:existing.id,mata_kuliah_id:mid},{ignoreDuplicates:true});
-   else if(peranVal==='dosen')await sb.from('mata_kuliah').update({dosen_id:existing.id}).eq('id',mid);
+   if(peranVal==='mahasiswa')await sb.from('peserta').upsert({anggota_id:existingByEmail.id,mata_kuliah_id:mid},{ignoreDuplicates:true});
+   else if(peranVal==='dosen')await sb.from('mata_kuliah').update({dosen_id:existingByEmail.id}).eq('id',mid);
   }
   await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);
   if(lanjut)await sb.from('sesi_registrasi').insert({});
-  toast(lanjut?'Tersimpan! Tempelkan kartu berikutnya.':'Data, Nomor Induk & kartu berhasil ditautkan!');
+  toast(mismatch?'Peringatan: NIM user berbeda dengan input Admin (ditandai FALSE)!':'Data & kartu tertaut dengan status TRUE!');
   await load();draw();return;
  }
 
+ /* 2. Cek jika NIM cocok dengan user yang sudah daftar mandiri sebelumnya */
+ const existingByNim=nimVal?S.ang.find(x=>cleanNim(x.nim).toLowerCase()===nimVal.toLowerCase()):null;
+ if(existingByNim){
+  const upd={
+   nama:namaVal,peran:peranVal,prodi:prodiVal,nim:nimVal,
+   kelas:peranVal==='mahasiswa'?kelasVal:null,uid_kartu:uid,aktif:true,
+   terverifikasi:true,catatan_kalibrasi:'Terkalibrasi TRUE otomatis (NIM cocok saat Mode Auto)'
+  };
+  let res=await sb.from('anggota').update(upd).eq('id',existingByNim.id);
+  if(res.error&&/terverifikasi|catatan_kalibrasi/i.test(res.error.message)){delete upd.terverifikasi;delete upd.catatan_kalibrasi;res=await sb.from('anggota').update(upd).eq('id',existingByNim.id);}
+  if(res.error)return toast(res.error.message);
+  for(const mid of mks){
+   if(peranVal==='mahasiswa')await sb.from('peserta').upsert({anggota_id:existingByNim.id,mata_kuliah_id:mid},{ignoreDuplicates:true});
+   else if(peranVal==='dosen')await sb.from('mata_kuliah').update({dosen_id:existingByNim.id}).eq('id',mid);
+  }
+  await sb.from('sesi_registrasi').update({selesai:true}).eq('id',S.sesi.id);
+  if(lanjut)await sb.from('sesi_registrasi').insert({});
+  toast('Data mandiri user cocok & terkalibrasi TRUE!');
+  await load();draw();return;
+ }
+
+ /* 3. User benar-benar baru (belum pernah login sama sekali) -> Langsung TRUE tanpa perlu kalibrasi */
  const {data,error}=await sb.rpc('simpan_mode_auto',{p_sesi_id:S.sesi.id,p_peran:peranVal,p_nama:namaVal,p_nim:nimVal,p_kelas:kelasVal,p_email:emailVal,p_no_wa:null,p_mk_ids:mks,p_lanjut:lanjut});
  if(error||data?.error)return toast(error?.message||data.error);
- if(emailVal||nimVal){
-  const q=emailVal?sb.from('anggota').update({prodi:prodiVal}).ilike('email',emailVal):sb.from('anggota').update({prodi:prodiVal}).eq('uid_kartu',uid);
-  await q.catch(()=>{});
- }
- toast(lanjut?'Tersimpan! Tempelkan kartu berikutnya.':'Data & kartu berhasil disimpan!');
+ const metaUpd={prodi:prodiVal,terverifikasi:true,sumber_daftar:'admin',catatan_kalibrasi:'Didaftarkan langsung oleh Admin (TRUE)'};
+ const q=emailVal?sb.from('anggota').update(metaUpd).ilike('email',emailVal):sb.from('anggota').update(metaUpd).eq('uid_kartu',uid);
+ await q.catch(()=>{});
+ toast(lanjut?'Tersimpan (TRUE)! Tempelkan kartu berikutnya.':'Pendaftaran Admin berhasil (Status: TRUE)!');
  await load();draw();
 }
 
-/* ===== ADMIN: MATA KULIAH & ATUR PERAN ANGGOTA ===== */
+/* ===== ADMIN: MATA KULIAH, TAMBAH ANGGOTA & KALIBRASI PERAN ===== */
 function mkForm(id){
  const defProdi=activeProdi==='ALL'?'Teknologi Rekayasa Komputer':activeProdi;
  const k=S.mk.find(x=>x.id==id)||{hari:1,mulai:'08:00',selesai:'09:40',toleransi_menit:15,ruangan:'Lab TRK',prodi:defProdi};
+ const pTarget=prodiOf(k);
+ const dsnProdi=S.ang.filter(a=>a.peran=='dosen'&&(a.prodi||'')===pTarget);
+ const dsnLain=S.ang.filter(a=>a.peran=='dosen'&&(a.prodi||'')!==pTarget);
  dlg(`<h3>${id?'Ubah':'Tambah'} Mata Kuliah</h3>
- <label>Program Studi<select id="k0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${prodiOf(k)===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label>
+ <label>Program Studi<select id="k0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${pTarget===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label>
  <div class="r2"><label>Kode<input id="k1" value="${esc(k.kode||'')}"></label><label>Toleransi (menit)<input type="number" id="k6" value="${k.toleransi_menit??15}"></label></div>
  <label>Nama Mata Kuliah<input id="k2" value="${esc(k.nama||'')}"></label>
  <label>Hari<select id="k3">${[1,2,3,4,5,6,0].map(d=>`<option value="${d}" ${d==k.hari?'selected':''}>${DN[d]}</option>`).join('')}</select></label>
  <div class="r2"><label>Mulai<input type="time" id="k4" value="${hm(k.mulai)}"></label><label>Selesai<input type="time" id="k5" value="${hm(k.selesai)}"></label></div>
- <label>Dosen Pengampu<select id="k7"><option value="">—</option>${S.ang.filter(a=>a.peran=='dosen').map(a=>`<option value="${a.id}" ${a.id==k.dosen_id?'selected':''}>${esc(a.nama)}</option>`).join('')}</select></label>
+ <label>Dosen Pengampu<select id="k7"><option value="">— Pilih Dosen —</option>${dsnProdi.length?`<optgroup label="Dosen ${esc(pTarget)}">${dsnProdi.map(a=>`<option value="${a.id}" ${a.id==k.dosen_id?'selected':''}>${esc(a.nama)}</option>`).join('')}</optgroup>`:''}${dsnLain.length?`<optgroup label="Dosen Prodi Lain">${dsnLain.map(a=>`<option value="${a.id}" ${a.id==k.dosen_id?'selected':''}>${esc(a.nama)} (${esc(a.prodi||'Belum pilih prodi')})</option>`).join('')}</optgroup>`:''}</select></label>
  <label>Ruangan<input id="k8" value="${esc(k.ruangan||'')}"></label>
  <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="mkSave('${id||''}')">Simpan</button></div>`);
 }
@@ -827,21 +967,71 @@ async function simpanSeedMk(seedId){
 }
 async function mkDel(id){if(!confirm('Hapus mata kuliah ini?'))return;const {error}=await sb.from('mata_kuliah').delete().eq('id',id);if(error)return toast(error.message);await load();draw()}
 
+function newUsrForm(){
+ const defProdi=activeProdi==='ALL'?'Teknologi Rekayasa Komputer':activeProdi;
+ dlg(`<h3>Tambah Data Master Anggota (Admin · TRUE)</h3>
+ <p class="mut" style="margin-top:0">Data yang ditambahkan Admin langsung berstatus <b>TRUE</b>. Jika mahasiswa/dosen login Gmail belakangan dengan NIM/NIDN yang sama, akun akan otomatis terkalibrasi TRUE.</p>
+ <div class="r2"><label>Peran<select id="nu1" onchange="$('#nu4w').style.display=this.value==='mahasiswa'?'block':'none'"><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option><option value="admin">Admin</option></select></label>
+ <label>Program Studi<select id="nu0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${defProdi===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label></div>
+ <label>Nama Asli Lengkap<input id="nu2" placeholder="Nama asli sesuai KTM / SIAKAD"></label>
+ <div class="r2"><label>NIM / NIDN<input id="nu3" inputmode="numeric" placeholder="256661001"></label><label id="nu4w">Kelas<input id="nu4" placeholder="TRK-3A"></label></div>
+ <label>Alamat Gmail (opsional)<input id="nu5" type="email" placeholder="nama@gmail.com"></label>
+ <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="saveNewUsr()">Simpan (TRUE)</button></div>`);
+}
+async function saveNewUsr(){
+ const nama=$('#nu2').value.trim(),nim=$('#nu3').value.trim(),peran=$('#nu1').value,prodi=$('#nu0').value,kelas=$('#nu4').value.trim(),email=$('#nu5').value.trim().toLowerCase()||null;
+ if(!nama||!nim)return toast('Nama asli dan NIM/NIDN wajib diisi');
+ const p={nama,nim,peran,prodi,kelas:peran==='mahasiswa'?(kelas||null):null,email,aktif:true,terverifikasi:true,sumber_daftar:'admin',catatan_kalibrasi:'Didaftarkan langsung oleh Admin (TRUE)'};
+ let res=await sb.from('anggota').insert(p);
+ if(res.error&&/terverifikasi|sumber_daftar|catatan_kalibrasi/i.test(res.error.message)){
+  delete p.terverifikasi;delete p.sumber_daftar;delete p.catatan_kalibrasi;
+  res=await sb.from('anggota').insert(p);
+ }
+ if(res.error)return toast(res.error.message);
+ cls();toast('Anggota berhasil ditambahkan (Status Kalibrasi: TRUE)');await load();draw();
+}
+
 function editUsr(id){
  const a=S.ang.find(x=>x.id==id);if(!a)return;
  const n=cleanNim(a.nim);
- dlg(`<h3>Atur Peran &amp; Data Anggota</h3><p class="mut" style="margin-top:0">${esc(a.nama)}</p>
+ const ver=isVerified(a);
+ const defProdi=a.prodi||(activeProdi==='ALL'?'Teknologi Rekayasa Komputer':activeProdi);
+ dlg(`<h3>Kalibrasi Identitas &amp; Atur Peran</h3>
+ <div class="cal-box ${ver?'ok':'er'}" style="margin-bottom:10px">
+  <div><b>Sumber Input:</b> ${a.sumber_daftar==='admin'?'Pendaftaran Admin':'Pendaftaran Mandiri User'} · <b>Status Saat Ini:</b> ${ver?'TRUE (Terverifikasi)':'FALSE (Perlu Kalibrasi)'}</div>
+  <div class="mut">Periksa kecocokan <b>Gmail</b>, <b>Nama Asli</b>, dan <b>NIM/NIDN</b> di bawah ini sebelum menetapkan hasil kalibrasi.</div>
+ </div>
  <div class="r2"><label>Peran<select id="u1" onchange="$('#u4w').style.display=this.value==='mahasiswa'?'block':'none'"><option value="mahasiswa" ${a.peran=='mahasiswa'?'selected':''}>Mahasiswa</option><option value="dosen" ${a.peran=='dosen'?'selected':''}>Dosen</option><option value="admin" ${a.peran=='admin'?'selected':''}>Admin</option></select></label>
- <label>Program Studi<select id="u0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${(a.prodi||'Teknologi Rekayasa Komputer')===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label></div>
- <div class="r2"><label>NIM / NIDN<input id="u3" value="${esc(n)}" placeholder="Kosongkan jika belum ada"></label><label id="u4w" style="display:${a.peran=='mahasiswa'?'block':'none'}">Kelas<input id="u4" value="${esc(a.kelas||'')}" placeholder="TRK-3A"></label></div>
+ <label>Program Studi<select id="u0">${PRODI_LIST.map(p=>`<option value="${p.name}" ${defProdi===p.name?'selected':''}>${p.name}</option>`).join('')}</select></label></div>
+ <label>Nama Asli Lengkap<input id="u5" value="${esc(a.nama||'')}" placeholder="Nama asli sesuai KTM / SIAKAD"></label>
+ <div class="r2"><label>NIM / NIDN<input id="u3" value="${esc(n)}" placeholder="Nomor induk resmi"></label><label id="u4w" style="display:${a.peran=='mahasiswa'?'block':'none'}">Kelas<input id="u4" value="${esc(a.kelas||'')}" placeholder="TRK-3A"></label></div>
  <label>Alamat Gmail<input id="u2" type="email" value="${esc(a.email||'')}" placeholder="nama@gmail.com"></label>
- <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="saveUsr('${id}')">Simpan Perubahan</button></div>`);
+ <label>Hasil Kalibrasi Admin<select id="u6"><option value="true" ${ver?'selected':''}>TRUE — Data Valid &amp; Sesuai (Setujui)</option><option value="false" ${!ver?'selected':''}>FALSE — Tidak Sesuai / Belum Valid</option></select></label>
+ <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" onclick="cls()">Batal</button><button class="btn p sm" style="width:auto" onclick="saveUsr('${id}')">Simpan Kalibrasi</button></div>`);
 }
 async function saveUsr(id){
- const p={email:$('#u2').value.trim().toLowerCase()||null,peran:$('#u1').value,prodi:$('#u0').value,nim:$('#u3').value.trim()||null,kelas:$('#u1').value==='mahasiswa'?($('#u4').value.trim()||null):null};
+ const isTrue=$('#u6').value==='true';
+ const namaVal=$('#u5').value.trim();
+ const nimVal=$('#u3').value.trim()||null;
+ if(!namaVal)return toast('Nama asli tidak boleh kosong');
+ if(isTrue&&!nimVal)return toast('Isi NIM/NIDN terlebih dahulu sebelum menetapkan kalibrasi TRUE');
+ const p={
+  nama:namaVal,
+  email:$('#u2').value.trim().toLowerCase()||null,
+  peran:$('#u1').value,
+  prodi:$('#u0').value,
+  nim:nimVal,
+  kelas:$('#u1').value==='mahasiswa'?($('#u4').value.trim()||null):null,
+  terverifikasi:isTrue,
+  catatan_kalibrasi:isTrue?'Terkalibrasi TRUE oleh Admin':'Dinyatakan FALSE oleh Admin (periksa ulang identitas)'
+ };
  let res=await sb.from('anggota').update(p).eq('id',id);
- if(res.error&&/prodi/i.test(res.error.message)){delete p.prodi;res=await sb.from('anggota').update(p).eq('id',id);}
- if(res.error)return toast(res.error.message);cls();toast('Peran & data anggota diperbarui');await load();draw();
+ if(res.error&&/prodi|terverifikasi|catatan_kalibrasi/i.test(res.error.message)){
+  delete p.prodi;delete p.terverifikasi;delete p.catatan_kalibrasi;
+  res=await sb.from('anggota').update(p).eq('id',id);
+ }
+ if(res.error)return toast(res.error.message);
+ cls();toast(`Kalibrasi disimpan (Status: ${isTrue?'TRUE':'FALSE'})`);await load();draw();
 }
 async function togAktif(id,v){const {error}=await sb.from('anggota').update({aktif:v}).eq('id',id);if(error)return toast(error.message);await load();draw()}
 async function togNotif(v){const {error}=await sb.from('pengaturan').update({notif_aktif:v}).eq('id',true);if(error)return toast(error.message);toast('Pengaturan notifikasi diperbarui');await load();draw()}
@@ -862,10 +1052,10 @@ async function statLoad(){
 function xlsView(){return `<div class="card"><h3>Template &amp; Export</h3><div class="row" style="justify-content:flex-start"><button class="btn sm" onclick="tpl()">Unduh Template .xlsx</button><button class="btn p sm" style="width:auto" onclick="exportXls()">Export Laporan .xlsx (3 Sheet)</button></div></div><div class="card"><h3>Import Data .xlsx</h3><input type="file" accept=".xlsx,.xls" onchange="pickXls(this)">${pv.length?`<p class="mut">${pv.length} baris terbaca</p><button class="btn p sm" style="width:auto" onclick="saveImp()">Simpan Data Import</button>`:''}</div>`}
 function tpl(){const ws=XLSX.utils.aoa_to_sheet([['Peran','NIM_atau_NIDN','Nama','Kelas','Program_Studi','Email_Gmail','Kode_Matkul'],['mahasiswa','256661001','Budi Santoso','TRK-3A','Teknologi Rekayasa Komputer','budi@gmail.com','2601;2603'],['dosen','198501012010','Dr. Siti Aminah','','Teknik Informatika','siti@gmail.com','TI101']]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');XLSX.writeFile(wb,'template-presensi-polnes.xlsx')}
 async function pickXls(inp){const f=inp.files[0];if(!f)return;const wb=XLSX.read(await f.arrayBuffer());pv=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});draw()}
-async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,email,aktif:true},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
+async function saveImp(){let n=0;for(const r of pv){const nim=String(r.NIM_atau_NIDN||'').trim(),nama=String(r.Nama||'').trim(),peran=String(r.Peran||'mahasiswa').toLowerCase().trim(),prodi=String(r.Program_Studi||activeProdi||'Teknologi Rekayasa Komputer').trim(),email=String(r.Email_Gmail||'').trim().toLowerCase()||null,mks=String(r.Kode_Matkul||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(!nim||!nama)continue;if(me.peran==='admin'){const {data:a}=await sb.from('anggota').upsert({nim,nama,kelas:String(r.Kelas||'').trim(),peran,prodi,email,aktif:true,terverifikasi:true,sumber_daftar:'admin'},{onConflict:'nim'}).select().single();if(a){n++;for(const c of mks){const k=S.mk.find(x=>x.kode==c);if(k){if(peran==='mahasiswa')await sb.from('peserta').upsert({anggota_id:a.id,mata_kuliah_id:k.id},{ignoreDuplicates:true});else if(peran==='dosen')await sb.from('mata_kuliah').update({dosen_id:a.id}).eq('id',k.id)}}}}else{for(const c of mks){const k=S.mk.find(x=>x.kode==c&&x.dosen_id==me.id);if(k){const {data}=await sb.rpc('tambah_peserta',{p_nim:nim,p_mk:k.id});if(data)n++}}}}toast(n+' data berhasil diproses');pv=[];await load();draw()}
 function exportXls(){
  const ids=me.peran==='admin'?null:myMk().map(k=>k.id),wb=XLSX.utils.book_new(),A=(n,d)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n);
- A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,Program_Studi:a.prodi||'Teknologi Rekayasa Komputer',NIM_NIDN:cleanNim(a.nim),Nama:a.nama,Kelas:a.kelas,Email:a.email,Telegram:a.telegram_chat_id?'Tertaut':'Belum',Aktif:a.aktif})));
+ A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,Program_Studi:a.prodi||'Belum dipilih',NIM_NIDN:cleanNim(a.nim),Nama_Asli:a.nama,Kelas:a.kelas,Email:a.email,Kalibrasi:isVerified(a)?'TRUE':'FALSE',Telegram:a.telegram_chat_id?'Tertaut':'Belum',Aktif:a.aktif})));
  A('Mata_Kuliah',S.mk.filter(k=>!ids||ids.includes(k.id)).map(k=>({Program_Studi:prodiOf(k),Kode:k.kode,Nama:k.nama,Hari:DN[k.hari],Mulai:hm(k.mulai),Selesai:hm(k.selesai),Toleransi_Menit:k.toleransi_menit??15,Ruangan:k.ruangan,Dosen:nm(k.dosen_id)})));
  A('Log_Presensi',S.pre.filter(r=>!ids||ids.includes(r.mata_kuliah_id)).map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Matkul:mkn(r.mata_kuliah_id),NIM:cleanNim(a.nim),Nama:a.nama,Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}}));
  XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx');
