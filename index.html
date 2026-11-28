@@ -19,8 +19,8 @@
       background_color: '#071510',
       theme_color: '#0B5D44',
       icons: [
-        { src: 'logo_polnes.png', sizes: '192x192', type: 'image/png' },
-        { src: 'logo_polnes.png', sizes: '512x512', type: 'image/png' }
+        { src: './logo-polnes.png', sizes: '192x192', type: 'image/png' },
+        { src: './logo-polnes.png', sizes: '512x512', type: 'image/png' }
       ]
     };
     const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
@@ -540,7 +540,10 @@ function courseImg(nama){
  return `<img src="${list[0]}" loading="lazy" decoding="async" data-fb="${list.join('|')}" data-idx="0" onerror="nextImg(this)" alt="">`;
 }
 
-const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const _witaDateFmt=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Makassar',year:'numeric',month:'2-digit',day:'2-digit'});
+const _witaDispFmt=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Makassar',weekday:'short',day:'numeric',month:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+const _MON_ID=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const today=()=>_witaDateFmt.format(new Date());
 const mn=t=>{if(!t)return 0;const a=t.split(':');return +a[0]*60+ +a[1]};
 const hm=t=>(t||'').slice(0,5);
 const hms=t=>(t||'').slice(0,8);
@@ -568,9 +571,16 @@ const isDummyNim=n=>/^99\d{10}$/.test(String(n||'').trim());
 const cleanNim=n=>{const s=String(n||'').trim();return(!s||isDummyNim(s))?'':s};
 const mask=n=>{n=cleanNim(n);if(!n)return'Belum ada NIM';return n.length>5?n.slice(0,3)+'•'.repeat(n.length-5)+n.slice(-2):n};
 const maskNim=n=>{const stf=me&&(me.peran==='admin'||me.peran==='dosen')&&!kioskOn();if(stf)return cleanNim(n)||'Belum ada NIM';return n===undefined?'•••••••••':mask(n)};
-const _wf=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Makassar',weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
 const _WD={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
-function nowW(){const o={};_wf.formatToParts(new Date()).forEach(p=>o[p.type]=p.value);return{dow:_WD[o.weekday],sec:(+o.hour%24)*3600+(+o.minute)*60+(+o.second)}}
+function nowW(){
+ const o={};_witaDispFmt.formatToParts(new Date()).forEach(p=>o[p.type]=p.value);
+ const dow=_WD[o.weekday],hh=+(o.hour||0)%24,mm=+(o.minute||0),ss=+(o.second||0);
+ return{
+  dow,sec:hh*3600+mm*60+ss,
+  timeStr:`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`,
+  dateStr:`${DN[dow]}, ${+o.day} ${_MON_ID[(+o.month||1)-1]} ${o.year}`
+ };
+}
 const isLive=k=>{const w=nowW(),n=Math.floor(w.sec/60);return k.hari==w.dow&&mn(k.mulai)<=n&&n<=mn(k.selesai)};
 /* Sinkronisasi TRUE wajib memiliki kartu RFID DAN tersinkronisasi === true (berlaku untuk Mahasiswa, Dosen, maupun Admin) */
 const isSynced=a=>Boolean(a&&a.uid_kartu&&a.tersinkronisasi===true);
@@ -588,6 +598,7 @@ const MENU={
 const role=()=>me?me.peran:'guest';
 const mkByProdi=()=>activeProdi==='ALL'?S.mk:S.mk.filter(k=>prodiOf(k)===activeProdi);
 const angByProdi=()=>activeProdi==='ALL'?S.ang:S.ang.filter(a=>(a.prodi||'')===activeProdi);
+function getAngMap(){const m=new Map();for(const a of S.ang)if(a&&a.id!=null)m.set(String(a.id),a);return m}
 
 /* ===== PAKET MATA KULIAH PER PRODI ===== */
 async function enrollProdiPackage(anggotaId,prodiName){
@@ -730,6 +741,14 @@ function setupRealtime(){
    await load();
    if(r&&r.anggota_id&&me&&me.peran==='admin'){const a=S.ang.find(z=>z.id==r.anggota_id)||{};toast((a.nama||'Tap')+' — '+hm(r.masuk))}
    draw(true);
+  })
+  .on('postgres_changes',{event:'*',schema:'public',table:'perangkat'},x=>{
+   const r=x.new||x.old;if(!r)return;
+   const idx=S.dev.findIndex(d=>String(d.id)===String(r.id));
+   if(x.eventType==='DELETE'){if(idx!==-1)S.dev.splice(idx,1)}
+   else if(idx!==-1)S.dev[idx]={...S.dev[idx],...r};
+   else S.dev=[...S.dev,r];
+   draw(true);
   });
  if(me&&me.peran==='admin'){
   CH.on('postgres_changes',{event:'*',schema:'public',table:'sesi_registrasi'},async()=>{await load();await afterLoad();if(pg==='reg')draw(true)});
@@ -848,7 +867,7 @@ function devInfo(){const d=S.dev.find(x=>x.aktif)||S.dev[0];if(!d||!d.terakhir_t
 function myMk(){if(!me)return[];return me.peran==='dosen'?S.mk.filter(k=>k.dosen_id==me.id):S.mk.filter(k=>S.pes.some(p=>p.anggota_id==me.id&&p.mata_kuliah_id==k.id))}
 async function setStatus(aid,mid,st){
  const t=today(),r=S.pre.find(x=>x.anggota_id==aid&&x.mata_kuliah_id==mid&&x.tanggal==t);
- const q=r?sb.from('presensi').update({status:st}).eq('id',r.id):sb.from('presensi').insert({anggota_id:aid,mata_kuliah_id:mid,tanggal:t,masuk:new Date().toTimeString().slice(0,8),status:st,sumber:'manual'});
+ const q=r?sb.from('presensi').update({status:st}).eq('id',r.id):sb.from('presensi').insert({anggota_id:aid,mata_kuliah_id:mid,tanggal:t,masuk:nowW().timeStr,status:st,sumber:'manual'});
  const {error}=await q;if(error)return toast(error.message);toast('Status diperbarui');await load();draw();
 }
 async function setStatusId(id,st){const {error}=await sb.from('presensi').update({status:st}).eq('id',id);if(error)return toast(error.message);toast('Status diperbarui');await load();draw()}
@@ -897,7 +916,7 @@ const nextCard=list=>{
 /* ===== VIEW ===== */
 const V={
  dash(){
-  const t=today(),d=devInfo(),dow=new Date().getDay();
+  const t=today(),d=devInfo(),dow=nowW().dow;
   const prodiMks=mkByProdi();
   const p=S.pre.filter(x=>x.tanggal==t&&(activeProdi==='ALL'||mkProdiById(x.mata_kuliah_id)===activeProdi));
   const live=prodiMks.filter(isLive),taps=[...p].sort((a,b)=>String(b.pulang||b.masuk||'').localeCompare(String(a.pulang||a.masuk||''))).slice(0,6);
@@ -1017,7 +1036,7 @@ const V={
      <h2>${esc(me.nama)}</h2>
      <div class="ktm-grid"><div><small>${dsn?'NIDN / NIP':'NIM / ID'}</small><b class="mono">${nomorInduk?esc(nomorInduk):'Belum diisi'}</b></div><div><small>Status Sinkronisasi</small><b>${syn?'TRUE · Tersinkronisasi':'FALSE · Belum Sinkron'}</b></div>${dsn||adm?`<div><small>Peran</small><b>${esc(PL[me.peran]||me.peran)}</b></div>`:`<div><small>Kelas</small><b>${esc(me.kelas||'-')}</b></div>`}<div><small>Email Gmail</small><b style="font-size:12px">${esc(me.email||'-')}</b></div></div>
      <div class="ktm-rfid"><div><small style="display:block;font-size:10px;color:var(--gd-soft);letter-spacing:.08em">KARTU RFID</small>${adaKartu?`<b class="mono" style="font-size:15px;letter-spacing:.08em">${rfidShow?esc(uid):'••••••••'}</b>`:'<span class="b er">Belum terdaftar</span>'}</div>${adaKartu?`<button class="btn sm" onclick="rfidShow=!rfidShow;draw()">${ico(rfidShow?'eyeOff':'eye',14)} ${rfidShow?'Sembunyikan UID':'Tampilkan UID'}</button>`:''}</div></div></div>
-    <div class="card" style="margin-top:12px"><div class="row"><h3 style="margin:0">Checklist Aktivasi Presensi</h3><span class="b ${done==3&&syn?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?ico('check',14):i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[3]==='TRUE'||s[3]==='Terhubung'||s[3]==='Terpasang'?'ok':'lt'}">${s[3]}</span></div>`).join('')}${!tgSiap?`<button class="btn tg" style="margin-top:10px" onclick="go('tg')">${ico('tg',15)} Tautkan Telegram Sekarang</button>`:''}</div>
+    <div class="card" style="margin-top:12px"><div class="row"><h3 style="margin:0">Checklist Aktivasi Presensi</h3><span class="b ${done==3&&syn?'ok':'lt'}">${done}/3</span></div><div class="bar"><i style="width:${Math.round(done/3*100)}%"></i></div>${steps.map((s,i)=>`<div class="ck ${s[2]?'done':''}"><span class="n">${s[2]?ico('check',14):i+1}</span><div class="x"><b>${s[0]}</b><span class="mut">${s[1]}</span></div><span class="b ${s[3]==='TRUE'||s[3]==='Terhubung'||s[3]==='Terpasang'?'ok':'lt'}">${s[3]}</span></div>`).join('')}<div class="row" style="margin-top:10px;gap:8px">${!tgSiap?`<button class="btn tg" style="flex:1" onclick="go('tg')">${ico('tg',15)} Tautkan Telegram Sekarang</button>`:''}<button type="button" class="btn sm" onclick="startTour()">${ico('refresh',14)} Ulangi Panduan Sistem</button></div></div>
    </div>
 
    <div class="card" id="pf_card">
@@ -1047,7 +1066,7 @@ const V={
    h+=`<h3 class="sec-h">${ico('riw',16)} Riwayat Presensi Saya (Admin)</h3>${myLogs.map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat presensi untuk akun Admin Anda.</p>'}`;
   }else if(dsn){h+=`<h3>Kelas yang Diampu</h3><div class="grid">${myMk().map(mkCard).join('')||'<p class="mut">Belum ada mata kuliah yang diampu.</p>'}</div>`}
   else{
-   const hr=myMk().filter(k=>k.hari==new Date().getDay());
+   const hr=myMk().filter(k=>k.hari==nowW().dow);
    h+=`<h3 class="sec-h">${ico('dash',16)} Ringkasan Kehadiran Paket Mata Kuliah Saya</h3><div id="st"><p class="mut">Memuat…</p></div><h3>Jadwal Hari Ini</h3>${hr.map(k=>{const tol=+(k.toleransi_menit??15);return `<div style="margin-bottom:10px">${mkCard(k)}<div class="mut" data-cd="${mn(k.mulai)+tol}" style="padding:4px 6px"></div></div>`}).join('')||'<p class="mut">Tidak ada kuliah hari ini.</p>'}`;
   }
   return h;
@@ -1249,11 +1268,11 @@ async function simpanProfilMandiri(btn){
 
 /* ===== LOG PRESENSI: PENCARIAN & FILTER PERAN ===== */
 function logFiltered(){
- const q=logQ.trim().toLowerCase();
+ const q=logQ.trim().toLowerCase(),angMap=getAngMap();
  return S.pre.filter(x=>{
   if(activeProdi!=='ALL'&&mkProdiById(x.mata_kuliah_id)!==activeProdi)return false;
   if(sel&&x.mata_kuliah_id!=sel)return false;
-  const a=S.ang.find(z=>z.id==x.anggota_id)||{};
+  const a=angMap.get(String(x.anggota_id))||{};
   const pRole=a.peran||'mahasiswa';
   if(logRole&&pRole!==logRole)return false;
   if(q){
@@ -1279,7 +1298,8 @@ async function exportLogXls(btn){
  exportLogXls.busy=1;const done=busyBtn(btn,'Mengekspor…');
  try{
   await new Promise(r=>setTimeout(r,40));
-  const data=rows.map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Nama:a.nama||'-',NIM_NIDN:cleanNim(a.nim),Peran:PL[a.peran]||a.peran||'',Program_Studi:mkProdiById(r.mata_kuliah_id),Matkul:mkn(r.mata_kuliah_id),Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber||''}});
+  const angMap=getAngMap();
+  const data=rows.map(r=>{const a=angMap.get(String(r.anggota_id))||{};return{Tanggal:r.tanggal,Nama:a.nama||'-',NIM_NIDN:cleanNim(a.nim),Peran:PL[a.peran]||a.peran||'',Program_Studi:mkProdiById(r.mata_kuliah_id),Matkul:mkn(r.mata_kuliah_id),Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber||''}});
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'Log_Presensi');
   const slug=(activeProdi==='ALL'?'semua-prodi':activeProdi).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   XLSX.writeFile(wb,`log-presensi-${slug}-${today()}.xlsx`);
@@ -1288,9 +1308,9 @@ async function exportLogXls(btn){
  finally{exportLogXls.busy=0;if(btn&&btn.isConnected)done()}
 }
 function logRows(){
- const r=logList();
+ const r=logList(),angMap=getAngMap();
  return r.map(x=>{
-  const a=S.ang.find(z=>z.id==x.anggota_id)||{};
+  const a=angMap.get(String(x.anggota_id))||{};
   const n=cleanNim(a.nim);
   return `<tr><td data-label="Tanggal">${x.tanggal}<td class="ttl" data-label="Nama"><b>${esc(a.nama||'-')}</b><td class="mono" data-label="NIM/NIDN">${n?esc(n):'<span class="b">kosong</span>'}<td data-label="Peran">${roleBadge(a.peran)}<td data-label="Matkul">${esc(mkn(x.mata_kuliah_id))}<td data-label="Masuk">${hm(x.masuk)}<td data-label="Pulang">${hm(x.pulang)||'—'}<td data-label="Status">${stSel(x.id,x.status)}</tr>`;
  }).join('')||'<tr><td colspan=8 class="emp">Tidak ada log presensi yang sesuai dengan filter/pencarian.</tr>';
@@ -1709,10 +1729,10 @@ async function exportXls(btn){
  exportXls.busy=1;const done=busyBtn(btn,'Mengekspor…');
  try{
  await new Promise(r=>setTimeout(r,40));
- const ids=me.peran==='admin'?null:myMk().map(k=>k.id),wb=XLSX.utils.book_new(),A=(n,d)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n);
+ const ids=me.peran==='admin'?null:myMk().map(k=>k.id),wb=XLSX.utils.book_new(),A=(n,d)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n),angMap=getAngMap();
  A('Anggota',S.ang.filter(a=>!ids||S.pes.some(p=>p.anggota_id==a.id&&ids.includes(p.mata_kuliah_id))).map(a=>({Peran:a.peran,Program_Studi:a.prodi||'Belum dipilih',NIM_NIDN:cleanNim(a.nim),Nama_Asli:a.nama,Kelas:a.kelas,Email:a.email,Sinkronisasi:isSynced(a)?'TRUE':'FALSE',Telegram:a.telegram_chat_id?'Tertaut':'Belum',Aktif:a.aktif})));
  A('Mata_Kuliah',S.mk.filter(k=>!k._seed&&(!ids||ids.includes(k.id))).map(k=>({Program_Studi:prodiOf(k),Kode:k.kode,Nama:k.nama,Hari:DN[k.hari],Mulai:hm(k.mulai),Selesai:hm(k.selesai),Toleransi_Menit:k.toleransi_menit??15,Ruangan:k.ruangan,Dosen:nm(k.dosen_id)})));
- A('Log_Presensi',S.pre.filter(r=>!ids||ids.includes(r.mata_kuliah_id)).map(r=>{const a=S.ang.find(x=>x.id==r.anggota_id)||{};return{Tanggal:r.tanggal,Nama:a.nama,NIM_NIDN:cleanNim(a.nim),Peran:PL[a.peran]||a.peran,Program_Studi:mkProdiById(r.mata_kuliah_id),Matkul:mkn(r.mata_kuliah_id),Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}}));
+ A('Log_Presensi',S.pre.filter(r=>!ids||ids.includes(r.mata_kuliah_id)).map(r=>{const a=angMap.get(String(r.anggota_id))||{};return{Tanggal:r.tanggal,Nama:a.nama,NIM_NIDN:cleanNim(a.nim),Peran:PL[a.peran]||a.peran,Program_Studi:mkProdiById(r.mata_kuliah_id),Matkul:mkn(r.mata_kuliah_id),Masuk:hm(r.masuk),Pulang:hm(r.pulang),Status:r.status,Sumber:r.sumber}}));
  XLSX.writeFile(wb,'presensi-polnes-'+today()+'.xlsx');
  toast('Laporan Excel berhasil diunduh.');
  }catch(e){toast('Ekspor gagal: '+friendlyErr(e))}
@@ -1836,10 +1856,9 @@ function finishTour(){
 /* ===== TICKER: JAM, COUNTDOWN, BATAS TEPAT WAKTU & BILAH TOLERANSI ===== */
 const p2=n=>String(n).padStart(2,'0');
 function tick(){
- const d=new Date();
- document.querySelectorAll('[data-clock]').forEach(e=>{e.textContent=e.dataset.clock==='t'?`${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`:`${DN[d.getDay()]}, ${d.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()]} ${d.getFullYear()}`});
- document.querySelectorAll('[data-cd]').forEach(e=>{const n=d.getHours()*60+d.getMinutes(),left=+e.dataset.cd*60-(n*60+d.getSeconds());e.textContent=left>0?`Batas tepat waktu ${p2(Math.floor(left/3600))}:${p2(Math.floor(left%3600/60))}:${p2(left%60)}`:'Batas tepat waktu sudah lewat'});
  const W=nowW();
+ document.querySelectorAll('[data-clock]').forEach(e=>{e.textContent=e.dataset.clock==='t'?W.timeStr:W.dateStr});
+ document.querySelectorAll('[data-cd]').forEach(e=>{const left=+e.dataset.cd*60-W.sec;e.textContent=left>0?`Batas tepat waktu ${p2(Math.floor(left/3600))}:${p2(Math.floor(left%3600/60))}:${p2(left%60)}`:'Batas tepat waktu sudah lewat'});
  const redrawNow=()=>{if(tick.nx)return;tick.nx=1;setTimeout(()=>{tick.nx=0;draw(true)},50)};
  document.querySelectorAll('[data-tolbar]').forEach(e=>{
   const tol=+e.dataset.t*60,s=+e.dataset.s*60,en=+e.dataset.e*60,lim=s+tol,left=lim-W.sec;
