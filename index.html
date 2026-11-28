@@ -335,6 +335,47 @@ body.kiosk .card{padding:22px}
 [data-theme=dark] #tour-tip h3{color:var(--em)}
 #tour-tip p{margin:0 0 14px;font-size:13px;line-height:1.55}
 @media(prefers-reduced-motion:reduce){#tour-spot,#tour-tip{transition:none}}
+
+/* ===== PRODIBAR BUKA-TUTUP ===== */
+.prodibar{display:grid;grid-template-rows:1fr;transition:grid-template-rows .25s ease,opacity .25s ease,padding .25s ease,border-color .25s ease}
+.prodibar-clip{overflow:hidden;min-height:0}
+.prodibar.closed{grid-template-rows:0fr;opacity:0;padding-top:0;padding-bottom:0;border-bottom-color:transparent}
+.prodi-tg{display:inline-flex;align-items:center;gap:4px;max-width:100%;border:0;background:none;margin:0;padding:3px 6px 3px 0;color:var(--mut);font:600 11px 'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;border-radius:8px}
+.prodi-tg:hover{color:var(--em)}
+.prodi-tg:focus-visible,.mk-link:focus-visible{outline:2px solid var(--gd);outline-offset:2px}
+.prodi-tg .pt-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prodi-tg .chev{display:inline-block;font-size:13px;line-height:1;transition:transform .25s ease}
+.prodi-tg[aria-expanded=false] .chev{transform:rotate(-90deg)}
+body.kiosk .prodi-tg{pointer-events:none}body.kiosk .prodi-tg .chev{display:none}
+@media(max-width:800px){.prodi-tg{min-height:28px;max-width:150px}}
+@media(prefers-reduced-motion:reduce){.prodibar,.prodi-tg .chev,.mk-link{transition:none!important}}
+
+/* ===== KARTU MATKUL BISA DIKLIK ===== */
+.mk-link{cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+@media(hover:hover){.mk-link:hover{transform:translateY(-3px);border-color:var(--gd);box-shadow:0 10px 24px -10px rgba(197,160,89,.55)}}
+.mk-link:active{transform:translateY(-1px)}
+.mk-go{margin-top:6px;font-size:11.5px;font-weight:800;letter-spacing:.02em;color:var(--em-deep)}
+[data-theme=dark] .mk-go{color:var(--gd-soft)}
+
+/* ===== RIWAYAT: GRID GAMBAR BESAR & BANNER DETAIL ===== */
+.riw-grid .mk-img{height:170px}
+.riw-back{margin:0 0 10px}
+.mkban{position:relative;height:190px;border-radius:18px;overflow:hidden;margin-bottom:12px;background:#063B2B;border:2px solid var(--gd);box-shadow:var(--shadow)}
+.mkban>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mkban-in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:14px 18px;color:#fff;background:linear-gradient(to top,rgba(2,18,13,.92),rgba(2,18,13,.55) 55%,rgba(2,18,13,.1))}
+.mkban-code{font-size:11.5px;font-weight:700;letter-spacing:.1em;color:var(--gd-soft)}
+.mkban h2{margin:0;font-size:clamp(18px,3vw,28px);line-height:1.2;color:#fff;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mkban-chips{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;opacity:.95}
+.mkban-chips span{display:inline-flex;align-items:center;gap:5px}
+.riw-f{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:6px}
+.riw-f label{margin:0}.riw-f input{width:min(220px,100%);margin-bottom:0}
+.riw-f .btn{margin-bottom:2px}
+@media(max-width:700px){
+ .mkban{height:140px;border-radius:14px}
+ .mkban-in{padding:10px 12px;gap:2px}
+ .mkban h2{font-size:17px}
+ .mkban-chips{font-size:11px;gap:2px 10px}
+}
 </style>
 </head>
 <body>
@@ -486,9 +527,9 @@ let activeProdi='Teknologi Rekayasa Komputer';
 let lt='google',rfidShow=false,mf='semua',memQ='',logQ='',logRole='',regTarget='',regPrio=true,regBusy=0,tgTimer=null,tgLeft=0,fresh=new Set(),CH=null,bt=0;
 const MENU={
  guest:[['dash','dash','Dashboard']],
- admin:[['dash','dash','Dashboard'],['portal','portal','Portal Saya'],['mk','mk','Mata Kuliah'],['mem','mem','Anggota'],['reg','reg','Registrasi RFID'],['log','log','Log Presensi'],['ntf','ntf','Notifikasi'],['xls','xls','Import / Export']],
+ admin:[['dash','dash','Dashboard'],['portal','portal','Portal Saya'],['mk','mk','Mata Kuliah'],['mem','mem','Anggota'],['reg','reg','Registrasi RFID'],['riw','riw','Riwayat'],['log','log','Log Presensi'],['ntf','ntf','Notifikasi'],['xls','xls','Import / Export']],
  mahasiswa:[['dash','dash','Dashboard'],['portal','portal','Portal Saya'],['riw','riw','Riwayat'],['tg','tg','Telegram']],
- dosen:[['dash','dash','Dashboard'],['portal','portal','Portal Saya'],['kelas','kelas','Kelas Saya'],['kor','kor','Koreksi'],['xls','xls','Import / Export'],['tg','tg','Telegram']]
+ dosen:[['dash','dash','Dashboard'],['portal','portal','Portal Saya'],['kelas','kelas','Kelas Saya'],['riw','riw','Riwayat'],['kor','kor','Koreksi'],['xls','xls','Import / Export'],['tg','tg','Telegram']]
 };
 const role=()=>me?me.peran:'guest';
 const mkByProdi=()=>activeProdi==='ALL'?S.mk:S.mk.filter(k=>prodiOf(k)===activeProdi);
@@ -683,13 +724,24 @@ function shell(){
   const cnt=S.mk.filter(k=>prodiOf(k)===p.name).length;
   return `<button type="button" class="pbtn ${activeProdi===p.name?'on':''}" onclick="setProdi('${p.name}')"><span class="code">${p.code}</span><span>${p.name}</span><small style="opacity:.75">(${cnt})</small></button>`;
  }).join('')+(me&&me.peran==='admin'?`<button type="button" class="pbtn ${activeProdi==='ALL'?'on':''}" onclick="setProdi('ALL')"><span>Semua Prodi</span><small style="opacity:.75">(${S.mk.length})</small></button>`:'');
- $('#app').innerHTML=`<header class="hd"><div class="logo3d"><img src="./logo-polnes.png" alt="Logo Polnes"></div><div class="brand"><h3>Presensi RFID Polnes</h3><small>${esc(subProdi)}</small></div><nav class="nav">${nav}</nav><div class="hd-r"><button class="ib" title="Mode Proyektor" onclick="toggleFull()">${ico('proj',16)}</button><button class="ib" title="Terang / Gelap" onclick="toggleTema()">${ico('theme',16)}</button>${usr}</div></header>
- <div class="prodibar"><div class="prodibar-in"><span class="prodi-lbl">${ico('building',13)} Program Studi:</span>${pBtns}</div></div>
+ $('#app').innerHTML=`<header class="hd"><div class="logo3d"><img src="./logo-polnes.png" alt="Logo Polnes"></div><div class="brand"><h3>Presensi RFID Polnes</h3><button type="button" class="prodi-tg" aria-expanded="${prodiOpen}" aria-controls="prodibar" title="Buka / tutup bilah Program Studi" onclick="toggleProdibar()"><span class="pt-txt">${esc(subProdi)}</span><span class="chev" aria-hidden="true">▾</span></button></div><nav class="nav">${nav}</nav><div class="hd-r"><button class="ib" title="Mode Proyektor" onclick="toggleFull()">${ico('proj',16)}</button><button class="ib" title="Terang / Gelap" onclick="toggleTema()">${ico('theme',16)}</button>${usr}</div></header>
+ <div class="prodibar ${prodiOpen?'':'closed'}" id="prodibar"><div class="prodibar-clip" ${prodiOpen?'':'inert'}><div class="prodibar-in"><span class="prodi-lbl">${ico('building',13)} Program Studi:</span>${pBtns}</div></div></div>
  <main class="wrap" id="main"></main><button id="kx" class="btn g sm kx-on" onclick="toggleFull()">Keluar Mode Proyektor</button>`;
  bindTilt($('#app'));
  draw();
 }
 function setProdi(p){activeProdi=p;sel='';shell()}
+/* Bilah Program Studi buka-tutup (grid-template-rows 0fr<->1fr + opacity), preferensi disimpan di localStorage */
+let prodiOpen=true;try{prodiOpen=localStorage.getItem('prodibar')!=='0'}catch(e){}
+function toggleProdibar(){
+ prodiOpen=!prodiOpen;
+ try{localStorage.setItem('prodibar',prodiOpen?'1':'0')}catch(e){}
+ const pb=document.getElementById('prodibar');
+ if(pb){pb.classList.toggle('closed',!prodiOpen);const c=pb.querySelector('.prodibar-clip');if(c)c.inert=!prodiOpen}
+ document.querySelectorAll('.prodi-tg').forEach(b=>b.setAttribute('aria-expanded',String(prodiOpen)));
+}
+function openMk(id){sel=String(id);riwDate='';pg='riw';pfRes=null;stopTgPollIfLeft();shell();window.scrollTo(0,0)}
+function riwBack(){sel='';riwDate='';draw();window.scrollTo(0,0)}
 function go(p){pg=p;sel='';if(p!=='portal')pfRes=null;stopTgPollIfLeft();shell();window.scrollTo(0,0)}
 function toggleTema(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('tema',t)}catch(e){}}
 /* Mode Proyektor: paksa tema gelap (tidak disimpan ke localStorage), lalu kembalikan tema sebelumnya saat keluar */
@@ -726,11 +778,14 @@ const bd=s=>`<span class="b ${s=='Hadir'?'ok':s=='Terlambat'?'lt':s=='Izin'||s==
 const syncBadge=a=>isSynced(a)?'<span class="b ok">TRUE</span>':'<span class="b er">FALSE</span>';
 const roleBadge=r=>`<span class="rb ${esc(r||'mahasiswa')}">${esc(PL[r]||r||'Mahasiswa')}</span>`;
 /* Kartu Mata Kuliah: Clean Split Card (gambar diam di atas, panel info solid di bawah) */
-const mkCard=k=>{
+function mkCardHtml(k,link,count){
  const tol=k.toleransi_menit??15,lv=isLive(k);
  const badge=lv?'<span class="live">BERLANGSUNG</span>':(k._seed?'<span class="sim-tag">Data Simulasi</span>':'');
- return `<div class="mk ${lv?'now':''}"><div class="mk-img">${badge}${courseImg(k.nama)}</div><div class="mk-info"><span class="mk-code mono">${esc(k.kode)}</span><b class="mk-nm">${esc(k.nama)}</b><div class="mk-meta">${ico('riw',12)} ${DN[k.hari]} · ${hm(k.mulai)}–${hm(k.selesai)}</div><div class="mk-meta">${ico('building',12)} ${esc(k.ruangan||'-')}</div><span class="b ok mk-tol">Toleransi ${tol} mnt</span></div></div>`;
-};
+ const go=link&&!kioskOn(),idq=esc(String(k.id));
+ return `<div class="mk ${lv?'now':''}${go?' mk-link':''}"${go?` role="button" tabindex="0" aria-label="Lihat riwayat presensi ${esc(k.nama)}" onclick="openMk('${idq}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMk('${idq}')}"`:''}><div class="mk-img">${badge}${courseImg(k.nama)}</div><div class="mk-info"><span class="mk-code mono">${esc(k.kode)}</span><b class="mk-nm">${esc(k.nama)}</b><div class="mk-meta">${ico('riw',12)} ${DN[k.hari]} · ${hm(k.mulai)}–${hm(k.selesai)}</div><div class="mk-meta">${ico('building',12)} ${esc(k.ruangan||'-')}</div><span class="b ok mk-tol">Toleransi ${tol} mnt</span>${typeof count==='number'?`<span class="b lt">${count} catatan presensi</span>`:''}${go?'<span class="mk-go">Lihat Riwayat →</span>':''}</div></div>`;
+}
+const mkCard=k=>mkCardHtml(k,false);
+const mkCardLink=(k,count)=>mkCardHtml(k,true,count);
 const STS=['Hadir','Terlambat','Izin','Sakit'];
 const nm=id=>(S.ang.find(x=>x.id==id)||{}).nama||'-';
 const mkn=id=>(S.mk.find(x=>x.id==id)||{}).nama||'-';
@@ -801,7 +856,7 @@ const V={
   <div class="kpi"><div class="card"><span class="mut">Hadir hari ini</span><b>${p.length}</b></div><div class="card"><span class="mut">Terlambat</span><b>${p.filter(x=>x.status=='Terlambat').length}</b></div><div class="card"><span class="mut">Kelas hari ini</span><b>${hari}</b></div><div class="card"><span class="mut">${esc(d.n)}</span><b style="font-size:${kioskOn()?'30':'20'}px;display:flex;align-items:center;gap:8px;margin-top:4px">${d.on?'<span class="b ok" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Online</span>':'<span class="b er" style="font-size:14px;padding:5px 12px"><span class="dot"></span> Offline</span>'}</b></div></div>
   <div class="dash-main"><div class="dcol">${spotHtml}${histHtml}</div><div class="dcol">${rightHtml}</div></div>
   <div class="row" style="margin:14px 0 10px"><h3 class="sec-h" style="margin:0">${ico('mk',16)} Paket Mata Kuliah — ${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)}</h3><span class="mut">${prodiMks.length} mata kuliah</span></div>
-  ${S.mk.some(k=>k._seed)?'<div class="sim-note"><b>Data Simulasi.</b> Tabel mata kuliah di database masih kosong, sehingga yang tampil adalah contoh jadwal untuk demonstrasi. Data ini tidak tersimpan dan tidak ikut diekspor.</div>':''}<div class="grid">${prodiMks.map(mkCard).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>
+  ${S.mk.some(k=>k._seed)?'<div class="sim-note"><b>Data Simulasi.</b> Tabel mata kuliah di database masih kosong, sehingga yang tampil adalah contoh jadwal untuk demonstrasi. Data ini tidak tersimpan dan tidak ikut diekspor.</div>':''}<div class="grid">${prodiMks.map(k=>mkCardLink(k)).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>
   ${me?'':`<div class="card" style="margin-top:14px"><div class="row"><div><b>Mahasiswa / Dosen?</b><div class="mut">Masuk dengan Google untuk mengisi identitas asli, membuka KTM Digital, dan menautkan Telegram.</div></div><button class="btn p sm" onclick="lgn()">${ico('lock',14)} Masuk</button></div></div>`}`},
  admin_mk(){
   const list=mkByProdi();
@@ -943,7 +998,7 @@ const V={
   }
   return h;
  },
- mahasiswa_riw(){return S.pre.filter(x=>me&&x.anggota_id==me.id).slice(0,50).map(x=>`<div class="card"><div class="row"><b>${esc(mkn(x.mata_kuliah_id))}</b>${bd(x.status)}</div><div class="mut">${x.tanggal} · Masuk ${hm(x.masuk)} · Pulang ${hm(x.pulang)||'—'}</div></div>`).join('')||'<p class="mut">Belum ada riwayat.</p>'},
+ riw(){return riwView()},
  tg(){
   if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
   const ok=!!me.telegram_chat_id,poll=!!tgTimer,isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -976,6 +1031,47 @@ const V={
   const ids=myMk().map(k=>k.id),r=S.pre.filter(x=>ids.includes(x.mata_kuliah_id)&&(!sel||x.mata_kuliah_id==sel)).slice(0,100);
   return `<select onchange="sel=this.value;draw()"><option value="">Semua kelas saya</option>${myMk().map(k=>`<option value="${k.id}" ${k.id==sel?'selected':''}>${esc(k.nama)}</option>`).join('')}</select>${r.map(x=>`<div class="card"><div class="row"><b>${esc(nm(x.anggota_id))}</b>${stSel(x.id,x.status)}</div><div class="mut">${esc(mkn(x.mata_kuliah_id))} · ${x.tanggal} · ${hm(x.masuk)}</div></div>`).join('')}`}
 };
+
+/* ===== RIWAYAT: PILIH MATKUL BERGAMBAR BESAR -> DETAIL DATANG & PULANG ===== */
+let riwDate='';
+function riwBase(k){
+ const peranOf=new Map(S.ang.map(a=>[String(a.id),a.peran]));
+ return S.pre.filter(x=>x.mata_kuliah_id==k.id&&peranOf.get(String(x.anggota_id))==='mahasiswa');
+}
+function riwList(k){return riwBase(k).filter(x=>!riwDate||x.tanggal===riwDate)}
+function riwMeta(k){
+ const all=riwList(k).length,shown=Math.min(all,LOG_MAX);
+ if(!all)return riwDate?'Tidak ada catatan presensi pada tanggal tersebut.':'Belum ada catatan presensi mahasiswa pada mata kuliah ini.';
+ return all>LOG_MAX?`Menampilkan ${shown} catatan terbaru dari ${all}. Pilih tanggal untuk mempersempit.`:`Menampilkan ${all} catatan presensi${riwDate?' pada '+riwDate:''}.`;
+}
+function riwRows(k){
+ const r=riwList(k).slice(0,LOG_MAX);
+ return r.map(x=>{
+  const a=S.ang.find(z=>z.id==x.anggota_id)||{},mine=me&&a.id==me.id;
+  return `<tr><td data-label="Tanggal">${esc(x.tanggal)}<td class="ttl" data-label="Nama Mahasiswa"><b>${esc(a.nama||'-')}</b>${mine?' <span class="b ok">Saya</span>':''}<td class="mono" data-label="NIM">${esc(maskNim(a.nim))}<td data-label="Jam Datang">${hm(x.masuk)||'—'}<td data-label="Jam Pulang">${hm(x.pulang)||'—'}<td data-label="Status">${bd(x.status)}</tr>`;
+ }).join('')||'<tr><td colspan=6 class="emp">Tidak ada riwayat presensi untuk filter ini.</tr>';
+}
+function riwRefresh(){
+ const k=S.mk.find(x=>String(x.id)===String(sel));if(!k)return;
+ const t=$('#riwtb');if(t)t.innerHTML=riwRows(k);
+ const m=$('#riwmeta');if(m)m.textContent=riwMeta(k);
+}
+function riwView(){
+ if(!me)return '<div class="card">Silakan masuk terlebih dahulu.</div>';
+ const k=sel?S.mk.find(x=>String(x.id)===String(sel)):null;
+ if(!k){
+  const peranOf=new Map(S.ang.map(a=>[String(a.id),a.peran])),cnt={};
+  S.pre.forEach(x=>{if(peranOf.get(String(x.anggota_id))==='mahasiswa')cnt[x.mata_kuliah_id]=(cnt[x.mata_kuliah_id]||0)+1});
+  const list=mkByProdi();
+  return `<div class="row" style="margin-bottom:10px"><h3 class="sec-h" style="margin:0">${ico('riw',16)} Riwayat Presensi — Pilih Mata Kuliah</h3><span class="mut">${esc(activeProdi==='ALL'?'Semua Prodi':activeProdi)} · ${list.length} mata kuliah</span></div>
+  <div class="grid riw-grid">${list.map(m=>mkCardLink(m,cnt[m.id]||0)).join('')||'<p class="mut">Belum ada data mata kuliah pada program studi ini.</p>'}</div>`;
+ }
+ const tol=k.toleransi_menit??15;
+ return `<button type="button" class="btn sm riw-back" onclick="riwBack()">← Semua Mata Kuliah</button>
+ <section class="mkban">${courseImg(k.nama)}<div class="mkban-in"><span class="mono mkban-code">${esc(k.kode)}${k._seed?' · Data Simulasi':''}</span><h2>${esc(k.nama)}</h2><div class="mkban-chips"><span>${ico('building',12)} ${esc(prodiOf(k))}</span><span>${ico('riw',12)} ${DN[k.hari]} · ${hm(k.mulai)}–${hm(k.selesai)}</span><span>${ico('building',12)} ${esc(k.ruangan||'-')}</span><span>${ico('warn',12)} Toleransi ${tol} mnt</span></div></div></section>
+ <div class="card"><div class="riw-f"><label>Filter Tanggal<input type="date" id="riw_d" value="${esc(riwDate)}" onchange="riwDate=this.value;riwRefresh()"></label><button type="button" class="btn sm" onclick="riwDate='';const d=$('#riw_d');if(d)d.value='';riwRefresh()">Semua Tanggal</button></div><div class="mut" id="riwmeta">${esc(riwMeta(k))}</div></div>
+ <div class="card tw rtw"><table class="rt"><thead><tr><th>Tanggal<th>Nama Mahasiswa<th>NIM<th>Jam Datang<th>Jam Pulang<th>Status</tr></thead><tbody id="riwtb">${riwRows(k)}</tbody></table></div>`;
+}
 
 /* ===== PENDAFTARAN & SINKRONISASI MANDIRI USER ===== */
 /* ===== HELPER UX: PESAN ERROR RAMAH, VALIDASI FIELD, TOMBOL SIBUK ===== */
